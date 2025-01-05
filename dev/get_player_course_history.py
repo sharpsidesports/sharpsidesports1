@@ -44,6 +44,35 @@ def get_pga_tour_events():
         "key": "cf5b806066038ad69a752686db8f"
     }
     
+    # Define a blacklist of courses
+    course_blacklist = {
+        "Colonial CC",
+        "Conway Farms GC",
+        "Eagle Point Golf Club",
+        "Innisbrook Resort (Copperhead Course)",
+        "Keene Trace Golf Club",
+        "Keene Trace Golf Club (Champion Trace)",
+        "Keene Trace Golf Club (Champions Course)",
+        "Muirfield Village GC",
+        "Olympia Fields CC (North)",
+        "PGA National (Champion)",
+        "RTJ Trail (Grand National)",
+        "Riviera CC",
+        "Sedgefield CC",
+        "Silverado Resort & Spa (North)",
+        "Silverado Resort (North Course)",
+        "Silverado Resort and Spa North",
+        "TPC Four Seasons Resort",
+        "TPC San Antonio - AT&T Oaks",
+        "TPC Sawgrass",
+        "TPC Scottsdale",
+        "The Dunes Golf and Beach Club",
+        "The Los Angeles Country Club (North Course)",
+        "The Summit Club",
+        "Valhalla GC",
+        "Waialae CC"
+    }
+    
     # Make the request to the API
     response = requests.get(url, params=params)
     
@@ -55,7 +84,7 @@ def get_pga_tour_events():
         pga_events = [event for event in events if event['tour'] == 'pga' and event['traditional_stats'] == 'yes' and event['sg_categories'] == 'yes']
         
         # Get the first 20 PGA Tour events
-        first_20_pga_events = pga_events[:2]
+        first_20_pga_events = pga_events[:]
         
         # Initialize a data object to store player rounds by course
         player_rounds_by_course = {}
@@ -90,6 +119,11 @@ def get_pga_tour_events():
                     for round_key, round_info in score.items():
                         if round_key.startswith('round_') and round_info:
                             course_name = round_info['course_name']
+                            
+                            # Skip processing if the course is in the blacklist
+                            if course_name in course_blacklist:
+                                continue
+
                             if course_name not in player_rounds_by_course[player_name]:
                                 player_rounds_by_course[player_name][course_name] = {'rounds': []}
                             
