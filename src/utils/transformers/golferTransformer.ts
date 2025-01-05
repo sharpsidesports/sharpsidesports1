@@ -1,6 +1,6 @@
 import { Golfer, GolferStats } from '../../types/golf';
 import { calculateImpliedProbability } from '../calculations/oddsCalculator';
-import playerRoundsData from '../../data/player_rounds_FULL.json';
+import playerRoundsData from '../../data/player_rounds_FILTERED.json';
 
 export const golferImages = {
   "Scheffler, Scottie": "https://pga-tour-res.cloudinary.com/image/upload/c_fill,d_headshots_default.png,f_auto,g_face:center,h_294,q_auto,w_220/headshots_46046.png",
@@ -21,7 +21,7 @@ export const transformGolferData = (
   // Sort rankings by datagolf_rank and take only top 10
   const top10Rankings = rankings
     .sort((a, b) => (a.datagolf_rank || 0) - (b.datagolf_rank || 0))
-    .slice(0, 10);
+    .slice(0, 2);
 
   return top10Rankings.map(player => {
     const oddsData = odds.find(o => o.dg_id.toString() === player.dg_id.toString());

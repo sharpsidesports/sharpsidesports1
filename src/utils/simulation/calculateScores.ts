@@ -50,7 +50,6 @@ const calculateMetricValue = (golfer: Golfer, metric: SGMetric, selectedCourses:
 
   // Adjust based on recent rounds on selected courses
   selectedCourses.forEach(course => {
-    console.log(course);
     if (golfer.recentRounds[course]) {
       const rounds = golfer.recentRounds[course].rounds;
       rounds.forEach(round => {
@@ -112,5 +111,7 @@ export const calculateSimulatedScore = (
     return score;
   }, 0);
 
-  return (strokesGainedScore + proximityScore ) * (1 + randomFactor * 1.5);
+  return (strokesGainedScore + proximityScore ) 
+  // * (1 + randomFactor * 1.5)
+  ;
 };
