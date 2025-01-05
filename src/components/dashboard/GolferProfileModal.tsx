@@ -16,10 +16,10 @@ interface GolferProfileModalProps {
 }
 
 function GolferProfileModal({ golfer, onClose }: GolferProfileModalProps) {
-  const finishPositionData = golfer.recentRounds.map(round => ({
-    date: new Date(round.date).toLocaleDateString(),
-    position: round.position
-  }));
+  // const finishPositionData = golfer.recentRounds.map(round => ({
+  //   date: new Date(round.date).toLocaleDateString(),
+  //   position: round.position
+  // }));
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
@@ -101,7 +101,7 @@ function GolferProfileModal({ golfer, onClose }: GolferProfileModalProps) {
             </div>
           </div>
 
-          <div className="mb-6">
+          {/* <div className="mb-6">
             <h3 className="text-lg font-semibold mb-4">Recent Performance</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -119,7 +119,7 @@ function GolferProfileModal({ golfer, onClose }: GolferProfileModalProps) {
                 </LineChart>
               </ResponsiveContainer>
             </div>
-          </div>
+          </div> */}
 
           <div className="bg-gray-50 p-4 rounded-lg">
             <h3 className="text-lg font-semibold mb-4">Simulation Results</h3>
