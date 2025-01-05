@@ -1,7 +1,7 @@
 import { Golfer } from '../../types/golf';
 import { SGMetric, MetricWeight, METRIC_CATEGORIES } from '../../types/metrics';
 
-const getSGValue = (golfer: Golfer, metric: SGMetric, selectedCourses: string[]): number => {
+const calculateMetricValue = (golfer: Golfer, metric: SGMetric, selectedCourses: string[]): number => {
   let baseValue = 0;
   let courseAdjustedValue = 0;
   let courseCount = 0;
@@ -96,7 +96,7 @@ export const calculateSimulatedScore = (
 ): number => {
   const strokesGainedScore = weights.reduce((score, metricWeight) => {
     if (METRIC_CATEGORIES.GENERAL.includes(metricWeight.metric)) {
-      const value = getSGValue(golfer, metricWeight.metric, selectedCourses);
+      const value = calculateMetricValue(golfer, metricWeight.metric, selectedCourses);
       const weightedValue = value * (metricWeight.weight / 100);
       return score + weightedValue;
     }
@@ -105,13 +105,12 @@ export const calculateSimulatedScore = (
   
   const proximityScore = weights.reduce((score, metricWeight) => {
     if (METRIC_CATEGORIES.PROXIMITY.includes(metricWeight.metric)) {
-      const proximityValue = getSGValue(golfer, metricWeight.metric, selectedCourses);
+      const proximityValue = calculateMetricValue(golfer, metricWeight.metric, selectedCourses);
       const weightedValue = proximityValue * (metricWeight.weight / 100);
       return score + weightedValue;
     }
     return score;
   }, 0);
-
 
   return (strokesGainedScore + proximityScore ) * (1 + randomFactor * 1.5);
 };
