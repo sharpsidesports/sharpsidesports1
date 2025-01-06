@@ -15,8 +15,8 @@ export const golferImages = {
 export const transformGolferData = (
   rankings: any[],
   odds: any[] = [],
-  skillRatings: any[] = [],
-  approachStats: any[] = []
+  approachStats: any[] = [],
+  selectedCourses: string[] = []
 ): Golfer[] => {
   // Sort rankings by datagolf_rank and take only top 10
   const top10Rankings = rankings
@@ -24,39 +24,65 @@ export const transformGolferData = (
     .slice(0, 2);
 
   return top10Rankings.map(player => {
-    const oddsData = odds.find(o => o.dg_id.toString() === player.dg_id.toString());
-    const skillData = skillRatings.find(s => s.dg_id === player.dg_id);
     const approachData = approachStats.find(a => a.dg_id === player.dg_id);
 
-    // Convert oddsData.fanduel from string to number
-    const fanduelOdds = oddsData ? parseInt(oddsData.fanduel, 10) : 0;
 
     // Fetch the player's round history from the JSON data
     const playerRounds = playerRoundsData[player.player_name] || {};
+
+    // Calculate average SG metrics across selected courses
+    let totalRounds = 0;
+    let totalSGTotal = 0, totalSGTee = 0, totalSGApproach = 0, totalSGAround = 0, totalSGPutting = 0;
+    console.log(selectedCourses)
+    selectedCourses.forEach(course => {
+      if (playerRounds[course]) {
+        playerRounds[course].rounds.forEach(round => {
+          totalSGTotal += round.sg_total;
+          totalSGTee += round.sg_ott;
+          totalSGApproach += round.sg_app;
+          totalSGAround += round.sg_arg;
+          totalSGPutting += round.sg_putt;
+          totalRounds++;
+        });
+      }
+    });
+
+    const averageSGTotal = totalRounds ? totalSGTotal / totalRounds : 0;
+    const averageSGTee = totalRounds ? totalSGTee / totalRounds : 0;
+    const averageSGApproach = totalRounds ? totalSGApproach / totalRounds : 0;
+    const averageSGAround = totalRounds ? totalSGAround / totalRounds : 0;
+    const averageSGPutting = totalRounds ? totalSGPutting / totalRounds : 0;
 
     return {
       id: player.dg_id.toString(),
       name: player.player_name,
       imageUrl: golferImages[player.player_name] || `https://pga-tour-res.cloudinary.com/image/upload/c_fill,d_headshots_default.png,f_auto,g_face:center,h_294,q_auto,w_220/headshots_${player.dg_id}.png`,
       rank: player.datagolf_rank,
-      strokesGainedTotal: skillData?.sg_total || 0,
-      strokesGainedTee: skillData?.sg_ott || 0,
-      strokesGainedApproach: skillData?.sg_app || 0,
-      strokesGainedAround: skillData?.sg_arg || 0,
-      strokesGainedPutting: skillData?.sg_putt || 0,
+      strokesGainedTotal: averageSGTotal,
+      strokesGainedTee: averageSGTee,
+      strokesGainedApproach: averageSGApproach,
+      strokesGainedAround: averageSGAround,
+      strokesGainedPutting: averageSGPutting,
       proximityStats: {
-        '100-125': approachData?.['100_150_fw_proximity_per_shot'] || 0,
-        '125-150': approachData?.['100_150_fw_proximity_per_shot'] || 0,
-        '175-200': approachData?.['150_200_fw_proximity_per_shot'] || 0,
-        '200-225': approachData?.['over_200_fw_proximity_per_shot'] || 0,
-        '225plus': approachData?.['over_200_fw_proximity_per_shot'] || 0
+        '100-125': 1,
+        '125-150': 1,
+        '175-200': 1,
+        '200-225': 1,
+        '225plus': 1
       },
-      odds: fanduelOdds,
+      // proximityStats: {
+      //   '100-125': approachData?.['100_150_fw_proximity_per_shot'] || 0,
+      //   '125-150': approachData?.['100_150_fw_proximity_per_shot'] || 0,
+      //   '175-200': approachData?.['150_200_fw_proximity_per_shot'] || 0,
+      //   '200-225': approachData?.['over_200_fw_proximity_per_shot'] || 0,
+      //   '225plus': approachData?.['over_200_fw_proximity_per_shot'] || 0
+      // },
+      odds: odds,
       simulatedRank: 0,
       simulationStats: {
         averageFinish: 0,
-        winPercentage: calculateImpliedProbability(fanduelOdds),
-        impliedProbability: calculateImpliedProbability(fanduelOdds)
+        winPercentage: calculateImpliedProbability(odds),
+        impliedProbability: calculateImpliedProbability(odds)
       },
       recentRounds: playerRounds
     };

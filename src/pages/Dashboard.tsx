@@ -13,11 +13,11 @@ import GolferList from '../components/dashboard/GolferList';
 import GolferCard from '../components/dashboard/GolferCard';
 
 export default function Dashboard() {
-  const { runSimulation, golfers, fetchGolferData, loading, error } = useGolfStore();
+  const { runSimulation, golfers, fetchGolferData, selectedCourses, loading, error } = useGolfStore();
 
   useEffect(() => {
     fetchGolferData();
-  }, [fetchGolferData]);
+  }, [fetchGolferData, selectedCourses]);
 
   return (
     <div className="space-y-6">

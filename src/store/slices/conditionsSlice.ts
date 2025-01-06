@@ -18,7 +18,10 @@ export const createConditionsSlice: StateCreator<ConditionsSlice> = (set) => ({
     approach: 'medium',
     scoring: 'medium'
   },
-  selectedCourses: ['Augusta National Golf Club'],
+  selectedCourses: [
+    // 'Augusta National Golf Club'
+    // , 'Albany GC'
+  ],
   
   updateConditions: (conditions) => set({ conditions }),
   

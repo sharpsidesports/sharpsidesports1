@@ -2,6 +2,7 @@ import { StateCreator } from 'zustand';
 import { Golfer } from '../../types/golf';
 import { datagolfService } from '../../services/api/datagolfService';
 import { transformGolferData } from '../../utils/transformers/golferTransformer';
+import { useGolfStore } from '../useGolfStore';
 
 export interface GolfersSlice {
   golfers: Golfer[];
@@ -21,18 +22,18 @@ export const createGolfersSlice: StateCreator<GolfersSlice> = (set) => ({
   fetchGolferData: async () => {
     set({ loading: true, error: null });
     try {
-      const [rankingsResponse, oddsResponse, skillResponse, approachResponse] = await Promise.all([
+      const [rankingsResponse,  approachResponse] = await Promise.all([
         datagolfService.getPlayerRankings(),
-        datagolfService.getBettingOdds(),
-        datagolfService.getSkillRatings(),
         datagolfService.getApproachStats()
       ]);
 
+      const { selectedCourses } = useGolfStore.getState();
+
       const enrichedData = transformGolferData(
         rankingsResponse.rankings,
-        oddsResponse.odds,
-        skillResponse.players,
-        approachResponse.data
+        100, // pass in odds
+        approachResponse.data,
+        selectedCourses
       );
 
       set({ golfers: enrichedData });
