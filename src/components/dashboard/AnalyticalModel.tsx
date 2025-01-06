@@ -130,6 +130,7 @@ export default function AnalyticalModel() {
           onRemoveMetric={handleRemoveMetric}
         />
 
+        
         {weights.some(m => METRIC_CATEGORIES.PAR3.includes(m.metric)) && (
           <MetricCategory
             title="Par 3 Performance"

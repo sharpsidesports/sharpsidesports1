@@ -2,14 +2,14 @@ import { Golfer } from '../../types/golf';
 import { simulateMultipleRounds } from './simulateRound';
 import { MetricWeight } from '../../types/metrics';
 
-export const simulateGolfers = (golfers: Golfer[], weights: MetricWeight[], selectedCourses: string[]): Golfer[] => {
+export const simulateGolfers = (golfers: Golfer[], weights: MetricWeight[]): Golfer[] => {
   const simulatedGolfers = golfers.map(golfer => {
     const { averageFinish, winPercentage } = simulateMultipleRounds(
       golfer,
       weights,
-      1000,
+      2,
       golfers,
-      selectedCourses
+      
     );
 
     return {

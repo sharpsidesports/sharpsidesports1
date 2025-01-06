@@ -19,8 +19,8 @@ export const useGolfStore = create<GolfStore>()(
       ...createAnalyticalModelsSlice(set, get, ...a),
       runSimulation: () => {
         console.log('Simulating results in useGolfStore');
-        const { golfers, weights, selectedCourses } = get();
-        const simulatedGolfers = simulateGolfers(golfers, weights, selectedCourses);
+        const { golfers, weights } = get();
+        const simulatedGolfers = simulateGolfers(golfers, weights);
         set({ golfers: simulatedGolfers });
       },
     }),

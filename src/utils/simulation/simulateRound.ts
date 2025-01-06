@@ -3,8 +3,8 @@ import { MetricWeight } from '../../types/metrics';
 import { calculateSimulatedScore } from './calculateScores';
 import { generateRandomFactor } from '../random';
 
-export const simulateRound = (golfer: Golfer, weights: MetricWeight[], selectedCourses: string[]) => {
-  return calculateSimulatedScore(golfer, weights, generateRandomFactor(), selectedCourses);
+export const simulateRound = (golfer: Golfer, weights: MetricWeight[], ) => {
+  return calculateSimulatedScore(golfer, weights, generateRandomFactor());
 };
 
 export const simulateMultipleRounds = (
@@ -12,18 +12,17 @@ export const simulateMultipleRounds = (
   weights: MetricWeight[],
   numRounds: number,
   competitors: Golfer[],
-  selectedCourses: string[]
 ) => {
   let totalPosition = 0;
   let wins = 0;
 
   for (let i = 0; i < numRounds; i++) {
-    const simulatedScore = simulateRound(golfer, weights, selectedCourses);
+    const simulatedScore = simulateRound(golfer, weights);
     totalPosition += simulatedScore;
 
     const otherScores = competitors
       .filter(g => g.id !== golfer.id)
-      .map(g => simulateRound(g, weights, selectedCourses));
+      .map(g => simulateRound(g, weights));
 
     if (otherScores.every(score => simulatedScore < score)) {
       wins++;

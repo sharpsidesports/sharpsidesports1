@@ -1,102 +1,47 @@
 import { Golfer } from '../../types/golf';
 import { SGMetric, MetricWeight, METRIC_CATEGORIES } from '../../types/metrics';
 
-const calculateMetricValue = (golfer: Golfer, metric: SGMetric, selectedCourses: string[]): number => {
-  let baseValue = 0;
-  let courseAdjustedValue = 0;
-  let courseCount = 0;
-
-  // Calculate base value from overall stats
+const calculateMetricValue = (golfer: Golfer, metric: SGMetric): number => {
   switch (metric) {
     case 'Total':
-      baseValue = golfer.strokesGainedTotal;
-      break;
+      return golfer.strokesGainedTotal;
     case 'OTT':
-      baseValue = golfer.strokesGainedTee;
-      break;
+      return golfer.strokesGainedTee;
     case 'APP':
-      baseValue = golfer.strokesGainedApproach;
-      break;
+      return golfer.strokesGainedApproach;
     case 'ARG':
-      baseValue = golfer.strokesGainedAround;
-      break;
+      return golfer.strokesGainedAround;
     case 'P':
-      baseValue = golfer.strokesGainedPutting;
-      break;
+      return golfer.strokesGainedPutting;
     case 'T2G':
-      baseValue = golfer.strokesGainedTotal - golfer.strokesGainedPutting;
-      break;
+      return golfer.strokesGainedTotal - golfer.strokesGainedPutting;
     case 'BS':
-      baseValue = golfer.strokesGainedTee + golfer.strokesGainedApproach;
-      break;
+      return golfer.strokesGainedTee + golfer.strokesGainedApproach;
     case 'Prox100_125':
-      baseValue = golfer.proximityStats['100-125'];
-      break;
+      return golfer.proximityStats['100-125'];
     case 'Prox125_150':
-      baseValue = golfer.proximityStats['125-150'];
-      break;
+      return golfer.proximityStats['125-150'];
     case 'Prox175_200':
-      baseValue = golfer.proximityStats['175-200'];
-      break;
+      return golfer.proximityStats['175-200'];
     case 'Prox200_225':
-      baseValue = golfer.proximityStats['200-225'];
-      break;
+      return golfer.proximityStats['200-225'];
     case 'Prox225Plus':
-      baseValue = golfer.proximityStats['225plus'];
-      break;
+      return golfer.proximityStats['225plus'];
     default:
-      baseValue = 0;
+      return 0;
   }
-
-  // Adjust based on recent rounds on selected courses
-  selectedCourses.forEach(course => {
-    if (golfer.recentRounds[course]) {
-      const rounds = golfer.recentRounds[course].rounds;
-      rounds.forEach(round => {
-        switch (metric) {
-          case 'Total':
-            courseAdjustedValue += round.sg_total;
-            break;
-          case 'OTT':
-            courseAdjustedValue += round.sg_ott;
-            break;
-          case 'APP':
-            courseAdjustedValue += round.sg_app;
-            break;
-          case 'ARG':
-            courseAdjustedValue += round.sg_arg;
-            break;
-          case 'P':
-            courseAdjustedValue += round.sg_putt;
-            break;
-          case 'T2G':
-            courseAdjustedValue += round.sg_t2g;
-            break;
-          // Add cases for proximity metrics if needed
-        }
-        courseCount++;
-      });
-    }
-  });
-
-  if (courseCount > 0) {
-    courseAdjustedValue /= courseCount;
-  }
-
-  // Combine base value with course-adjusted value
-  return baseValue * 0.5 + courseAdjustedValue * 0.5;
 };
 
 export const calculateSimulatedScore = (
   golfer: Golfer,
   weights: MetricWeight[],
   randomFactor: number,
-  selectedCourses: string[]
 ): number => {
   const strokesGainedScore = weights.reduce((score, metricWeight) => {
     if (METRIC_CATEGORIES.GENERAL.includes(metricWeight.metric)) {
-      const value = calculateMetricValue(golfer, metricWeight.metric, selectedCourses);
-      const weightedValue = value * (metricWeight.weight / 100);
+      const sgValue = calculateMetricValue(golfer, metricWeight.metric);
+      const weightedValue = sgValue * (metricWeight.weight / 100);
+      // console.log(score, weightedValue, golfer.name);
       return score + weightedValue;
     }
     return score;
@@ -104,13 +49,14 @@ export const calculateSimulatedScore = (
   
   const proximityScore = weights.reduce((score, metricWeight) => {
     if (METRIC_CATEGORIES.PROXIMITY.includes(metricWeight.metric)) {
-      const proximityValue = calculateMetricValue(golfer, metricWeight.metric, selectedCourses);
+      const proximityValue = calculateMetricValue(golfer, metricWeight.metric);
       const weightedValue = proximityValue * (metricWeight.weight / 100);
       return score + weightedValue;
     }
     return score;
   }, 0);
 
+  console.log(strokesGainedScore, strokesGainedScore + proximityScore, golfer.name);
   return (strokesGainedScore + proximityScore ) 
   // * (1 + randomFactor * 1.5)
   ;
