@@ -89,14 +89,14 @@
       ]
     }
   },
-  "Schauffele, Xander": {
+  "Rahm, Jon": {
     "Augusta National Golf Club": {
       "rounds": [
         {
           "eventName": "Masters Tournament",
           "eventId": 14,
           "courseName": "Augusta National Golf Club",
-          "playerName": "Schauffele, Xander",
+          "playerName": "Rahm, Jon",
           "dgId": 19895,
           "round": 1,
           "date": "2024-04-14",
@@ -116,7 +116,7 @@
           "eventName": "Masters Tournament",
           "eventId": 14,
           "courseName": "Augusta National Golf Club",
-          "playerName": "Schauffele, Xander",
+          "playerName": "Rahm, Jon",
           "dgId": 19895,
           "round": 2,
           "date": "2024-04-14",
@@ -141,7 +141,7 @@
           "eventName": "Masters Tournament",
           "eventId": 14,
           "courseName": "Albany GC",
-          "playerName": "Schauffele, Xander",
+          "playerName": "Rahm, Jon",
           "dgId": 19895,
           "round": 1,
           "date": "2024-04-14",
@@ -161,7 +161,7 @@
           "eventName": "Masters Tournament",
           "eventId": 14,
           "courseName": "Albany GC",
-          "playerName": "Schauffele, Xander",
+          "playerName": "Rahm, Jon",
           "dgId": 19895,
           "round": 2,
           "date": "2024-04-14",

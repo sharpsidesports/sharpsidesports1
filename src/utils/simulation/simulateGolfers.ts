@@ -7,7 +7,7 @@ export const simulateGolfers = (golfers: Golfer[], weights: MetricWeight[]): Gol
     const { averageFinish, winPercentage } = simulateMultipleRounds(
       golfer,
       weights,
-      2,
+      1000,
       golfers,
       
     );

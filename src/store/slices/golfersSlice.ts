@@ -22,8 +22,9 @@ export const createGolfersSlice: StateCreator<GolfersSlice> = (set) => ({
   fetchGolferData: async () => {
     set({ loading: true, error: null });
     try {
-      const [rankingsResponse,  approachResponse] = await Promise.all([
+      const [rankingsResponse,  oddsResponse, approachResponse] = await Promise.all([
         datagolfService.getPlayerRankings(),
+        datagolfService.getBettingOdds(),
         datagolfService.getApproachStats()
       ]);
 
@@ -31,7 +32,7 @@ export const createGolfersSlice: StateCreator<GolfersSlice> = (set) => ({
 
       const enrichedData = transformGolferData(
         rankingsResponse.rankings,
-        100, // pass in odds
+        oddsResponse.odds,
         approachResponse.data,
         selectedCourses
       );

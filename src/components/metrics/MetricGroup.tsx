@@ -1,12 +1,12 @@
 import React from 'react';
-import { SGMetric } from '../../types/metrics';
+import { SharpsideMetric } from '../../types/metrics';
 import MetricSlider from './MetricSlider';
 
 interface MetricGroupProps {
   title: string;
-  metrics: { metric: SGMetric; weight: number }[];
-  onWeightChange: (metric: SGMetric, weight: number) => void;
-  onRemoveMetric: (metric: SGMetric) => void;
+  metrics: { metric: SharpsideMetric; weight: number }[];
+  onWeightChange: (metric: SharpsideMetric, weight: number) => void;
+  onRemoveMetric: (metric: SharpsideMetric) => void;
 }
 
 export default function MetricGroup({ title, metrics, onWeightChange, onRemoveMetric }: MetricGroupProps) {

@@ -25,19 +25,19 @@ export const datagolfService = {
     }
   },
 
-  // async getBettingOdds() {
-  //   try {
-  //     const response = await apiClient.get(ENDPOINTS.BETTING_ODDS, {
-  //       tour: 'pga',
-  //       market: 'win',
-  //       odds_format: 'american'
-  //     });
-  //     return response;
-  //   } catch (error) {
-  //     console.error('Error fetching betting odds:', error);
-  //     throw error;
-  //   }
-  // },
+  async getBettingOdds() {
+    try {
+      const response = await apiClient.get(ENDPOINTS.BETTING_ODDS, {
+        tour: 'pga',
+        market: 'win',
+        odds_format: 'american'
+      });
+      return response;
+    } catch (error) {
+      console.error('Error fetching betting odds:', error);
+      throw error;
+    }
+  },
 
   async getApproachStats() {
     try {

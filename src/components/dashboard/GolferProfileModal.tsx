@@ -67,6 +67,14 @@ function GolferProfileModal({ golfer, onClose }: GolferProfileModalProps) {
                   <span>Putting:</span>
                   <span className="font-medium">{golfer.strokesGainedPutting.toFixed(2)}</span>
                 </div>
+                <div className="flex justify-between">
+                  <span>Driving Accuracy:</span>
+                  <span className="font-medium">{golfer.drivingAccuracy.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Driving Distance:</span>
+                  <span className="font-medium">{golfer.drivingDistance.toFixed(2)}</span>
+                </div>
                 <div className="flex justify-between pt-2 border-t">
                   <span>Total:</span>
                   <span className="font-bold">{golfer.strokesGainedTotal.toFixed(2)}</span>
@@ -79,23 +87,23 @@ function GolferProfileModal({ golfer, onClose }: GolferProfileModalProps) {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span>100-125 yards:</span>
-                  <span className="font-medium">{golfer.proximityStats['100-125'].toFixed(1)}'</span>
+                  <span className="font-medium">{golfer.proximityMetrics['100-125'].toFixed(1)}'</span>
                 </div>
                 <div className="flex justify-between">
                   <span>125-150 yards:</span>
-                  <span className="font-medium">{golfer.proximityStats['125-150'].toFixed(1)}'</span>
+                  <span className="font-medium">{golfer.proximityMetrics['125-150'].toFixed(1)}'</span>
                 </div>
                 <div className="flex justify-between">
                   <span>175-200 yards:</span>
-                  <span className="font-medium">{golfer.proximityStats['175-200'].toFixed(1)}'</span>
+                  <span className="font-medium">{golfer.proximityMetrics['175-200'].toFixed(1)}'</span>
                 </div>
                 <div className="flex justify-between">
                   <span>200-225 yards:</span>
-                  <span className="font-medium">{golfer.proximityStats['200-225'].toFixed(1)}'</span>
+                  <span className="font-medium">{golfer.proximityMetrics['200-225'].toFixed(1)}'</span>
                 </div>
                 <div className="flex justify-between">
                   <span>225+ yards:</span>
-                  <span className="font-medium">{golfer.proximityStats['225plus'].toFixed(1)}'</span>
+                  <span className="font-medium">{golfer.proximityMetrics['225plus'].toFixed(1)}'</span>
                 </div>
               </div>
             </div>
