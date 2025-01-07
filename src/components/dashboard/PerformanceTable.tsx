@@ -4,7 +4,7 @@ import GolferProfileModal from './GolferProfileModal';
 import { Golfer } from '../../types/golf';
 
 type SortField = 'name' | 'rank' | 'strokesGainedTotal' | 'strokesGainedTee' | 'strokesGainedApproach' | 
-                 'strokesGainedAround' | 'strokesGainedPutting' | 'proximity100125' | 'proximity125150' |
+                 'strokesGainedAround' | 'strokesGainedPutting' | 'drivingAccuracy' | 'drivingDistance' | 'proximity100125' | 'proximity125150' |
                  'proximity175200' | 'proximity200225' | 'proximity225plus';
 type SortDirection = 'asc' | 'desc';
 
@@ -57,25 +57,33 @@ function PerformanceTable() {
           aValue = a.strokesGainedPutting;
           bValue = b.strokesGainedPutting;
           break;
+        case 'drivingAccuracy':
+          aValue = a.drivingAccuracy;
+          bValue = b.drivingAccuracy;
+          break;
+        case 'drivingDistance':
+          aValue = a.drivingDistance;
+          bValue = b.drivingDistance;
+          break;
         case 'proximity100125':
-          aValue = a.proximityStats['100-125'];
-          bValue = b.proximityStats['100-125'];
+          aValue = a.proximityMetrics['100-125'];
+          bValue = b.proximityMetrics['100-125'];
           break;
         case 'proximity125150':
-          aValue = a.proximityStats['125-150'];
-          bValue = b.proximityStats['125-150'];
+          aValue = a.proximityMetrics['125-150'];
+          bValue = b.proximityMetrics['125-150'];
           break;
         case 'proximity175200':
-          aValue = a.proximityStats['175-200'];
-          bValue = b.proximityStats['175-200'];
+          aValue = a.proximityMetrics['175-200'];
+          bValue = b.proximityMetrics['175-200'];
           break;
         case 'proximity200225':
-          aValue = a.proximityStats['200-225'];
-          bValue = b.proximityStats['200-225'];
+          aValue = a.proximityMetrics['200-225'];
+          bValue = b.proximityMetrics['200-225'];
           break;
         case 'proximity225plus':
-          aValue = a.proximityStats['225plus'];
-          bValue = b.proximityStats['225plus'];
+          aValue = a.proximityMetrics['225plus'];
+          bValue = b.proximityMetrics['225plus'];
           break;
         default:
           return 0;
@@ -131,6 +139,20 @@ function PerformanceTable() {
               onClick={() => handleSort('strokesGainedPutting')}
             >
               SG: Putting
+            </th>
+            <th 
+              scope="col" 
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+              onClick={() => handleSort('drivingAccuracy')}
+            >
+              Driving Accuracy
+            </th>
+            <th 
+              scope="col" 
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+              onClick={() => handleSort('drivingDistance')}
+            >
+              Driving Distance
             </th>
             <th 
               scope="col" 
@@ -205,21 +227,27 @@ function PerformanceTable() {
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {golfer.strokesGainedPutting.toFixed(2)}
+              </td> 
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {golfer.drivingAccuracy.toFixed(2)}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {golfer.proximityStats['100-125'].toFixed(1)}'
+                {golfer.drivingDistance.toFixed(2)}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {golfer.proximityStats['125-150'].toFixed(1)}'
+                {golfer.proximityMetrics['100-125'].toFixed(1)}'
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {golfer.proximityStats['175-200'].toFixed(1)}'
+                {golfer.proximityMetrics['125-150'].toFixed(1)}'
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {golfer.proximityStats['200-225'].toFixed(1)}'
+                {golfer.proximityMetrics['175-200'].toFixed(1)}'
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {golfer.proximityStats['225plus'].toFixed(1)}'
+                {golfer.proximityMetrics['200-225'].toFixed(1)}'
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {golfer.proximityMetrics['225plus'].toFixed(1)}'
               </td>
             </tr>
           ))}

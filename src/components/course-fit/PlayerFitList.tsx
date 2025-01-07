@@ -83,7 +83,10 @@ export default function PlayerFitList() {
                   <div className="text-sm text-gray-900">
                     SG: OTT {golfer.strokesGainedTee.toFixed(2)} | 
                     APP {golfer.strokesGainedApproach.toFixed(2)} | 
-                    ARG {golfer.strokesGainedAround.toFixed(2)}
+                    ARG {golfer.strokesGainedAround.toFixed(2)} | 
+                    P {golfer.strokesGainedPutting.toFixed(2)} | 
+                    Driving Acc {golfer.drivingAccuracy.toFixed(2)} | 
+                    Driving Dist {golfer.drivingDistance.toFixed(2)}  
                   </div>
                 </td>
               </tr>

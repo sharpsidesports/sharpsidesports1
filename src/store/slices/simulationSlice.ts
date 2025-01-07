@@ -2,12 +2,14 @@ import { StateCreator } from 'zustand';
 import { MetricWeight } from '../../types/metrics';
 
 const DEFAULT_METRICS: MetricWeight[] = [
-  { metric: 'OTT', weight: 100 },
-  // { metric: 'APP', weight: 50 },
-  // { metric: 'ARG', weight: 20 },
-  // { metric: 'P', weight: 20 },
-  // { metric: 'T2G', weight: 10 },
-  // { metric: 'Prox100_125', weight: 10 }
+  { metric: 'OTT', weight: 20 },
+  { metric: 'ARG', weight: 20 },
+  { metric: 'P', weight: 20 },
+  { metric: 'T2G', weight: 10 },
+  { metric: 'DrivingAcc', weight: 10 },
+  { metric: 'DrivingDist', weight: 5 },
+  { metric: 'Prox100_125', weight: 10 },
+  { metric: 'Prox125_150', weight: 5 }
 
 ];
 

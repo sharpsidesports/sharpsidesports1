@@ -1,9 +1,9 @@
 import React from 'react';
-import { SGMetric, METRIC_CATEGORIES, METRIC_LABELS } from '../../types/metrics';
+import { SharpsideMetric, METRIC_CATEGORIES, METRIC_LABELS } from '../../types/metrics';
 
 interface MetricSelectorProps {
-  unusedMetrics: SGMetric[];
-  onSelect: (metric: SGMetric) => void;
+  unusedMetrics: SharpsideMetric[];
+  onSelect: (metric: SharpsideMetric) => void;
   onCancel: () => void;
 }
 
@@ -13,7 +13,7 @@ export default function MetricSelector({ unusedMetrics, onSelect, onCancel }: Me
       <div className="flex gap-2">
         <select
           className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-          onChange={(e) => onSelect(e.target.value as SGMetric)}
+          onChange={(e) => onSelect(e.target.value as SharpsideMetric)}
           value=""
         >
           <option value="" disabled>Select a metric</option>

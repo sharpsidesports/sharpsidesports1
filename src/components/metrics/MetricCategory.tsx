@@ -1,13 +1,13 @@
 import React from 'react';
-import { SGMetric } from '../../types/metrics';
+import { SharpsideMetric } from '../../types/metrics';
 import MetricSlider from './MetricSlider';
 
 interface MetricCategoryProps {
   title: string;
-  metrics: SGMetric[];
-  selectedMetrics: { metric: SGMetric; weight: number }[];
-  onWeightChange: (metric: SGMetric, weight: number) => void;
-  onRemoveMetric: (metric: SGMetric) => void;
+  metrics: SharpsideMetric[];
+  selectedMetrics: { metric: SharpsideMetric; weight: number }[];
+  onWeightChange: (metric: SharpsideMetric, weight: number) => void;
+  onRemoveMetric: (metric: SharpsideMetric) => void;
 }
 
 export default function MetricCategory({

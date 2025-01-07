@@ -1,8 +1,8 @@
 import React from 'react';
-import { SGMetric, METRIC_LABELS } from '../../types/metrics';
+import { SharpsideMetric, METRIC_LABELS } from '../../types/metrics';
 
 interface MetricSliderProps {
-  metric: SGMetric;
+  metric: SharpsideMetric;
   weight: number;
   onWeightChange: (weight: number) => void;
   onRemove: () => void;

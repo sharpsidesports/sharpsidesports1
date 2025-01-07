@@ -31,7 +31,7 @@
 //       { year: 2021, position: 5, score: -10 }
 //     ],
 //     simulatedRank: 0,
-//     proximityStats: {
+//     proximityMetrics: {
 //       '100-125': 17.2,
 //       '125-150': 19.8,
 //       '175-200': 27.5,
@@ -62,7 +62,7 @@
 //       { year: 2021, position: 6, score: -9 }
 //     ],
 //     simulatedRank: 0,
-//     proximityStats: {
+//     proximityMetrics: {
 //       '100-125': 17.8,
 //       '125-150': 20.2,
 //       '175-200': 28.5,
@@ -93,7 +93,7 @@
 //       { year: 2021, position: 3, score: -12 }
 //     ],
 //     simulatedRank: 0,
-//     proximityStats: {
+//     proximityMetrics: {
 //       '100-125': 17.6,
 //       '125-150': 20.5,
 //       '175-200': 28.8,
@@ -124,7 +124,7 @@
 //       { year: 2021, position: 8, score: -8 }
 //     ],
 //     simulatedRank: 0,
-//     proximityStats: {
+//     proximityMetrics: {
 //       '100-125': 17.9,
 //       '125-150': 20.8,
 //       '175-200': 29.1,
@@ -155,7 +155,7 @@
 //       { year: 2021, position: 7, score: -9 }
 //     ],
 //     simulatedRank: 0,
-//     proximityStats: {
+//     proximityMetrics: {
 //       '100-125': 18.1,
 //       '125-150': 21.0,
 //       '175-200': 29.4,
@@ -186,7 +186,7 @@
 //       { year: 2021, position: 10, score: -6 }
 //     ],
 //     simulatedRank: 0,
-//     proximityStats: {
+//     proximityMetrics: {
 //       '100-125': 18.3,
 //       '125-150': 21.2,
 //       '175-200': 29.7,

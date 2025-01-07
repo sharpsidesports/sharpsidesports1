@@ -13,7 +13,7 @@ const calculateProximityScore = (golfer: Golfer): number => {
   };
 
   return Object.entries(weights).reduce((score, [range, weight]) => {
-    return score + (golfer.proximityStats[range as keyof typeof golfer.proximityStats] * weight);
+    return score + (golfer.proximityMetrics[range as keyof typeof golfer.proximityMetrics] * weight);
   }, 0);
 };
 
@@ -80,19 +80,19 @@ export default function ProximityLeaderboard() {
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                  {golfer.proximityStats['100-125'].toFixed(1)}'
+                  {golfer.proximityMetrics['100-125'].toFixed(1)}'
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                  {golfer.proximityStats['125-150'].toFixed(1)}'
+                  {golfer.proximityMetrics['125-150'].toFixed(1)}'
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                  {golfer.proximityStats['175-200'].toFixed(1)}'
+                  {golfer.proximityMetrics['175-200'].toFixed(1)}'
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                  {golfer.proximityStats['200-225'].toFixed(1)}'
+                  {golfer.proximityMetrics['200-225'].toFixed(1)}'
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                  {golfer.proximityStats['225plus'].toFixed(1)}'
+                  {golfer.proximityMetrics['225plus'].toFixed(1)}'
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-green-600">
                   {calculateProximityScore(golfer).toFixed(1)}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useGolfStore } from '../../store/useGolfStore';
-import { SGMetric, METRIC_CATEGORIES, METRIC_LABELS, MetricWeight } from '../../types/metrics';
+import { SharpsideMetric, METRIC_CATEGORIES, METRIC_LABELS, MetricWeight } from '../../types/metrics';
 import MetricCategory from '../metrics/MetricCategory';
 import AnalyticalModelActions from './AnalyticalModelActions';
 
@@ -8,7 +8,7 @@ export default function AnalyticalModel() {
   const { weights, updateWeights } = useGolfStore();
   const [showAddMetric, setShowAddMetric] = useState(false);
 
-  const handleWeightChange = (metricToUpdate: SGMetric, newValue: number) => {
+  const handleWeightChange = (metricToUpdate: SharpsideMetric, newValue: number) => {
     const totalWeight = 100;
     const currentMetric = weights.find(m => m.metric === metricToUpdate);
     if (!currentMetric) return;
@@ -35,7 +35,7 @@ export default function AnalyticalModel() {
 
 
   
-  const handleAddMetric = (metric: SGMetric) => {
+  const handleAddMetric = (metric: SharpsideMetric) => {
     const newMetrics = [...weights, { metric, weight: 0 }];
     const weightPerMetric = Math.floor(100 / newMetrics.length);
 
@@ -50,7 +50,7 @@ export default function AnalyticalModel() {
     setShowAddMetric(false);
   };
 
-  const handleRemoveMetric = (metricToRemove: SGMetric) => {
+  const handleRemoveMetric = (metricToRemove: SharpsideMetric) => {
     if (weights.length <= 5) {
       alert('You must maintain at least 5 base metrics');
       return;
@@ -95,7 +95,7 @@ export default function AnalyticalModel() {
           <div className="flex gap-2">
             <select
               className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-              onChange={(e) => handleAddMetric(e.target.value as SGMetric)}
+              onChange={(e) => handleAddMetric(e.target.value as SharpsideMetric)}
               value=""
             >
               <option value="" disabled>Select a metric</option>
@@ -131,7 +131,7 @@ export default function AnalyticalModel() {
         />
 
         
-        {weights.some(m => METRIC_CATEGORIES.PAR3.includes(m.metric)) && (
+        {/* {weights.some(m => METRIC_CATEGORIES.PAR3.includes(m.metric)) && (
           <MetricCategory
             title="Par 3 Performance"
             metrics={METRIC_CATEGORIES.PAR3}
@@ -139,7 +139,7 @@ export default function AnalyticalModel() {
             onWeightChange={handleWeightChange}
             onRemoveMetric={handleRemoveMetric}
           />
-        )}
+        )} */}
 
         {/* {weights.some(m => METRIC_CATEGORIES.PAR4.includes(m.metric)) && (
           <MetricCategory

@@ -18,7 +18,9 @@ export interface Golfer {
   strokesGainedApproach: number;
   strokesGainedAround: number;
   strokesGainedPutting: number;
-  proximityStats: {
+  drivingAccuracy: number;
+  drivingDistance: number;
+  proximityMetrics: {
     '100-125': number;
     '125-150': number;
     '175-200': number;
@@ -70,7 +72,7 @@ export interface RoundResult {
 //   strokesGainedApproach: number;
 //   strokesGainedAround: number;
 //   strokesGainedPutting: number;
-//   proximityStats: {
+//   proximityMetrics: {
 //     '100-125': number;
 //     '125-150': number;
 //     '175-200': number;

@@ -13,7 +13,9 @@ export default function StrokesGainedTable() {
       approach: 0.25,
       around: 0.15,
       putting: 0.10,
-      ballStriking: 0.15 // Combined tee and approach
+      ballStriking: 0.15, // Combined tee and approach
+      drivingAccuracy: 0.10,
+      drivingDistance: 0.10
     };
 
     const ballStrikingScore = (golfer.strokesGainedTee + golfer.strokesGainedApproach) / 2;
@@ -24,6 +26,8 @@ export default function StrokesGainedTable() {
       golfer.strokesGainedApproach * weights.approach +
       golfer.strokesGainedAround * weights.around +
       golfer.strokesGainedPutting * weights.putting +
+      golfer.drivingAccuracy * weights.drivingAccuracy +
+      golfer.drivingDistance * weights.drivingDistance +
       ballStrikingScore * weights.ballStriking
     );
   };
@@ -58,6 +62,12 @@ export default function StrokesGainedTable() {
             <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
               Putting
             </th>
+            <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Driving Accuracy
+            </th>
+            <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Driving Distance
+            </th> 
             <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
               Score
             </th>
@@ -99,6 +109,12 @@ export default function StrokesGainedTable() {
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
                 {golfer.strokesGainedPutting.toFixed(2)}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
+                {golfer.drivingAccuracy.toFixed(2)}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
+                {golfer.drivingDistance.toFixed(2)}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-green-600">
                 {calculateStrokesGainedScore(golfer).toFixed(2)}
