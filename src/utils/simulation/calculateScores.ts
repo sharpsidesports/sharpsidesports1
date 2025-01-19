@@ -3,6 +3,7 @@ import { SharpsideMetric, MetricWeight, METRIC_CATEGORIES } from '../../types/me
 
 const calculateMetricValue = (golfer: Golfer, metric: SharpsideMetric): number => {
   switch (metric) {
+    // General metrics
     case 'Total':
       return golfer.strokesGainedTotal;
     case 'OTT':
@@ -21,6 +22,8 @@ const calculateMetricValue = (golfer: Golfer, metric: SharpsideMetric): number =
       return golfer.strokesGainedTotal - golfer.strokesGainedPutting;
     case 'BS':
       return golfer.strokesGainedTee + golfer.strokesGainedApproach;
+    
+    // Proximity metrics
     case 'Prox100_125':
       return golfer.proximityMetrics['100-125'];
     case 'Prox125_150':
@@ -31,6 +34,40 @@ const calculateMetricValue = (golfer: Golfer, metric: SharpsideMetric): number =
       return golfer.proximityMetrics['200-225'];
     case 'Prox225Plus':
       return golfer.proximityMetrics['225plus'];
+    
+    // Scoring metrics
+    case 'BogeyAvoid':
+      return golfer.scoringStats?.bogeyAvoidance ?? 0;
+    case 'ConsecBirdies':
+      return golfer.scoringStats?.consecutiveBirdiesStreak ?? 0;
+    case 'ConsecBirdiesEagles':
+      return golfer.scoringStats?.consecutiveBirdiesEaglesStreak ?? 0;
+    case 'TotalEagles':
+      return golfer.scoringStats?.totalEagles ?? 0;
+    case 'TotalBirdies':
+      return golfer.scoringStats?.totalBirdies ?? 0;
+    case 'Par3BirdieOrBetter':
+      return golfer.scoringStats?.par3BirdieOrBetter ?? 0;
+    case 'Par4BirdieOrBetter':
+      return golfer.scoringStats?.par4BirdieOrBetter ?? 0;
+    case 'Par5BirdieOrBetter':
+      return golfer.scoringStats?.par5BirdieOrBetter ?? 0;
+    case 'BirdieConversion':
+      return golfer.scoringStats?.birdieOrBetterConversion ?? 0;
+    case 'Par3Scoring':
+      return golfer.scoringStats?.par3ScoringAvg ?? 0;
+    case 'Par4Scoring':
+      return golfer.scoringStats?.par4ScoringAvg ?? 0;
+    case 'Par5Scoring':
+      return golfer.scoringStats?.par5ScoringAvg ?? 0;
+    case 'EaglesPerHole':
+      return golfer.scoringStats?.eaglesPerHole ?? 0;
+    case 'BirdieAvg':
+      return golfer.scoringStats?.birdieAverage ?? 0;
+    case 'BirdieOrBetterPct':
+      return golfer.scoringStats?.birdieOrBetterPercentage ?? 0;
+    case 'ConsecHolesUnderPar':
+      return golfer.scoringStats?.consecutiveHolesBelowPar ?? 0;
     default:
       return 0;
   }
@@ -59,8 +96,16 @@ export const calculateSimulatedScore = (
     return score;
   }, 0);
 
-  // console.log(strokesGainedScore, strokesGainedScore + proximityScore, golfer.name);
-  return (strokesGainedScore + proximityScore ) 
-  * (1 + randomFactor * 1.3)
-  ;
+  const scoringScore = weights.reduce((score, metricWeight) => {
+    if (METRIC_CATEGORIES.SCORING.includes(metricWeight.metric)) {
+      const scoringValue = calculateMetricValue(golfer, metricWeight.metric);
+      // For scoring averages (par 3/4/5), higher is worse
+      const isScoring = ['Par3Scoring', 'Par4Scoring', 'Par5Scoring'].includes(metricWeight.metric);
+      const weightedValue = scoringValue * (metricWeight.weight / 100);
+      return score + (isScoring ? weightedValue : -weightedValue);
+    }
+    return score;
+  }, 0);
+
+  return (strokesGainedScore + proximityScore + scoringScore) * (1 + randomFactor * 1.3);
 };

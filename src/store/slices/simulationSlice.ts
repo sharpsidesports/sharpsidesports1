@@ -2,15 +2,23 @@ import { StateCreator } from 'zustand';
 import { MetricWeight } from '../../types/metrics';
 
 const DEFAULT_METRICS: MetricWeight[] = [
-  { metric: 'OTT', weight: 20 },
-  { metric: 'ARG', weight: 20 },
-  { metric: 'P', weight: 20 },
+  // Core metrics
+  { metric: 'OTT', weight: 15 },
+  { metric: 'P', weight: 15 },
   { metric: 'T2G', weight: 10 },
-  { metric: 'DrivingAcc', weight: 10 },
   { metric: 'DrivingDist', weight: 5 },
-  { metric: 'Prox100_125', weight: 10 },
-  { metric: 'Prox125_150', weight: 5 }
-
+  
+  // Proximity metrics
+  { metric: 'Prox100_125', weight: 5 },
+  { metric: 'Prox125_150', weight: 5 },
+  
+  // Scoring metrics
+  { metric: 'BogeyAvoid', weight: 10 },
+  { metric: 'BirdieConversion', weight: 10 },
+  { metric: 'Par3Scoring', weight: 5 },
+  // { metric: 'Par4Scoring', weight: 10 },
+  // { metric: 'Par5Scoring', weight: 5 },
+  // { metric: 'BirdieOrBetterPct', weight: 5 }
 ];
 
 export interface SimulationSlice {

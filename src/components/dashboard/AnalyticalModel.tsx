@@ -172,6 +172,16 @@ export default function AnalyticalModel() {
             onRemoveMetric={handleRemoveMetric}
           />
         )}
+
+        {weights.some(m => METRIC_CATEGORIES.SCORING.includes(m.metric)) && (
+          <MetricCategory
+            title="Scoring Performance"
+            metrics={METRIC_CATEGORIES.SCORING}
+            selectedMetrics={weights}
+            onWeightChange={handleWeightChange}
+            onRemoveMetric={handleRemoveMetric}
+          />
+        )}
       </div>
     </div>
   );
