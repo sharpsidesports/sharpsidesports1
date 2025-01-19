@@ -27,6 +27,24 @@ export interface Golfer {
     '200-225': number;
     '225plus': number;
   };
+  scoringStats?: {
+    bogeyAvoidance?: number;
+    consecutiveBirdiesStreak?: number;
+    consecutiveBirdiesEaglesStreak?: number;
+    totalEagles?: number;
+    totalBirdies?: number;
+    par3BirdieOrBetter?: number;
+    par4BirdieOrBetter?: number;
+    par5BirdieOrBetter?: number;
+    birdieOrBetterConversion?: number;
+    par3ScoringAvg?: number;
+    par4ScoringAvg?: number;
+    par5ScoringAvg?: number;
+    eaglesPerHole?: number;
+    birdieAverage?: number;
+    birdieOrBetterPercentage?: number;
+    consecutiveHolesBelowPar?: number;
+  };
   odds: number;
   simulatedRank: number;
   simulationStats: {

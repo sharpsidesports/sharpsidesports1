@@ -118,7 +118,7 @@ def process_json_files_to_csv(json_directory, csv_file_path):
             for field in numeric_fields:
                 if isinstance(stat[field], str):
                     # print(field + " " + stat[field])
-                    stat[field] = stat[field].replace('"', '').replace('%', '').replace(',', '').strip()
+                    stat[field] = stat[field].replace('"', '').replace('%', '').replace(',', '').replace('-', '').strip()
                     # print(stat[field])
             
             # Add 'Percentage' to title if original value contains '%'
