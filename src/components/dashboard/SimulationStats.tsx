@@ -6,7 +6,6 @@ import GolferProfileModal from './GolferProfileModal';
 export default function SimulationStats() {
   const { golfers } = useGolfStore();
   const [selectedGolfer, setSelectedGolfer] = useState<Golfer | null>(null);
-
   const sortedGolfers = [...golfers].sort((a, b) => 
     a.simulationStats.averageFinish - b.simulationStats.averageFinish
   );

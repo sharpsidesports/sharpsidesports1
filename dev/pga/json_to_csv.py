@@ -1,6 +1,22 @@
 import json
 import csv
 import os
+import requests
+
+def get_datagolf_players():
+    """Fetch player list from DataGolf API and create a mapping of names to dg_ids"""
+    url = "https://feeds.datagolf.com/get-player-list?file_format=json&key=cf5b806066038ad69a752686db8f"
+    response = requests.get(url)
+    players = response.json()
+    
+    # Create a mapping of normalized names to dg_ids
+    name_to_dgid = {}
+    for player in players:
+        # DataGolf format is "LastName, FirstName"
+        name = player['player_name'].lower()
+        name_to_dgid[name] = player['dg_id']
+    
+    return name_to_dgid
 
 def collect_fields_from_json_files(directory):
     # Define the known fields from the JSON structure in a logical order
@@ -10,6 +26,7 @@ def collect_fields_from_json_files(directory):
         'player_last_name',
         'player_full_name',
         'player_id',
+        'dg_id',
         # Core stat information
         'title',
         'value',
@@ -27,6 +44,9 @@ def collect_fields_from_json_files(directory):
         'supportingValue_description',
         'supportingValue_value'
     ]
+    
+    # Get DataGolf player mapping
+    name_to_dgid = get_datagolf_players()
     player_data = []
 
     # Iterate over all JSON files in the directory
@@ -42,13 +62,17 @@ def collect_fields_from_json_files(directory):
             with open(file_path, 'r') as json_file:
                 data = json.load(json_file)
                 for stat in data:
+                    # Create player_full_name in same format as DataGolf
+                    full_name = f"{player_last_name.title()}, {player_first_name.title()}"
+                    
                     # Flatten the nested structures
                     flat_stat = {
                         # Player identification
                         'player_first_name': player_first_name,
                         'player_last_name': player_last_name,
-                        'player_full_name': f"{player_last_name.title()}, {player_first_name.title()}",
+                        'player_full_name': full_name,
                         'player_id': player_id,
+                        'dg_id': name_to_dgid.get(full_name.lower(), None),
                         # Core stat information
                         'title': stat.get('title'),
                         'value': stat.get('value'),

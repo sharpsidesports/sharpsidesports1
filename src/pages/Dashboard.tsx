@@ -22,7 +22,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {loading && <p>Loading...</p>}
-      {error && <p>{error}</p>}
+      {error && <p className="text-red-500">{error}</p>}
       <RoundRangeSelector />
       
       <div className="flex gap-4 items-stretch">
@@ -55,10 +55,14 @@ export default function Dashboard() {
       <CourseInsights />
       <GolferList />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">GolferCard
-        {golfers.map((golfer) => (
-          <GolferCard key={golfer.id} golfer={golfer} />
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {Array.isArray(golfers) && golfers.length > 0 ? (
+          golfers.map((golfer) => (
+            <GolferCard key={golfer.id} golfer={golfer} />
+          ))
+        ) : (
+          <p className="col-span-3 text-center text-gray-500">No golfers available</p>
+        )}
       </div>
     </div>
   );
