@@ -26,7 +26,7 @@ function RoundRangeSelector() {
     <div className="bg-white rounded-lg shadow p-4 mb-6">
       <div className="flex items-center justify-between">
         <label htmlFor="roundRange" className="block text-sm font-medium text-gray-700">
-          Historical Round Range
+          Historical Round Rangeeeeeeeeeee
         </label>
         <select
           id="roundRange"
