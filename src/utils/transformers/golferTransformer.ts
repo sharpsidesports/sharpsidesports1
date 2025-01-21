@@ -1,7 +1,6 @@
-import { Golfer, GolferStats } from '../../types/golf';
+import { Golfer } from '../../types/golf';
 import { calculateImpliedProbability } from '../calculations/oddsCalculator';
-import playerRoundsData from '../../data/player_rounds_FULL.json';
-import { ScoringStats, RELEVANT_STAT_IDS } from '../data/scoringStatsLoader';
+import { getPlayerRoundsByDgIds, getScoringStatsByDgIds, SupabaseError } from '../supabase/queries';
 
 export const golferImages = {
   "Scheffler, Scottie": "https://pga-tour-res.cloudinary.com/image/upload/c_fill,d_headshots_default.png,f_auto,g_face:center,h_294,q_auto,w_220/headshots_46046.png",
@@ -13,112 +12,190 @@ export const golferImages = {
   "Koepka, Brooks": "https://pga-tour-res.cloudinary.com/image/upload/c_fill,d_headshots_default.png,f_auto,g_face:center,h_294,q_auto,w_220/headshots_34046.png",
   "Spieth, Jordan": "https://pga-tour-res.cloudinary.com/image/upload/c_fill,d_headshots_default.png,f_auto,g_face:center,h_294,q_auto,w_220/headshots_34046.png"
 };
-  
-export const transformGolferData = (
+
+export const transformGolferData = async (
   rankings: any[],
   odds: any[] = [],
   approachStats: any[] = [],
-  selectedCourses: string[] = [],
-  scoringStats: ScoringStats[] = []
-): Golfer[] => {
-  // Sort rankings by datagolf_rank and take only top 10
-  const top10Rankings = rankings
-    .sort((a, b) => (a.datagolf_rank || 0) - (b.datagolf_rank || 0))
-    .slice(0, 10);
+  selectedCourses: string[] = []
+): Promise<Golfer[]> => {
+  try {
+    if (!Array.isArray(rankings) || rankings.length === 0) {
+      console.warn('No rankings data provided');
+      return [];
+    }
 
-  return top10Rankings.map(player => {
-    const approachData = approachStats.find(a => a.dg_id === player.dg_id);
-    const oddsData = odds.find(o => o.player_name.toString() === player.player_name.toString());
-    const playerScoring = scoringStats.filter(s => s.player_full_name === player.player_name);
-    
-    // Fetch the player's round history from the JSON data
-    const playerRounds = playerRoundsData[player.player_name] || {};
-    const fanduelOdds = oddsData ? parseInt(oddsData.fanduel, 10) : 0;
+    // Sort rankings by datagolf_rank and take only top 10
+    const top10Rankings = rankings
+      .sort((a, b) => (a.datagolf_rank || 0) - (b.datagolf_rank || 0))
+      .slice(0, 10);
 
-    // Calculate average SG metrics across selected courses
-    let totalRounds = 0;
-    let totalSGTotal = 0, totalSGTee = 0, totalSGApproach = 0, totalSGAround = 0, totalSGPutting = 0, totalDrivingAcc = 0, totalDrivingDist = 0;
-    
-    selectedCourses.forEach(course => {
-      if (playerRounds[course]) {
-        playerRounds[course].rounds.forEach(round => {
-          totalSGTotal += round.sg_total;
-          totalSGTee += round.sg_ott;
-          totalSGApproach += round.sg_app;
-          totalSGAround += round.sg_arg;
-          totalSGPutting += round.sg_putt;
-          totalDrivingAcc += round.driving_acc;
-          totalDrivingDist += round.driving_dist;
-          totalRounds++;
+    // Get the dg_ids for the top 10 players
+    const dgIds = top10Rankings.map(p => {
+      console.log('Player dg_id:', {
+        name: p.player_name,
+        dg_id: p.dg_id,
+        type: typeof p.dg_id
+      });
+      return String(p.dg_id);
+    }).filter(Boolean);
+
+    if (dgIds.length === 0) {
+      console.warn('No valid dg_ids found in rankings');
+      return [];
+    }
+
+    // Get scoring stats and rounds data from Supabase
+    let scoringStats: any[] = [], playerRounds: any[] = [];
+    try {
+      [scoringStats, playerRounds] = await Promise.all([
+        getScoringStatsByDgIds(dgIds, {
+          years: [new Date().getFullYear(), new Date().getFullYear() - 1],
+        }),
+        getPlayerRoundsByDgIds(dgIds, selectedCourses, {
+          limit: 100,
+          startDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        })
+      ]);
+
+      // Debug log the results
+      console.log('Scoring stats:', scoringStats.length, 'items');
+      console.log('Player rounds:', playerRounds.length, 'items');
+      console.log('Sample scoring stat:', scoringStats[0]);
+      console.log('Sample player round:', playerRounds[0]);
+    } catch (error) {
+      console.error('Failed to fetch data from Supabase:', error);
+      if (error instanceof SupabaseError) {
+        console.error('Supabase Error Details:', {
+          code: error.code,
+          details: error.details,
+          hint: error.hint
         });
       }
+      scoringStats = [];
+      playerRounds = [];
+    }
+
+    // Transform the data into Golfer objects
+    const golfers: Golfer[] = top10Rankings.map(ranking => {
+      const playerOdds = odds.find(o => o.dg_id === ranking.dg_id) || {};
+      const approachData = approachStats.find(s => s.dg_id === ranking.dg_id) || {};
+      const playerScoringStats = scoringStats.filter(s => s.dg_id === String(ranking.dg_id));
+      const playerSpecificRounds = playerRounds.filter(r => r.dg_id === String(ranking.dg_id));
+
+      console.log('Processing player:', {
+        name: ranking.player_name,
+        dg_id: ranking.dg_id,
+        scoringStatsCount: playerScoringStats.length,
+        roundsCount: playerSpecificRounds.length,
+        sampleStat: playerScoringStats[0]?.title
+      });
+
+      // Calculate average from rounds
+      const calculateAverageFromRounds = (field: string): number => {
+        if (!playerSpecificRounds.length) return 0;
+        const validRounds = playerSpecificRounds.filter(round => round[field] != null);
+        if (!validRounds.length) return 0;
+        const total = validRounds.reduce((sum, round) => sum + round[field], 0);
+        return total / validRounds.length;
+      };
+
+      // Calculate average from scoring stats
+      const calculateAverageFromStats = (statId: string): number => {
+        const stats = playerScoringStats.filter(s => s.stat_id === statId);
+        if (stats.length === 0) {
+          console.log(`No stats found for ID ${statId} for player ${ranking.player_name}`);
+          return 0;
+        }
+        return stats.reduce((sum, s) => sum + (s.value || 0), 0) / stats.length;
+      };
+
+      // Organize rounds by course
+      const roundsByCourse: { [courseName: string]: { rounds: any[] } } = {};
+      playerSpecificRounds.forEach(round => {
+        if (!roundsByCourse[round.course]) {
+          roundsByCourse[round.course] = { rounds: [] };
+        }
+        roundsByCourse[round.course].rounds.push({
+          eventName: round.event_name,
+          eventId: round.event_id,
+          courseName: round.course,
+          playerName: ranking.player_name,
+          dgId: ranking.dg_id,
+          round: round.round_num,
+          date: round.round_date,
+          teeTime: round.tee_time || "",
+          course_num: round.course_num,
+          course_par: round.course_par,
+          start_hole: round.start_hole || 1,
+          score: round.score,
+          sg_app: round.sg_app || 0,
+          sg_arg: round.sg_arg || 0,
+          sg_ott: round.sg_ott || 0,
+          sg_putt: round.sg_putt || 0,
+          sg_t2g: round.sg_t2g || 0,
+          sg_total: round.sg_total || 0,
+          driving_acc: round.driving_acc || 0,
+          driving_dist: round.driving_dist || 0,
+          gir: round.gir || 0,
+          prox_fw: round.prox_fw || 0,
+          prox_rgh: round.prox_rgh || 0,
+          scrambling: round.scrambling || 0
+        });
+      });
+
+      return {
+        id: ranking.dg_id.toString(),
+        name: ranking.player_name,
+        imageUrl: golferImages[ranking.player_name] || `https://pga-tour-res.cloudinary.com/image/upload/c_fill,d_headshots_default.png,f_auto,g_face:center,h_294,q_auto,w_220/headshots_${ranking.dg_id}.png`,
+        rank: ranking.datagolf_rank || 0,
+        // Use round data for strokes gained metrics
+        strokesGainedTotal: calculateAverageFromRounds('sg_total'),
+        strokesGainedTee: calculateAverageFromRounds('sg_ott'),
+        strokesGainedApproach: calculateAverageFromRounds('sg_app'),
+        strokesGainedAround: calculateAverageFromRounds('sg_arg'),
+        strokesGainedPutting: calculateAverageFromRounds('sg_putt'),
+        drivingAccuracy: calculateAverageFromRounds('driving_acc'),
+        drivingDistance: calculateAverageFromRounds('driving_dist'),
+        proximityMetrics: {
+          '100-125': approachData?.['100_150_fw_proximity_per_shot'] || 0,
+          '125-150': approachData?.['100_150_fw_proximity_per_shot'] || 0,
+          '175-200': approachData?.['150_200_fw_proximity_per_shot'] || 0,
+          '200-225': approachData?.['over_200_fw_proximity_per_shot'] || 0,
+          '225plus': approachData?.['over_200_fw_proximity_per_shot'] || 0
+        },
+        scoringStats: {
+          bogeyAvoidance: calculateAverageFromStats('02414'),
+          consecutiveBirdiesStreak: calculateAverageFromStats('02672'),
+          consecutiveBirdiesEaglesStreak: calculateAverageFromStats('02673'),
+          totalEagles: calculateAverageFromStats('106'),
+          totalBirdies: calculateAverageFromStats('107'),
+          par3BirdieOrBetter: calculateAverageFromStats('112'),
+          par4BirdieOrBetter: calculateAverageFromStats('113'),
+          par5BirdieOrBetter: calculateAverageFromStats('114'),
+          birdieOrBetterConversion: calculateAverageFromStats('115'),
+          par3ScoringAvg: calculateAverageFromStats('142'),
+          par4ScoringAvg: calculateAverageFromStats('143'),
+          par5ScoringAvg: calculateAverageFromStats('144'),
+          eaglesPerHole: calculateAverageFromStats('155'),
+          birdieAverage: calculateAverageFromStats('156'),
+          birdieOrBetterPercentage: calculateAverageFromStats('352'),
+          consecutiveHolesBelowPar: calculateAverageFromStats('452'),
+          odds: playerOdds.odds_outright || 0,
+          simulatedRank: 0
+        },
+        simulationStats: {
+          averageFinish: 0,
+          winPercentage: 0,
+          impliedProbability: calculateImpliedProbability(playerOdds.odds_outright || 0)
+        },
+        recentRounds: roundsByCourse
+      };
     });
 
-    const averageSGTotal = totalRounds ? totalSGTotal / totalRounds : 0;
-    const averageSGTee = totalRounds ? totalSGTee / totalRounds : 0;
-    const averageSGApproach = totalRounds ? totalSGApproach / totalRounds : 0;
-    const averageSGAround = totalRounds ? totalSGAround / totalRounds : 0;
-    const averageSGPutting = totalRounds ? totalSGPutting / totalRounds : 0;
-    const averageDrivingAcc = totalRounds ? totalDrivingAcc / totalRounds : 0;
-    const averageDrivingDist = totalRounds ? totalDrivingDist / totalRounds : 0;
-    
-    // Transform scoring stats - average across years
-    const calculateAverageStatValue = (stats: any[], statId: string) => {
-      const values = stats
-        .filter(s => s.statId === statId)
-        .map(s => Number(s.value))
-        .filter(v => !isNaN(v));
-      
-      return values.length ? values.reduce((sum, v) => sum + v, 0) / values.length : undefined;
-    };
-
-    const scoringStatsObject = {
-      bogeyAvoidance: calculateAverageStatValue(playerScoring, '02414'),
-      consecutiveBirdiesStreak: calculateAverageStatValue(playerScoring, '02672'),
-      consecutiveBirdiesEaglesStreak: calculateAverageStatValue(playerScoring, '02673'),
-      totalEagles: calculateAverageStatValue(playerScoring, '106'),
-      totalBirdies: calculateAverageStatValue(playerScoring, '107'),
-      par3BirdieOrBetter: calculateAverageStatValue(playerScoring, '112'),
-      par4BirdieOrBetter: calculateAverageStatValue(playerScoring, '113'),
-      par5BirdieOrBetter: calculateAverageStatValue(playerScoring, '114'),
-      birdieOrBetterConversion: calculateAverageStatValue(playerScoring, '115'),
-      par3ScoringAvg: calculateAverageStatValue(playerScoring, '142'),
-      par4ScoringAvg: calculateAverageStatValue(playerScoring, '143'),
-      par5ScoringAvg: calculateAverageStatValue(playerScoring, '144'),
-      eaglesPerHole: calculateAverageStatValue(playerScoring, '155'),
-      birdieAverage: calculateAverageStatValue(playerScoring, '156'),
-      birdieOrBetterPercentage: calculateAverageStatValue(playerScoring, '352'),
-      consecutiveHolesBelowPar: calculateAverageStatValue(playerScoring, '452')
-    };
-    
-    return {
-      id: player.dg_id.toString(),
-      name: player.player_name,
-      imageUrl: golferImages[player.player_name] || `https://pga-tour-res.cloudinary.com/image/upload/c_fill,d_headshots_default.png,f_auto,g_face:center,h_294,q_auto,w_220/headshots_${player.dg_id}.png`,
-      rank: player.datagolf_rank,
-      strokesGainedTotal: averageSGTotal,
-      strokesGainedTee: averageSGTee,
-      strokesGainedApproach: averageSGApproach,
-      strokesGainedAround: averageSGAround,
-      strokesGainedPutting: averageSGPutting,
-      drivingAccuracy: averageDrivingAcc,
-      drivingDistance: averageDrivingDist,
-      proximityMetrics: {
-        '100-125': approachData?.['100_150_fw_proximity_per_shot'] || 0,
-        '125-150': approachData?.['100_150_fw_proximity_per_shot'] || 0,
-        '175-200': approachData?.['150_200_fw_proximity_per_shot'] || 0,
-        '200-225': approachData?.['over_200_fw_proximity_per_shot'] || 0,
-        '225plus': approachData?.['over_200_fw_proximity_per_shot'] || 0
-      },
-      scoringStats: scoringStatsObject,
-      odds: fanduelOdds,
-      simulatedRank: 0,
-      simulationStats: {
-        averageFinish: 0,
-        winPercentage: 0,
-        impliedProbability: calculateImpliedProbability(fanduelOdds)
-      },
-      recentRounds: playerRounds
-    };
-  });
+    return golfers;
+  } catch (error) {
+    console.error('Error in transformGolferData:', error);
+    return [];
+  }
 };

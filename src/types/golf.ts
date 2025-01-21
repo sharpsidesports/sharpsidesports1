@@ -27,32 +27,61 @@ export interface Golfer {
     '200-225': number;
     '225plus': number;
   };
-  scoringStats?: {
-    bogeyAvoidance?: number;
-    consecutiveBirdiesStreak?: number;
-    consecutiveBirdiesEaglesStreak?: number;
-    totalEagles?: number;
-    totalBirdies?: number;
-    par3BirdieOrBetter?: number;
-    par4BirdieOrBetter?: number;
-    par5BirdieOrBetter?: number;
-    birdieOrBetterConversion?: number;
-    par3ScoringAvg?: number;
-    par4ScoringAvg?: number;
-    par5ScoringAvg?: number;
-    eaglesPerHole?: number;
-    birdieAverage?: number;
-    birdieOrBetterPercentage?: number;
-    consecutiveHolesBelowPar?: number;
+  scoringStats: {
+    bogeyAvoidance: number;
+    consecutiveBirdiesStreak: number;
+    consecutiveBirdiesEaglesStreak: number;
+    totalEagles: number;
+    totalBirdies: number;
+    par3BirdieOrBetter: number;
+    par4BirdieOrBetter: number;
+    par5BirdieOrBetter: number;
+    birdieOrBetterConversion: number;
+    par3ScoringAvg: number;
+    par4ScoringAvg: number;
+    par5ScoringAvg: number;
+    eaglesPerHole: number;
+    birdieAverage: number;
+    birdieOrBetterPercentage: number;
+    consecutiveHolesBelowPar: number;
+    odds: number;
+    simulatedRank: number;
   };
-  odds: number;
-  simulatedRank: number;
   simulationStats: {
     averageFinish: number;
     winPercentage: number;
     impliedProbability: number;
   };
-  recentRounds: RoundResult[];
+  recentRounds: {
+    [courseName: string]: {
+      rounds: Array<{
+        eventName: string;
+        eventId: number;
+        courseName: string;
+        playerName: string;
+        dgId: number;
+        round: number;
+        date: string;
+        teeTime: string;
+        course_num: number;
+        course_par: number;
+        start_hole: number;
+        score: number;
+        sg_app: number;
+        sg_arg: number;
+        sg_ott: number;
+        sg_putt: number;
+        sg_t2g: number;
+        sg_total: number;
+        driving_acc: number;
+        driving_dist: number;
+        gir: number;
+        prox_fw: number;
+        prox_rgh: number;
+        scrambling: number;
+      }>;
+    };
+  };
 }
 
 export interface CourseResult {
