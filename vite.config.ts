@@ -12,21 +12,13 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 5173,
       host: true,
-      proxy: mode === 'development' ? {
-        '/api': {
-          target: env.VITE_DG_API_URL || 'https://feeds.datagolf.com',
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, '')
-        }
-      } : undefined,
     },
     assetsInclude: ['**/*.csv'],
     define: {
       // Expose env variables to the client
       'process.env': {},
       __SUPABASE_URL__: JSON.stringify(env.VITE_SUPABASE_URL),
-      __SUPABASE_ANON_KEY__: JSON.stringify(env.VITE_SUPABASE_ANON_KEY),
-      __DG_API_URL__: JSON.stringify(mode === 'production' ? 'https://feeds.datagolf.com' : '/api')
+      __SUPABASE_ANON_KEY__: JSON.stringify(env.VITE_SUPABASE_ANON_KEY)
     },
     resolve: {
       alias: {
