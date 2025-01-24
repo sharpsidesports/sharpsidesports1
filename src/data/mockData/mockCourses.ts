@@ -31,6 +31,7 @@ export const mockCourses: Course[] = [
     length: 7245,
     par: 72,
     attributes: {
+      gir: 0.85,
       drivingDistance: 0.65,
       drivingAccuracy: 0.90,
       approach: 0.85,

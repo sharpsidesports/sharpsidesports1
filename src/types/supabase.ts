@@ -19,6 +19,7 @@ export interface Database {
           sg_app: number
           sg_arg: number
           sg_putt: number
+          gir: number
           driving_acc: number
           driving_dist: number
           round_date: string
@@ -33,6 +34,7 @@ export interface Database {
           sg_app: number
           sg_arg: number
           sg_putt: number
+          gir: number
           driving_acc: number
           driving_dist: number
           round_date: string
@@ -47,6 +49,7 @@ export interface Database {
           sg_app?: number
           sg_arg?: number
           sg_putt?: number
+          gir?: number
           driving_acc?: number
           driving_dist?: number
           round_date?: string

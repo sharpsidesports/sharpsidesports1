@@ -18,6 +18,7 @@ export interface Golfer {
   strokesGainedApproach: number;
   strokesGainedAround: number;
   strokesGainedPutting: number;
+  gir: number;
   drivingAccuracy: number;
   drivingDistance: number;
   proximityMetrics: {
@@ -29,9 +30,9 @@ export interface Golfer {
   };
   scoringStats: {
     bogeyAvoidance: number;
-    consecutiveBirdiesStreak: number;
-    consecutiveBirdiesEaglesStreak: number;
-    totalEagles: number;
+    // consecutiveBirdiesStreak: number;
+    // consecutiveBirdiesEaglesStreak: number;
+    // totalEagles: number;
     totalBirdies: number;
     par3BirdieOrBetter: number;
     par4BirdieOrBetter: number;
@@ -43,7 +44,7 @@ export interface Golfer {
     eaglesPerHole: number;
     birdieAverage: number;
     birdieOrBetterPercentage: number;
-    consecutiveHolesBelowPar: number;
+    // consecutiveHolesBelowPar: number;
     odds: number;
     simulatedRank: number;
   };

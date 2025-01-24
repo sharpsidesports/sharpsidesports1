@@ -155,6 +155,7 @@ export const transformGolferData = async (
         strokesGainedApproach: calculateAverageFromRounds('sg_app'),
         strokesGainedAround: calculateAverageFromRounds('sg_arg'),
         strokesGainedPutting: calculateAverageFromRounds('sg_putt'),
+        gir: calculateAverageFromRounds('gir'),
         drivingAccuracy: calculateAverageFromRounds('driving_acc'),
         drivingDistance: calculateAverageFromRounds('driving_dist'),
         proximityMetrics: {
@@ -166,9 +167,9 @@ export const transformGolferData = async (
         },
         scoringStats: {
           bogeyAvoidance: calculateAverageFromStats('02414'),
-          consecutiveBirdiesStreak: calculateAverageFromStats('02672'),
-          consecutiveBirdiesEaglesStreak: calculateAverageFromStats('02673'),
-          totalEagles: calculateAverageFromStats('106'),
+          // consecutiveBirdiesStreak: calculateAverageFromStats('02672'),
+          // consecutiveBirdiesEaglesStreak: calculateAverageFromStats('02673'),
+          // totalEagles: calculateAverageFromStats('106'),
           totalBirdies: calculateAverageFromStats('107'),
           par3BirdieOrBetter: calculateAverageFromStats('112'),
           par4BirdieOrBetter: calculateAverageFromStats('113'),
@@ -180,7 +181,7 @@ export const transformGolferData = async (
           eaglesPerHole: calculateAverageFromStats('155'),
           birdieAverage: calculateAverageFromStats('156'),
           birdieOrBetterPercentage: calculateAverageFromStats('352'),
-          consecutiveHolesBelowPar: calculateAverageFromStats('452'),
+          // consecutiveHolesBelowPar: calculateAverageFromStats('452'),
           odds: playerOdds.odds_outright || 0,
           simulatedRank: 0
         },

@@ -14,7 +14,8 @@ export default function StrokesGainedTable() {
       around: 0.15,
       putting: 0.10,
       ballStriking: 0.15, // Combined tee and approach
-      drivingAccuracy: 0.10,
+      gir: 0.05,
+      drivingAccuracy: 0.05,
       drivingDistance: 0.10
     };
 
@@ -26,6 +27,7 @@ export default function StrokesGainedTable() {
       golfer.strokesGainedApproach * weights.approach +
       golfer.strokesGainedAround * weights.around +
       golfer.strokesGainedPutting * weights.putting +
+      golfer.gir * weights.gir +
       golfer.drivingAccuracy * weights.drivingAccuracy +
       golfer.drivingDistance * weights.drivingDistance +
       ballStrikingScore * weights.ballStriking
@@ -109,6 +111,9 @@ export default function StrokesGainedTable() {
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
                 {golfer.strokesGainedPutting.toFixed(2)}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
+                {golfer.gir.toFixed(2)}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
                 {golfer.drivingAccuracy.toFixed(2)}

@@ -110,15 +110,15 @@ def process_json_files_to_csv(json_directory, csv_file_path):
     relevant_stat_ids = {
         # Birdies/Bogeys related
         '02414',  # Bogey Avoidance
-        '106',    # Total Eagles
+        # '106',    # Total Eagles
         '107',    # Total Birdies
         '115',    # Birdie or Better Conversion Percentage
         '155',    # Eagles (Holes per)
         '156',    # Birdie Average
         '352',    # Birdie or Better Percentage
-        '02672',  # Consecutive Birdies Streak
-        '02673',  # Consecutive Birdies/Eagles streak
-        '452',    # Consecutive Holes Below Par
+        # '02672',  # Consecutive Birdies Streak
+        # '02673',  # Consecutive Birdies/Eagles streak
+        # '452',    # Consecutive Holes Below Par
         
         # Par-specific stats and SG
         '142',    # Par 3 Scoring Average

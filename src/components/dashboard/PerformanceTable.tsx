@@ -4,8 +4,8 @@ import GolferProfileModal from './GolferProfileModal';
 import { Golfer } from '../../types/golf';
 
 type SortField = 'name' | 'rank' | 'strokesGainedTotal' | 'strokesGainedTee' | 'strokesGainedApproach' | 
-                 'strokesGainedAround' | 'strokesGainedPutting' | 'drivingAccuracy' | 'drivingDistance' | 'proximity100125' | 'proximity125150' |
-                 'proximity175200' | 'proximity200225' | 'proximity225plus';
+                 'strokesGainedAround' | 'strokesGainedPutting' | 'gir' | 'drivingAccuracy' | 'drivingDistance' | 'proximity100125' | 'proximity125150' |
+                 'proximity175200' | 'proximity200225' | 'proximity225plus' | 'birdieOrBetterPercentage' | 'birdieAverage';
 type SortDirection = 'asc' | 'desc';
 
 function PerformanceTable() {
@@ -57,6 +57,10 @@ function PerformanceTable() {
           aValue = a.strokesGainedPutting;
           bValue = b.strokesGainedPutting;
           break;
+        case 'gir':
+          aValue = a.gir;
+          bValue = b.gir;
+          break;
         case 'drivingAccuracy':
           aValue = a.drivingAccuracy;
           bValue = b.drivingAccuracy;
@@ -84,6 +88,14 @@ function PerformanceTable() {
         case 'proximity225plus':
           aValue = a.proximityMetrics['225plus'];
           bValue = b.proximityMetrics['225plus'];
+          break;
+        case 'birdieOrBetterPercentage':
+          aValue = a.scoringStats.birdieOrBetterPercentage;
+          bValue = b.scoringStats.birdieOrBetterPercentage;
+          break;
+        case 'birdieAverage':
+          aValue = a.scoringStats.birdieAverage;
+          bValue = b.scoringStats.birdieAverage;
           break;
         default:
           return 0;
@@ -139,6 +151,20 @@ function PerformanceTable() {
               onClick={() => handleSort('strokesGainedPutting')}
             >
               SG: Putting
+            </th>
+            <th 
+              scope="col" 
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+              onClick={() => handleSort('birdieOrBetterPercentage')}
+            >
+              Birdie or Better %
+            </th>
+            <th 
+              scope="col" 
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+              onClick={() => handleSort('birdieAverage')}
+            >
+              Birdie Avg
             </th>
             <th 
               scope="col" 
@@ -228,6 +254,15 @@ function PerformanceTable() {
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {golfer.strokesGainedPutting.toFixed(2)}
               </td> 
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {(golfer.scoringStats.birdieOrBetterPercentage).toFixed(1)}%
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {golfer.scoringStats.birdieAverage.toFixed(2)}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {golfer.gir.toFixed(2)}
+              </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {golfer.drivingAccuracy.toFixed(2)}
               </td>

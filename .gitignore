@@ -23,5 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 # Data files
-src/data/*.json
-dev/*.json
+*.json
+*.csv
+.vercel

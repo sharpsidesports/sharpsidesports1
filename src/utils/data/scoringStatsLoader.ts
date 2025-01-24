@@ -30,21 +30,3 @@ export function loadScoringStats(): ScoringStats[] {
   }));
 }
 
-export const RELEVANT_STAT_IDS = [
-  '02414', // Bogey Avoidance
-  '02672', // Consecutive Birdies Streak
-  '02673', // Consecutive Birdies/Eagles streak
-  '106',   // Total Eagles
-  '107',   // Total Birdies
-  '112',   // Par 3 Birdie or Better Leaders
-  '113',   // Par 4 Birdie or Better Leaders
-  '114',   // Par 5 Birdie or Better Leaders
-  '115',   // Birdie or Better Conversion Percentage
-  '142',   // Par 3 Scoring Average
-  '143',   // Par 4 Scoring Average
-  '144',   // Par 5 Scoring Average
-  '155',   // Eagles (Holes per)
-  '156',   // Birdie Average
-  '352',   // Birdie or Better Percentage
-  '452'    // Consecutive Holes Below Par
-];
