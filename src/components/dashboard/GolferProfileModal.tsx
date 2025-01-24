@@ -68,6 +68,10 @@ function GolferProfileModal({ golfer, onClose }: GolferProfileModalProps) {
                   <span className="font-medium">{golfer.strokesGainedPutting.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
+                  <span>GIR:</span>
+                  <span className="font-medium">{golfer.gir.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
                   <span>Driving Accuracy:</span>
                   <span className="font-medium">{golfer.drivingAccuracy.toFixed(2)}</span>
                 </div>

@@ -12,6 +12,18 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 5173,
       host: true,
+      proxy: {
+        '/api/datagolf': {
+          target: 'https://feeds.datagolf.com',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api\/datagolf\//, ''),
+          configure: (proxy, options) => {
+            proxy.on('proxyReq', (proxyReq, req, res) => {
+              console.log('Proxying request to DataGolf:', req.url);
+            });
+          }
+        }
+      }
     },
     assetsInclude: ['**/*.csv'],
     define: {

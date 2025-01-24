@@ -1,5 +1,6 @@
 export interface CourseAttributes {
   drivingDistance: number;
+  gir: number;
   drivingAccuracy: number;
   approach: number;
   aroundGreen: number;

@@ -85,6 +85,7 @@ export default function PlayerFitList() {
                     APP {golfer.strokesGainedApproach.toFixed(2)} | 
                     ARG {golfer.strokesGainedAround.toFixed(2)} | 
                     P {golfer.strokesGainedPutting.toFixed(2)} | 
+                    GIR {golfer.gir.toFixed(2)} |
                     Driving Acc {golfer.drivingAccuracy.toFixed(2)} | 
                     Driving Dist {golfer.drivingDistance.toFixed(2)}  
                   </div>

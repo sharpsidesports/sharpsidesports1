@@ -28,6 +28,7 @@ interface CourseData {
     sg_app: number;
     sg_arg: number;
     sg_putt: number;
+    gir: number;
     driving_acc: number;
     driving_dist: number;
   }>;
@@ -66,6 +67,7 @@ interface Round {
   sg_app: number | null;
   sg_arg: number | null;
   sg_putt: number | null;
+  gir: number | null;
   driving_acc: number | null;
   driving_dist: number | null;
   round_date: string;
@@ -154,6 +156,7 @@ async function migrateData() {
             sg_app: round.sg_app ?? null,
             sg_arg: round.sg_arg ?? null,
             sg_putt: round.sg_putt ?? null,
+            gir: round.gir ?? null,
             driving_acc: round.driving_acc ?? null,
             driving_dist: round.driving_dist ?? null,
             round_date: round.date

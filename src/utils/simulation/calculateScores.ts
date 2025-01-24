@@ -14,6 +14,8 @@ const calculateMetricValue = (golfer: Golfer, metric: SharpsideMetric): number =
       return golfer.strokesGainedAround;
     case 'P':
       return golfer.strokesGainedPutting;
+    case 'gir':
+      return golfer.gir;
     case 'DrivingAcc':
       return golfer.drivingAccuracy;
     case 'DrivingDist':
@@ -38,12 +40,6 @@ const calculateMetricValue = (golfer: Golfer, metric: SharpsideMetric): number =
     // Scoring metrics
     case 'BogeyAvoid':
       return golfer.scoringStats?.bogeyAvoidance ?? 0;
-    case 'ConsecBirdies':
-      return golfer.scoringStats?.consecutiveBirdiesStreak ?? 0;
-    case 'ConsecBirdiesEagles':
-      return golfer.scoringStats?.consecutiveBirdiesEaglesStreak ?? 0;
-    case 'TotalEagles':
-      return golfer.scoringStats?.totalEagles ?? 0;
     case 'TotalBirdies':
       return golfer.scoringStats?.totalBirdies ?? 0;
     case 'Par3BirdieOrBetter':
@@ -66,8 +62,7 @@ const calculateMetricValue = (golfer: Golfer, metric: SharpsideMetric): number =
       return golfer.scoringStats?.birdieAverage ?? 0;
     case 'BirdieOrBetterPct':
       return golfer.scoringStats?.birdieOrBetterPercentage ?? 0;
-    case 'ConsecHolesUnderPar':
-      return golfer.scoringStats?.consecutiveHolesBelowPar ?? 0;
+
     default:
       return 0;
   }
