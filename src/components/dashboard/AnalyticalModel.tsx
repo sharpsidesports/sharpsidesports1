@@ -121,67 +121,69 @@ export default function AnalyticalModel() {
         </div>
       )}
 
-      <div className="space-y-6">
-        <MetricCategory
-          title="Base Performance Metrics"
-          metrics={METRIC_CATEGORIES.GENERAL}
-          selectedMetrics={weights}
-          onWeightChange={handleWeightChange}
-          onRemoveMetric={handleRemoveMetric}
-        />
+      <div className="h-[400px] overflow-y-auto">
+        <div className="space-y-6">
+          <MetricCategory
+            title="Base Performance Metrics"
+            metrics={METRIC_CATEGORIES.GENERAL}
+            selectedMetrics={weights}
+            onWeightChange={handleWeightChange}
+            onRemoveMetric={handleRemoveMetric}
+          />
 
         
-        {/* {weights.some(m => METRIC_CATEGORIES.PAR3.includes(m.metric)) && (
-          <MetricCategory
-            title="Par 3 Performance"
-            metrics={METRIC_CATEGORIES.PAR3}
-            selectedMetrics={weights}
-            onWeightChange={handleWeightChange}
-            onRemoveMetric={handleRemoveMetric}
-          />
-        )} */}
+          {/* {weights.some(m => METRIC_CATEGORIES.PAR3.includes(m.metric)) && (
+            <MetricCategory
+              title="Par 3 Performance"
+              metrics={METRIC_CATEGORIES.PAR3}
+              selectedMetrics={weights}
+              onWeightChange={handleWeightChange}
+              onRemoveMetric={handleRemoveMetric}
+            />
+          )} */}
 
-        {/* {weights.some(m => METRIC_CATEGORIES.PAR4.includes(m.metric)) && (
-          <MetricCategory
-            title="Par 4 Performance"
-            metrics={METRIC_CATEGORIES.PAR4}
-            selectedMetrics={weights}
-            onWeightChange={handleWeightChange}
-            onRemoveMetric={handleRemoveMetric}
-          />
-        )}
+          {/* {weights.some(m => METRIC_CATEGORIES.PAR4.includes(m.metric)) && (
+            <MetricCategory
+              title="Par 4 Performance"
+              metrics={METRIC_CATEGORIES.PAR4}
+              selectedMetrics={weights}
+              onWeightChange={handleWeightChange}
+              onRemoveMetric={handleRemoveMetric}
+            />
+          )}
 
-        {weights.some(m => METRIC_CATEGORIES.PAR5.includes(m.metric)) && (
-          <MetricCategory
-            title="Par 5 Performance"
-            metrics={METRIC_CATEGORIES.PAR5}
-            selectedMetrics={weights}
-            onWeightChange={handleWeightChange}
-            onRemoveMetric={handleRemoveMetric}
-          />
-        )} */}
+          {weights.some(m => METRIC_CATEGORIES.PAR5.includes(m.metric)) && (
+            <MetricCategory
+              title="Par 5 Performance"
+              metrics={METRIC_CATEGORIES.PAR5}
+              selectedMetrics={weights}
+              onWeightChange={handleWeightChange}
+              onRemoveMetric={handleRemoveMetric}
+            />
+          )} */}
 
 
 
-        {weights.some(m => METRIC_CATEGORIES.PROXIMITY.includes(m.metric)) && (
-          <MetricCategory
-            title="Proximity Performance"
-            metrics={METRIC_CATEGORIES.PROXIMITY}
-            selectedMetrics={weights}
-            onWeightChange={handleWeightChange}
-            onRemoveMetric={handleRemoveMetric}
-          />
-        )}
+          {weights.some(m => METRIC_CATEGORIES.PROXIMITY.includes(m.metric)) && (
+            <MetricCategory
+              title="Proximity Performance"
+              metrics={METRIC_CATEGORIES.PROXIMITY}
+              selectedMetrics={weights}
+              onWeightChange={handleWeightChange}
+              onRemoveMetric={handleRemoveMetric}
+            />
+          )}
 
-        {weights.some(m => METRIC_CATEGORIES.SCORING.includes(m.metric)) && (
-          <MetricCategory
-            title="Scoring Performance"
-            metrics={METRIC_CATEGORIES.SCORING}
-            selectedMetrics={weights}
-            onWeightChange={handleWeightChange}
-            onRemoveMetric={handleRemoveMetric}
-          />
-        )}
+          {weights.some(m => METRIC_CATEGORIES.SCORING.includes(m.metric)) && (
+            <MetricCategory
+              title="Scoring Performance"
+              metrics={METRIC_CATEGORIES.SCORING}
+              selectedMetrics={weights}
+              onWeightChange={handleWeightChange}
+              onRemoveMetric={handleRemoveMetric}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

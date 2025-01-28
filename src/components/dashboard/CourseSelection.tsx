@@ -109,24 +109,26 @@ export default function CourseSelection() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
-        {COURSE_OPTIONS.map((course) => (
-          <button
-            key={course.id}
-            onClick={() => toggleCourse(course.id)}
-            className={`
-              px-2 py-1 rounded-md text-xs font-medium text-left
-              transition-colors duration-150 flex justify-between items-center
-              ${selectedCourses.includes(course.id)
-                ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }
-            `}
-          >
-            <span className="truncate">{course.name}</span>
-            <span className="text-xs opacity-60 ml-1">{course.tournament}</span>
-          </button>
-        ))}
+      <div className="h-[200px] overflow-y-auto">
+        <div className="grid grid-cols-2 gap-2">
+          {COURSE_OPTIONS.map((course) => (
+            <button
+              key={course.id}
+              onClick={() => toggleCourse(course.id)}
+              className={`
+                px-2 py-1 rounded-md text-xs font-medium text-left
+                transition-colors duration-150 flex justify-between items-center
+                ${selectedCourses.includes(course.id)
+                  ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }
+              `}
+            >
+              <span className="truncate">{course.name}</span>
+              <span className="text-xs opacity-60 ml-1">{course.tournament}</span>
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
