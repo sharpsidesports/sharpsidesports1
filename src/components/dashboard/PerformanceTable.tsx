@@ -2,15 +2,14 @@ import React, { useState } from 'react';
 import { useGolfStore } from '../../store/useGolfStore';
 import GolferProfileModal from './GolferProfileModal';
 import { Golfer } from '../../types/golf';
+import { SharpsideMetric } from '../../types/metrics';
 
-type SortField = 'name' | 'rank' | 'strokesGainedTotal' | 'strokesGainedTee' | 'strokesGainedApproach' | 
-                 'strokesGainedAround' | 'strokesGainedPutting' | 'gir' | 'drivingAccuracy' | 'drivingDistance' | 'proximity100125' | 'proximity125150' |
-                 'proximity175200' | 'proximity200225' | 'proximity225plus' | 'birdieOrBetterPercentage' | 'birdieAverage';
+type SortField = 'name' | SharpsideMetric;
 type SortDirection = 'asc' | 'desc';
 
 function PerformanceTable() {
-  const { golfers } = useGolfStore();
-  const [sortField, setSortField] = useState<SortField>('rank');
+  const { golfers, weights } = useGolfStore();
+  const [sortField, setSortField] = useState<SortField>('name');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   const [selectedGolfer, setSelectedGolfer] = useState<Golfer | null>(null);
 
@@ -25,84 +24,249 @@ function PerformanceTable() {
 
   const getSortedGolfers = () => {
     return [...golfers].sort((a, b) => {
-      let aValue: number;
-      let bValue: number;
+      let aValue: number | string;
+      let bValue: number | string;
 
+      if (sortField === 'name') {
+        return sortDirection === 'asc' 
+          ? a.name.localeCompare(b.name)
+          : b.name.localeCompare(a.name);
+      }
+
+      // Get values based on metric type
       switch (sortField) {
-        case 'name':
-          return sortDirection === 'asc' 
-            ? a.name.localeCompare(b.name)
-            : b.name.localeCompare(a.name);
-        case 'rank':
-          aValue = a.rank;
-          bValue = b.rank;
-          break;
-        case 'strokesGainedTotal':
+        case 'Total':
           aValue = a.strokesGainedTotal;
           bValue = b.strokesGainedTotal;
           break;
-        case 'strokesGainedTee':
+        case 'OTT':
           aValue = a.strokesGainedTee;
           bValue = b.strokesGainedTee;
           break;
-        case 'strokesGainedApproach':
+        case 'APP':
           aValue = a.strokesGainedApproach;
           bValue = b.strokesGainedApproach;
           break;
-        case 'strokesGainedAround':
+        case 'ARG':
           aValue = a.strokesGainedAround;
           bValue = b.strokesGainedAround;
           break;
-        case 'strokesGainedPutting':
+        case 'P':
           aValue = a.strokesGainedPutting;
           bValue = b.strokesGainedPutting;
+          break;
+        case 'T2G':
+          aValue = a.strokesGainedTee + a.strokesGainedApproach + a.strokesGainedAround;
+          bValue = b.strokesGainedTee + b.strokesGainedApproach + b.strokesGainedAround;
+          break;
+        case 'DrivingDist':
+          aValue = a.drivingDistance;
+          bValue = b.drivingDistance;
+          break;
+        case 'DrivingAcc':
+          aValue = a.drivingAccuracy;
+          bValue = a.drivingAccuracy;
           break;
         case 'gir':
           aValue = a.gir;
           bValue = b.gir;
           break;
-        case 'drivingAccuracy':
-          aValue = a.drivingAccuracy;
-          bValue = b.drivingAccuracy;
-          break;
-        case 'drivingDistance':
-          aValue = a.drivingDistance;
-          bValue = b.drivingDistance;
-          break;
-        case 'proximity100125':
+        case 'Prox100_125':
           aValue = a.proximityMetrics['100-125'];
           bValue = b.proximityMetrics['100-125'];
           break;
-        case 'proximity125150':
+        case 'Prox125_150':
           aValue = a.proximityMetrics['125-150'];
           bValue = b.proximityMetrics['125-150'];
           break;
-        case 'proximity175200':
+        case 'Prox175_200':
           aValue = a.proximityMetrics['175-200'];
           bValue = b.proximityMetrics['175-200'];
           break;
-        case 'proximity200225':
+        case 'Prox200_225':
           aValue = a.proximityMetrics['200-225'];
           bValue = b.proximityMetrics['200-225'];
           break;
-        case 'proximity225plus':
+        case 'Prox225Plus':
           aValue = a.proximityMetrics['225plus'];
           bValue = b.proximityMetrics['225plus'];
           break;
-        case 'birdieOrBetterPercentage':
-          aValue = a.scoringStats.birdieOrBetterPercentage;
-          bValue = b.scoringStats.birdieOrBetterPercentage;
+        case 'BogeyAvoid':
+          aValue = a.scoringStats.bogeyAvoidance;
+          bValue = b.scoringStats.bogeyAvoidance;
           break;
-        case 'birdieAverage':
+        case 'TotalBirdies':
+          aValue = a.scoringStats.totalBirdies;
+          bValue = b.scoringStats.totalBirdies;
+          break;
+        case 'Par3BirdieOrBetter':
+          aValue = a.scoringStats.par3BirdieOrBetter;
+          bValue = b.scoringStats.par3BirdieOrBetter;
+          break;
+        case 'Par4BirdieOrBetter':
+          aValue = a.scoringStats.par4BirdieOrBetter;
+          bValue = b.scoringStats.par4BirdieOrBetter;
+          break;
+        case 'Par5BirdieOrBetter':
+          aValue = a.scoringStats.par5BirdieOrBetter;
+          bValue = b.scoringStats.par5BirdieOrBetter;
+          break;
+        case 'BirdieConversion':
+          aValue = a.scoringStats.birdieOrBetterConversion;
+          bValue = b.scoringStats.birdieOrBetterConversion;
+          break;
+        case 'Par3Scoring':
+          aValue = a.scoringStats.par3ScoringAvg;
+          bValue = b.scoringStats.par3ScoringAvg;
+          break;
+        case 'Par4Scoring':
+          aValue = a.scoringStats.par4ScoringAvg;
+          bValue = b.scoringStats.par4ScoringAvg;
+          break;
+        case 'Par5Scoring':
+          aValue = a.scoringStats.par5ScoringAvg;
+          bValue = b.scoringStats.par5ScoringAvg;
+          break;
+        case 'EaglesPerHole':
+          aValue = a.scoringStats.eaglesPerHole;
+          bValue = b.scoringStats.eaglesPerHole;
+          break;
+        case 'BirdieAvg':
           aValue = a.scoringStats.birdieAverage;
           bValue = b.scoringStats.birdieAverage;
+          break;
+        case 'BirdieOrBetterPct':
+          aValue = a.scoringStats.birdieOrBetterPercentage;
+          bValue = b.scoringStats.birdieOrBetterPercentage;
           break;
         default:
           return 0;
       }
 
-      return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+      return sortDirection === 'asc' 
+        ? (aValue as number) - (bValue as number)
+        : (bValue as number) - (aValue as number);
     });
+  };
+
+  const getMetricValue = (golfer: Golfer, metric: SharpsideMetric): number => {
+    switch (metric) {
+      case 'Total':
+        return golfer.strokesGainedTotal;
+      case 'OTT':
+        return golfer.strokesGainedTee;
+      case 'APP':
+        return golfer.strokesGainedApproach;
+      case 'ARG':
+        return golfer.strokesGainedAround;
+      case 'P':
+        return golfer.strokesGainedPutting;
+      case 'T2G':
+        // T2G is the sum of OTT, APP, and ARG
+        return golfer.strokesGainedTee + golfer.strokesGainedApproach + golfer.strokesGainedAround;
+      case 'DrivingDist':
+        return golfer.drivingDistance;
+      case 'DrivingAcc':
+        return golfer.drivingAccuracy;
+      case 'gir':
+        return golfer.gir;
+      case 'Prox100_125':
+        return golfer.proximityMetrics['100-125'];
+      case 'Prox125_150':
+        return golfer.proximityMetrics['125-150'];
+      case 'Prox175_200':
+        return golfer.proximityMetrics['175-200'];
+      case 'Prox200_225':
+        return golfer.proximityMetrics['200-225'];
+      case 'Prox225Plus':
+        return golfer.proximityMetrics['225plus'];
+      // Scoring stats
+      case 'BogeyAvoid':
+        return golfer.scoringStats.bogeyAvoidance;
+      case 'TotalBirdies':
+        return golfer.scoringStats.totalBirdies;
+      case 'Par3BirdieOrBetter':
+        return golfer.scoringStats.par3BirdieOrBetter;
+      case 'Par4BirdieOrBetter':
+        return golfer.scoringStats.par4BirdieOrBetter;
+      case 'Par5BirdieOrBetter':
+        return golfer.scoringStats.par5BirdieOrBetter;
+      case 'BirdieConversion':
+        return golfer.scoringStats.birdieOrBetterConversion;
+      case 'Par3Scoring':
+        return golfer.scoringStats.par3ScoringAvg;
+      case 'Par4Scoring':
+        return golfer.scoringStats.par4ScoringAvg;
+      case 'Par5Scoring':
+        return golfer.scoringStats.par5ScoringAvg;
+      case 'EaglesPerHole':
+        return golfer.scoringStats.eaglesPerHole;
+      case 'BirdieAvg':
+        return golfer.scoringStats.birdieAverage;
+      case 'BirdieOrBetterPct':
+        return golfer.scoringStats.birdieOrBetterPercentage;
+      default:
+        return 0;
+    }
+  };
+
+  const getMetricLabel = (metric: SharpsideMetric): string => {
+    switch (metric) {
+      case 'Total':
+        return 'SG: Total';
+      case 'OTT':
+        return 'SG: Off the Tee';
+      case 'APP':
+        return 'SG: Approach';
+      case 'ARG':
+        return 'SG: Around';
+      case 'P':
+        return 'SG: Putting';
+      case 'T2G':
+        return 'SG: Tee to Green';
+      case 'DrivingDist':
+        return 'Driving Distance';
+      case 'DrivingAcc':
+        return 'Driving Accuracy';
+      case 'gir':
+        return 'GIR';
+      case 'Prox100_125':
+        return 'Prox 100-125';
+      case 'Prox125_150':
+        return 'Prox 125-150';
+      case 'Prox175_200':
+        return 'Prox 175-200';
+      case 'Prox200_225':
+        return 'Prox 200-225';
+      case 'Prox225Plus':
+        return 'Prox 225+';
+      case 'BogeyAvoid':
+        return 'Bogey Avoidance';
+      case 'TotalBirdies':
+        return 'Total Birdies';
+      case 'Par3BirdieOrBetter':
+        return 'Par 3 Birdie or Better';
+      case 'Par4BirdieOrBetter':
+        return 'Par 4 Birdie or Better';
+      case 'Par5BirdieOrBetter':
+        return 'Par 5 Birdie or Better';
+      case 'BirdieConversion':
+        return 'Birdie Conversion';
+      case 'Par3Scoring':
+        return 'Par 3 Scoring Avg';
+      case 'Par4Scoring':
+        return 'Par 4 Scoring Avg';
+      case 'Par5Scoring':
+        return 'Par 5 Scoring Avg';
+      case 'EaglesPerHole':
+        return 'Eagles per Hole';
+      case 'BirdieAvg':
+        return 'Birdie Average';
+      case 'BirdieOrBetterPct':
+        return 'Birdie or Better Percentage';
+      default:
+        return metric;
+    }
   };
 
   return (
@@ -117,173 +281,49 @@ function PerformanceTable() {
             >
               Golfer
             </th>
-            <th 
-              scope="col" 
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-              onClick={() => handleSort('strokesGainedTotal')}
-            >
-              SG: Total
-            </th>
-            <th 
-              scope="col" 
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-              onClick={() => handleSort('strokesGainedTee')}
-            >
-              SG: Off the Tee
-            </th>
-            <th 
-              scope="col" 
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-              onClick={() => handleSort('strokesGainedApproach')}
-            >
-              SG: Approach
-            </th>
-            <th 
-              scope="col" 
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-              onClick={() => handleSort('strokesGainedAround')}
-            >
-              SG: Around
-            </th>
-            <th 
-              scope="col" 
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-              onClick={() => handleSort('strokesGainedPutting')}
-            >
-              SG: Putting
-            </th>
-            <th 
-              scope="col" 
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-              onClick={() => handleSort('birdieOrBetterPercentage')}
-            >
-              Birdie or Better %
-            </th>
-            <th 
-              scope="col" 
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-              onClick={() => handleSort('birdieAverage')}
-            >
-              Birdie Avg
-            </th>
-            <th 
-              scope="col" 
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-              onClick={() => handleSort('drivingAccuracy')}
-            >
-              Driving Accuracy
-            </th>
-            <th 
-              scope="col" 
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-              onClick={() => handleSort('drivingDistance')}
-            >
-              Driving Distance
-            </th>
-            <th 
-              scope="col" 
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-              onClick={() => handleSort('proximity100125')}
-            >
-              Prox 100-125
-            </th>
-            <th 
-              scope="col" 
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-              onClick={() => handleSort('proximity125150')}
-            >
-              Prox 125-150
-            </th>
-            <th 
-              scope="col" 
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-              onClick={() => handleSort('proximity175200')}
-            >
-              Prox 175-200
-            </th>
-            <th 
-              scope="col" 
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-              onClick={() => handleSort('proximity200225')}
-            >
-              Prox 200-225
-            </th>
-            <th 
-              scope="col" 
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-              onClick={() => handleSort('proximity225plus')}
-            >
-              Prox 225+
-            </th>
+            {weights.map(({ metric }) => (
+              <th
+                key={metric}
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                onClick={() => handleSort(metric)}
+              >
+                {getMetricLabel(metric)}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {getSortedGolfers().map((golfer) => (
-            <tr 
-              key={golfer.id} 
+            <tr
+              key={golfer.id}
               className="hover:bg-gray-50 cursor-pointer"
               onClick={() => setSelectedGolfer(golfer)}
             >
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center">
                   <div className="flex-shrink-0 h-10 w-10">
-                    <img 
-                      className="h-10 w-10 rounded-full object-cover object-center" 
-                      src={golfer.imageUrl} 
+                    <img
+                      className="h-10 w-10 rounded-full"
+                      src={golfer.imageUrl}
                       alt={golfer.name}
                     />
                   </div>
                   <div className="ml-4">
-                    <div className="text-sm font-medium text-gray-900">{golfer.name}</div>
-                    <div className="text-sm text-gray-500">Rank: {golfer.rank}</div>
+                    <div className="text-sm font-medium text-gray-900">
+                      {golfer.name}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      Rank: {golfer.rank}
+                    </div>
                   </div>
                 </div>
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {golfer.strokesGainedTotal.toFixed(2)}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {golfer.strokesGainedTee.toFixed(2)}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {golfer.strokesGainedApproach.toFixed(2)}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {golfer.strokesGainedAround.toFixed(2)}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {golfer.strokesGainedPutting.toFixed(2)}
-              </td> 
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {(golfer.scoringStats.birdieOrBetterPercentage).toFixed(1)}%
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {golfer.scoringStats.birdieAverage.toFixed(2)}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {golfer.gir.toFixed(2)}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {golfer.drivingAccuracy.toFixed(2)}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {golfer.drivingDistance.toFixed(2)}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {golfer.proximityMetrics['100-125'].toFixed(1)}'
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {golfer.proximityMetrics['125-150'].toFixed(1)}'
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {golfer.proximityMetrics['175-200'].toFixed(1)}'
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {golfer.proximityMetrics['200-225'].toFixed(1)}'
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {golfer.proximityMetrics['225plus'].toFixed(1)}'
-              </td>
+              {weights.map(({ metric }) => (
+                <td key={metric} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {getMetricValue(golfer, metric).toFixed(2)}
+                </td>
+              ))}
             </tr>
           ))}
         </tbody>
