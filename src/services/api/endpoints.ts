@@ -5,4 +5,5 @@ export const ENDPOINTS = {
   HISTORICAL_ROUNDS: 'historical-raw-data/rounds',
   EVENT_LIST: 'historical-raw-data/event-list',
   BETTING_ODDS: 'betting-tools/outrights',
+  MATCHUPS: 'betting-tools/matchups',
 } as const;
