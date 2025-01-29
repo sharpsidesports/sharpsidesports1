@@ -1,94 +1,160 @@
-import React, { useState } from 'react';
-import { useGolfStore } from '../../store/useGolfStore';
+import React from 'react';
+import { useCourseFitStore } from '../../store/useCourseFitStore';
 
-export default function PlayerFitList() {
-  const { golfers } = useGolfStore();
-  const [sortBy, setSortBy] = useState<'fit' | 'name' | 'rank'>('fit');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+interface PlayerFitListProps {
+  courseId: string;
+  loading?: boolean;
+}
 
-  const sortedGolfers = [...golfers].sort((a, b) => {
-    const modifier = sortOrder === 'asc' ? 1 : -1;
-    if (sortBy === 'name') return a.name.localeCompare(b.name) * modifier;
-    if (sortBy === 'fit') return (b.simulatedRank - a.simulatedRank) * modifier;
-    return (a.rank - b.rank) * modifier;
-  });
+export default function PlayerFitList({ courseId, loading = false }: PlayerFitListProps) {
+  const { playerRounds } = useCourseFitStore();
 
-  const handleSort = (field: typeof sortBy) => {
-    if (field === sortBy) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortBy(field);
-      setSortOrder('desc');
+  // Get rounds for the selected course
+  const courseRounds = playerRounds.filter(round => round.course === courseId);
+
+  // Group rounds by player and calculate average performance
+  const playerStats = courseRounds.reduce((acc, round) => {
+    if (!acc[round.dg_id]) {
+      acc[round.dg_id] = {
+        dg_id: round.dg_id,
+        rounds: [],
+      };
     }
-  };
+    acc[round.dg_id].rounds.push(round);
+    return acc;
+  }, {} as Record<string, { dg_id: string; rounds: typeof courseRounds }>);
+
+  // Calculate averages and sort by SG: Total
+  const playerAverages = Object.values(playerStats)
+    .map(player => {
+      const avgStats = player.rounds.reduce(
+        (acc, round) => ({
+          sgTotal: acc.sgTotal + (round.sg_total || 0),
+          sgOtt: acc.sgOtt + (round.sg_ott || 0),
+          sgApp: acc.sgApp + (round.sg_app || 0),
+          sgArg: acc.sgArg + (round.sg_arg || 0),
+          sgPutt: acc.sgPutt + (round.sg_putt || 0),
+          gir: acc.gir + (round.gir || 0),
+          drivingAcc: acc.drivingAcc + (round.driving_acc || 0),
+          drivingDist: acc.drivingDist + (round.driving_dist || 0),
+        }),
+        {
+          sgTotal: 0,
+          sgOtt: 0,
+          sgApp: 0,
+          sgArg: 0,
+          sgPutt: 0,
+          gir: 0,
+          drivingAcc: 0,
+          drivingDist: 0,
+        }
+      );
+
+      const numRounds = player.rounds.length;
+      return {
+        dg_id: player.dg_id,
+        numRounds,
+        avgSgTotal: avgStats.sgTotal / numRounds,
+        avgSgOtt: avgStats.sgOtt / numRounds,
+        avgSgApp: avgStats.sgApp / numRounds,
+        avgSgArg: avgStats.sgArg / numRounds,
+        avgSgPutt: avgStats.sgPutt / numRounds,
+        avgGir: avgStats.gir / numRounds,
+        avgDrivingAcc: avgStats.drivingAcc / numRounds,
+        avgDrivingDist: avgStats.drivingDist / numRounds,
+      };
+    })
+    .sort((a, b) => b.avgSgTotal - a.avgSgTotal)
+    .slice(0, 10); // Show top 10 players
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        <span className="ml-2 text-gray-600">Loading player data...</span>
+      </div>
+    );
+  }
+
+  if (playerAverages.length === 0) {
+    return (
+      <div className="text-center py-8 text-gray-500">
+        No player data available for this course
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-gray-50 rounded-lg p-4">
-      <h3 className="text-lg font-semibold mb-4">Player Course Fit Rankings</h3>
+    <div>
+      <h2 className="text-xl font-semibold mb-4">Player Performance</h2>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead>
+          <thead className="bg-gray-50">
             <tr>
-              <th 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                onClick={() => handleSort('name')}
-              >
-                Player
-              </th>
-              <th 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                onClick={() => handleSort('fit')}
-              >
-                Course Fit Score
-              </th>
-              <th 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                onClick={() => handleSort('rank')}
-              >
-                World Rank
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Player ID
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Key Stats
+                Rounds
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                SG: Total
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                SG: OTT
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                SG: APP
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                SG: ARG
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                SG: PUTT
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                GIR %
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Driving Acc %
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Driving Dist
               </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {sortedGolfers.map((golfer) => (
-              <tr key={golfer.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0 h-10 w-10">
-                      <img 
-                        className="h-10 w-10 rounded-full object-cover" 
-                        src={golfer.imageUrl} 
-                        alt={golfer.name} 
-                      />
-                    </div>
-                    <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        {golfer.name}
-                      </div>
-                    </div>
-                  </div>
+            {playerAverages.map((player, index) => (
+              <tr key={player.dg_id}>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {player.dg_id}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-green-600">
-                    {(100 - golfer.simulatedRank).toFixed(1)}
-                  </div>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {player.numRounds}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {golfer.rank}
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {player.avgSgTotal.toFixed(2)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    SG: OTT {golfer.strokesGainedTee.toFixed(2)} | 
-                    APP {golfer.strokesGainedApproach.toFixed(2)} | 
-                    ARG {golfer.strokesGainedAround.toFixed(2)} | 
-                    P {golfer.strokesGainedPutting.toFixed(2)} | 
-                    GIR {golfer.gir.toFixed(2)} |
-                    Driving Acc {golfer.drivingAccuracy.toFixed(2)} | 
-                    Driving Dist {golfer.drivingDistance.toFixed(2)}  
-                  </div>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {player.avgSgOtt.toFixed(2)}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {player.avgSgApp.toFixed(2)}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {player.avgSgArg.toFixed(2)}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {player.avgSgPutt.toFixed(2)}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {player.avgGir.toFixed(1)}%
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {player.avgDrivingAcc.toFixed(1)}%
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {player.avgDrivingDist.toFixed(1)}
                 </td>
               </tr>
             ))}

@@ -6,7 +6,7 @@ interface CourseOption {
   name: string;
 }
 
-const COURSE_OPTIONS: CourseOption[] = [
+export const COURSE_OPTIONS: CourseOption[] = [
   { id: 'ACCORDIA GOLF Narashino Country Club', name: 'ACCORDIA GOLF Narashino Country Club' },
   { id: 'Albany GC', name: 'Albany GC' },
   { id: 'Arnold Palmer\'s Bay Hill Club & Lodge', name: 'Arnold Palmer\'s Bay Hill Club & Lodge' },
@@ -93,6 +93,8 @@ export default function CourseSelection() {
       <div className="flex justify-between items-center mb-3">
         <h3 className="text-sm font-medium text-gray-700">Course Filter</h3>
         <div className="flex items-center gap-2 text-xs">
+          <span className="text-gray-600">{selectedCourses.length} selected</span>
+          <span className="text-gray-300">|</span>
           <button
             onClick={() => COURSE_OPTIONS.forEach(course => toggleCourse(course.id))}
             className="text-green-600 hover:text-green-700"

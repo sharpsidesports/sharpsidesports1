@@ -167,21 +167,33 @@ export default function CourseConditions() {
   const { conditions, updateConditions, selectedCourses, toggleCourse } = useGolfStore();
 
   const handleDesignerChange = (designerId: string) => {
-    // Clear previous designer's courses if any
-    if (conditions.course !== 'all') {
-      DESIGNER_COURSES[conditions.course as keyof typeof DESIGNER_COURSES]?.forEach(course => {
-        if (selectedCourses.includes(course)) {
+    // Clear all previously selected courses
+    selectedCourses.forEach(course => {
+      toggleCourse(course);
+    });
+
+    // If both grass and designer are selected (not 'all'), find intersection
+    if (designerId !== 'all' && conditions.grass !== 'all') {
+      const designerCourses = new Set(DESIGNER_COURSES[designerId]);
+      const grassCourses = new Set(GRASS_TYPE_COURSES[conditions.grass as keyof typeof GRASS_TYPE_COURSES]);
+      
+      // Select courses that appear in both sets
+      Array.from(designerCourses)
+        .filter(course => grassCourses.has(course))
+        .forEach(course => {
           toggleCourse(course);
-        }
+        });
+    }
+    // If only designer is selected
+    else if (designerId !== 'all') {
+      DESIGNER_COURSES[designerId]?.forEach(course => {
+        toggleCourse(course);
       });
     }
-
-    // Select new designer's courses
-    if (designerId !== 'all') {
-      DESIGNER_COURSES[designerId]?.forEach(course => {
-        if (!selectedCourses.includes(course)) {
-          toggleCourse(course);
-        }
+    // If only grass is selected
+    else if (conditions.grass !== 'all') {
+      GRASS_TYPE_COURSES[conditions.grass as keyof typeof GRASS_TYPE_COURSES]?.forEach(course => {
+        toggleCourse(course);
       });
     }
 
@@ -189,21 +201,33 @@ export default function CourseConditions() {
   };
 
   const handleGrassTypeChange = (grassTypeId: string) => {
-    // Clear previous grass type's courses if any
-    if (conditions.grass !== 'all') {
-      GRASS_TYPE_COURSES[conditions.grass as keyof typeof GRASS_TYPE_COURSES]?.forEach(course => {
-        if (selectedCourses.includes(course)) {
+    // Clear all previously selected courses
+    selectedCourses.forEach(course => {
+      toggleCourse(course);
+    });
+
+    // If both grass and designer are selected (not 'all'), find intersection
+    if (grassTypeId !== 'all' && conditions.course !== 'all') {
+      const designerCourses = new Set(DESIGNER_COURSES[conditions.course as keyof typeof DESIGNER_COURSES]);
+      const grassCourses = new Set(GRASS_TYPE_COURSES[grassTypeId]);
+      
+      // Select courses that appear in both sets
+      Array.from(grassCourses)
+        .filter(course => designerCourses.has(course))
+        .forEach(course => {
           toggleCourse(course);
-        }
+        });
+    }
+    // If only grass is selected
+    else if (grassTypeId !== 'all') {
+      GRASS_TYPE_COURSES[grassTypeId]?.forEach(course => {
+        toggleCourse(course);
       });
     }
-
-    // Select new grass type's courses
-    if (grassTypeId !== 'all') {
-      GRASS_TYPE_COURSES[grassTypeId]?.forEach(course => {
-        if (!selectedCourses.includes(course)) {
-          toggleCourse(course);
-        }
+    // If only designer is selected
+    else if (conditions.course !== 'all') {
+      DESIGNER_COURSES[conditions.course as keyof typeof DESIGNER_COURSES]?.forEach(course => {
+        toggleCourse(course);
       });
     }
 
