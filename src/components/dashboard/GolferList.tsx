@@ -26,7 +26,11 @@ export default function GolferList() {
               </div>
               <div className="ml-4">
                 <h3 className="text-lg font-semibold">{golfer.name}</h3>
-                <span className="text-sm text-gray-600">Rank: {golfer.rank}</span>
+                <span className="text-sm text-gray-600">
+                  {typeof golfer.rank === 'number' && !isNaN(golfer.rank) 
+                    ? `Rank: ${golfer.rank}` 
+                    : 'Rank: --'}
+                </span>
               </div>
             </div>
             <div className="space-y-2">

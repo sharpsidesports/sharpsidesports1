@@ -1,15 +1,33 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import CourseSelector from '../components/course-fit/CourseSelector';
 import CourseComparison from '../components/course-fit/CourseComparison';
 import PlayerFitList from '../components/course-fit/PlayerFitList';
-import { mockCourses } from '../data/mockData/mockCourses';
+import { useCourseFitStore } from '../store/useCourseFitStore';
 
 export default function CourseFitTool() {
-  const [selectedCourseId, setSelectedCourseId] = useState<string>('');
-  const [comparisonCourseId, setComparisonCourseId] = useState<string>('');
+  const {
+    selectedCourseId,
+    comparisonCourseId,
+    courseStats,
+    loading,
+    error,
+    setSelectedCourse,
+    setComparisonCourse,
+    fetchPlayerRounds,
+  } = useCourseFitStore();
 
-  const selectedCourse = mockCourses.find(c => c.id === selectedCourseId) || null;
-  const comparisonCourse = mockCourses.find(c => c.id === comparisonCourseId) || null;
+  // Fetch player rounds when courses are selected
+  useEffect(() => {
+    const coursesToFetch = [selectedCourseId, comparisonCourseId]
+      .filter(Boolean) as string[];
+    
+    if (coursesToFetch.length > 0) {
+      fetchPlayerRounds(coursesToFetch);
+    }
+  }, [selectedCourseId, comparisonCourseId, fetchPlayerRounds]);
+
+  const selectedCourse = selectedCourseId ? courseStats[selectedCourseId] : null;
+  const comparisonCourse = comparisonCourseId ? courseStats[comparisonCourseId] : null;
 
   return (
     <div className="space-y-6">
@@ -19,13 +37,20 @@ export default function CourseFitTool() {
           Compare course characteristics and analyze player performance across different venues
         </p>
 
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg">
+            {error}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1">
             <CourseSelector 
               selectedCourseId={selectedCourseId}
               comparisonCourseId={comparisonCourseId}
-              onSelectCourse={setSelectedCourseId}
-              onSelectComparison={setComparisonCourseId}
+              onSelectCourse={setSelectedCourse}
+              onSelectComparison={setComparisonCourse}
+              loading={loading}
             />
           </div>
 
@@ -33,13 +58,14 @@ export default function CourseFitTool() {
             <CourseComparison
               selectedCourse={selectedCourse}
               comparisonCourse={comparisonCourse}
+              loading={loading}
             />
           </div>
         </div>
 
         {selectedCourse && (
           <div className="mt-6">
-            <PlayerFitList course={selectedCourse} />
+            <PlayerFitList courseId={selectedCourseId!} loading={loading} />
           </div>
         )}
       </div>
