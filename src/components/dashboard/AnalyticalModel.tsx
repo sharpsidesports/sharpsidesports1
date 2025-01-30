@@ -125,7 +125,7 @@ export default function AnalyticalModel() {
         <div className="space-y-6">
           <MetricCategory
             title="Base Performance Metrics"
-            metrics={METRIC_CATEGORIES.GENERAL}
+            metrics={METRIC_CATEGORIES.COURSE}
             selectedMetrics={weights}
             onWeightChange={handleWeightChange}
             onRemoveMetric={handleRemoveMetric}

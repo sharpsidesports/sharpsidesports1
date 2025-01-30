@@ -75,7 +75,7 @@ export const METRIC_LABELS: Record<SharpsideMetric, string> = {
 };
 
 export const METRIC_CATEGORIES = {
-  GENERAL: ['Total', 'OTT', 'APP', 'ARG', 'T2G', 'gir', 'DrivingAcc', 'DrivingDist', 'P', 'BS'] as SharpsideMetric[],
+  COURSE: ['Total', 'OTT', 'APP', 'ARG', 'T2G', 'gir', 'DrivingAcc', 'DrivingDist', 'P', 'BS'] as SharpsideMetric[],
   PROXIMITY: ['Prox100_125', 'Prox125_150', 'Prox175_200', 'Prox200_225', 'Prox225Plus'] as SharpsideMetric[],
   SCORING: [
     'BogeyAvoid', 'TotalBirdies',

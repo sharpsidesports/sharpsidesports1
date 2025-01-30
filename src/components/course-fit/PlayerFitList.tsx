@@ -1,5 +1,6 @@
 import React from 'react';
 import { useCourseFitStore } from '../../store/useCourseFitStore';
+import { getPlayerName } from '../../data/playerMapping';
 
 interface PlayerFitListProps {
   courseId: string;
@@ -34,19 +35,14 @@ export default function PlayerFitList({ courseId, loading = false }: PlayerFitLi
           sgApp: acc.sgApp + (round.sg_app || 0),
           sgArg: acc.sgArg + (round.sg_arg || 0),
           sgPutt: acc.sgPutt + (round.sg_putt || 0),
-          gir: acc.gir + (round.gir || 0),
-          drivingAcc: acc.drivingAcc + (round.driving_acc || 0),
-          drivingDist: acc.drivingDist + (round.driving_dist || 0),
+
         }),
         {
           sgTotal: 0,
           sgOtt: 0,
           sgApp: 0,
           sgArg: 0,
-          sgPutt: 0,
-          gir: 0,
-          drivingAcc: 0,
-          drivingDist: 0,
+          sgPutt: 0
         }
       );
 
@@ -54,14 +50,13 @@ export default function PlayerFitList({ courseId, loading = false }: PlayerFitLi
       return {
         dg_id: player.dg_id,
         numRounds,
+        playerName: getPlayerName(player.dg_id),
         avgSgTotal: avgStats.sgTotal / numRounds,
         avgSgOtt: avgStats.sgOtt / numRounds,
         avgSgApp: avgStats.sgApp / numRounds,
         avgSgArg: avgStats.sgArg / numRounds,
         avgSgPutt: avgStats.sgPutt / numRounds,
-        avgGir: avgStats.gir / numRounds,
-        avgDrivingAcc: avgStats.drivingAcc / numRounds,
-        avgDrivingDist: avgStats.drivingDist / numRounds,
+
       };
     })
     .sort((a, b) => b.avgSgTotal - a.avgSgTotal)
@@ -92,7 +87,7 @@ export default function PlayerFitList({ courseId, loading = false }: PlayerFitLi
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Player ID
+                Player Name
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Rounds
@@ -112,22 +107,14 @@ export default function PlayerFitList({ courseId, loading = false }: PlayerFitLi
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 SG: PUTT
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                GIR %
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Driving Acc %
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Driving Dist
-              </th>
+
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {playerAverages.map((player, index) => (
               <tr key={player.dg_id}>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {player.dg_id}
+                  {player.playerName}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {player.numRounds}
@@ -147,15 +134,7 @@ export default function PlayerFitList({ courseId, loading = false }: PlayerFitLi
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {player.avgSgPutt.toFixed(2)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {player.avgGir.toFixed(1)}%
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {player.avgDrivingAcc.toFixed(1)}%
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {player.avgDrivingDist.toFixed(1)}
-                </td>
+
               </tr>
             ))}
           </tbody>

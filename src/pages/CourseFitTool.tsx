@@ -26,6 +26,14 @@ export default function CourseFitTool() {
     }
   }, [selectedCourseId, comparisonCourseId, fetchPlayerRounds]);
 
+  // Set default courses on mount
+  useEffect(() => {
+    if (!selectedCourseId && !comparisonCourseId) {
+      setSelectedCourse('Augusta National Golf Club');
+      setComparisonCourse('Castle Pines Golf Club');
+    }
+  }, []); // Run only on mount
+
   const selectedCourse = selectedCourseId ? courseStats[selectedCourseId] : null;
   const comparisonCourse = comparisonCourseId ? courseStats[comparisonCourseId] : null;
 
@@ -43,24 +51,20 @@ export default function CourseFitTool() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1">
-            <CourseSelector 
-              selectedCourseId={selectedCourseId}
-              comparisonCourseId={comparisonCourseId}
-              onSelectCourse={setSelectedCourse}
-              onSelectComparison={setComparisonCourse}
-              loading={loading}
-            />
-          </div>
+        <div className="space-y-6">
+          <CourseSelector 
+            selectedCourseId={selectedCourseId}
+            comparisonCourseId={comparisonCourseId}
+            onSelectCourse={setSelectedCourse}
+            onSelectComparison={setComparisonCourse}
+            loading={loading}
+          />
 
-          <div className="lg:col-span-2">
-            <CourseComparison
-              selectedCourse={selectedCourse}
-              comparisonCourse={comparisonCourse}
-              loading={loading}
-            />
-          </div>
+          <CourseComparison
+            selectedCourse={selectedCourse}
+            comparisonCourse={comparisonCourse}
+            loading={loading}
+          />
         </div>
 
         {selectedCourse && (

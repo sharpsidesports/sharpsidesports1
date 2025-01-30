@@ -74,7 +74,7 @@ export const calculateSimulatedScore = (
   randomFactor: number,
 ): number => {
   const strokesGainedScore = weights.reduce((score, metricWeight) => {
-    if (METRIC_CATEGORIES.GENERAL.includes(metricWeight.metric)) {
+    if (METRIC_CATEGORIES.COURSE.includes(metricWeight.metric)) {
       const sgValue = calculateMetricValue(golfer, metricWeight.metric);
       const weightedValue = -(sgValue * (metricWeight.weight / 100));
       return score + weightedValue;
