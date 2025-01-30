@@ -89,5 +89,19 @@ export const datagolfService = {
       console.error('Error fetching three ball odds:', error);
       throw error;
     }
+  },
+
+  async getMatchups() {
+    try {
+      const response = await apiClient.get(ENDPOINTS.MATCHUPS, {
+        tour: 'pga',
+        market: 'round_matchups',
+        odds_format: 'american'
+      });
+      return response;
+    } catch (error) {
+      console.error('Error fetching matchups:', error);
+      throw error;
+    }
   }
 };
