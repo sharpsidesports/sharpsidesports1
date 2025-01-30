@@ -12,6 +12,17 @@ import CourseSelection from '../components/dashboard/CourseSelection';
 import GolferList from '../components/dashboard/GolferList';
 import GolferCard from '../components/dashboard/GolferCard';
 
+const LoadingOverlay = () => (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-4 rounded-lg shadow-lg">
+      <div className="flex items-center space-x-2">
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-sharpside-green"></div>
+        <p className="text-gray-700">Loading...</p>
+      </div>
+    </div>
+  </div>
+);
+
 export default function Dashboard() {
   const { runSimulation, golfers, fetchGolferData, selectedCourses, loading, error } = useGolfStore();
 
@@ -21,7 +32,7 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      {loading && <p>Loading...</p>}
+      {loading && <LoadingOverlay />}
       {error && <p className="text-red-500">{error}</p>}
       <RoundRangeSelector />
       

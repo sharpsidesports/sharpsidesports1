@@ -4,12 +4,12 @@ import GolferProfileModal from './GolferProfileModal';
 import { Golfer } from '../../types/golf';
 import { SharpsideMetric } from '../../types/metrics';
 
-type SortField = 'name' | SharpsideMetric;
+type SortField = 'rank' | 'name' | SharpsideMetric;
 type SortDirection = 'asc' | 'desc';
 
 function PerformanceTable() {
   const { golfers, weights } = useGolfStore();
-  const [sortField, setSortField] = useState<SortField>('name');
+  const [sortField, setSortField] = useState<SortField>('rank');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   const [selectedGolfer, setSelectedGolfer] = useState<Golfer | null>(null);
 
@@ -31,6 +31,12 @@ function PerformanceTable() {
         return sortDirection === 'asc' 
           ? a.name.localeCompare(b.name)
           : b.name.localeCompare(a.name);
+      }
+
+      if (sortField === 'rank') {
+        return sortDirection === 'asc'
+          ? a.rank - b.rank
+          : b.rank - a.rank;
       }
 
       // Get values based on metric type
