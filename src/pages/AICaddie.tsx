@@ -1,10 +1,25 @@
-import React from 'react';
-import CourseDistanceBreakdown from '../components/ai-caddie/CourseDistanceBreakdown';
-import ProximityLeaderboard from '../components/ai-caddie/ProximityLeaderboard';
+import React, { useEffect } from 'react';
+import { useGolfStore } from '../store/useGolfStore';
+// import CourseDistanceBreakdown from '../components/ai-caddie/CourseDistanceBreakdown';
+// import ProximityLeaderboard from '../components/ai-caddie/ProximityLeaderboard';
 import StrokesGainedBreakdown from '../components/ai-caddie/StrokesGainedBreakdown';
 import StrokesGainedLeaderboard from '../components/ai-caddie/StrokesGainedLeaderboard';
 
 export default function AICaddie() {
+  const { fetchGolferData, loading } = useGolfStore();
+
+  useEffect(() => {
+    fetchGolferData();
+  }, [fetchGolferData]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-sharpside-green"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-lg shadow p-6">
@@ -12,7 +27,7 @@ export default function AICaddie() {
         <p className="text-gray-600 mb-6">Course-specific insights and player performance metrics</p>
         
         <div className="space-y-8">
-          <div>
+          {/* <div>
             <h2 className="text-xl font-semibold mb-4">Course Distance Analysis</h2>
             <CourseDistanceBreakdown />
           </div>
@@ -28,7 +43,7 @@ export default function AICaddie() {
           
           <div className="my-8">
             <hr className="border-gray-200" />
-          </div>
+          </div> */}
           
           <div>
             <h2 className="text-xl font-semibold mb-4">Strokes Gained Analysis</h2>

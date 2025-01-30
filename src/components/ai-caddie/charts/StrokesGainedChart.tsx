@@ -1,10 +1,10 @@
 import React from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useStrokesGainedData } from '../hooks/useStrokesGainedData';
 
 export default function StrokesGainedChart() {
   const { strokesGainedData } = useStrokesGainedData();
-  const COLORS = ['#059669', '#10b981', '#34d399', '#6ee7b7', '#a7f3d0', '#d1fae5', '#ecfdf5'];
+  const COLORS = ['#059669', '#10b981', '#34d399', '#6ee7b7', '#a7f3d0'];
 
   return (
     <div className="h-80">
@@ -21,10 +21,16 @@ export default function StrokesGainedChart() {
             dataKey="percentage"
           >
             {strokesGainedData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              <Cell 
+                key={`cell-${index}`} 
+                fill={COLORS[index % COLORS.length]}
+                strokeWidth={2}
+              />
             ))}
           </Pie>
-          <Tooltip />
+          <Tooltip 
+            formatter={(value: number) => `${(value * 100).toFixed(1)}%`}
+          />
           <Legend />
         </PieChart>
       </ResponsiveContainer>

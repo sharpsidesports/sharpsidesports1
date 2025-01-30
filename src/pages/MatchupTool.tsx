@@ -1,19 +1,89 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useGolfStore } from '../store/useGolfStore';
 import { Golfer } from '../types/golf';
+import { datagolfService } from '../services/api/datagolfService';
+
+interface Matchup {
+  p1_player_name: string;
+  p2_player_name: string;
+  odds: {
+    [bookmaker: string]: {
+      p1: string;
+      p2: string;
+    };
+  };
+}
 
 function MatchupTool() {
-  const { golfers } = useGolfStore();
-  const [golfer1, setGolfer1] = useState<Golfer | null>(null);
-  const [golfer2, setGolfer2] = useState<Golfer | null>(null);
+  const { golfers, runSimulation } = useGolfStore();
+  const [matchups, setMatchups] = useState<Matchup[]>([]);
+  const [selectedMatchup, setSelectedMatchup] = useState<Matchup | null>(null);
   const [odds, setOdds] = useState<string>('');
   const [betAmount, setBetAmount] = useState<string>('');
+  const [isYourPickP1, setIsYourPickP1] = useState<boolean>(true);
+  const [selectedGolfer1, setSelectedGolfer1] = useState<Golfer | null>(null);
+  const [selectedGolfer2, setSelectedGolfer2] = useState<Golfer | null>(null);
+
+  useEffect(() => {
+    const fetchMatchups = async () => {
+      try {
+        const response = await datagolfService.getMatchups();
+        setMatchups(response.match_list || []);
+      } catch (error) {
+        console.error('Error fetching matchups:', error);
+      }
+    };
+    fetchMatchups();
+  }, []);
+
+  const getFilteredMatchups = () => {
+    return matchups.filter(matchup => {
+      const p1InGolfers = golfers.some(g => g.name.toLowerCase() === matchup.p1_player_name.toLowerCase());
+      const p2InGolfers = golfers.some(g => g.name.toLowerCase() === matchup.p2_player_name.toLowerCase());
+      return p1InGolfers && p2InGolfers;
+    });
+  };
+
+  const filteredMatchups = getFilteredMatchups();
+
+  const handlePlayerSelect = (playerName: string) => {
+    const matchup = filteredMatchups.find(m => 
+      m.p1_player_name === playerName || m.p2_player_name === playerName
+    );
+    
+    if (matchup) {
+      setSelectedMatchup(matchup);
+      const isP1 = playerName === matchup.p1_player_name;
+      setIsYourPickP1(isP1);
+      
+      // Set odds based on selection (using bet365 odds if available, otherwise first available book)
+      if (matchup.odds.bet365) {
+        setOdds(isP1 ? matchup.odds.bet365.p1 : matchup.odds.bet365.p2);
+      } else {
+        const firstBook = Object.keys(matchup.odds)[0];
+        if (firstBook) {
+          setOdds(isP1 ? matchup.odds[firstBook].p1 : matchup.odds[firstBook].p2);
+        }
+      }
+
+      // Find golfers in our simulation data
+      const golfer1 = golfers.find(g => 
+        g.name.toLowerCase() === (isP1 ? matchup.p1_player_name : matchup.p2_player_name).toLowerCase()
+      );
+      const golfer2 = golfers.find(g => 
+        g.name.toLowerCase() === (isP1 ? matchup.p2_player_name : matchup.p1_player_name).toLowerCase()
+      );
+
+      setSelectedGolfer1(golfer1 || null);
+      setSelectedGolfer2(golfer2 || null);
+    }
+  };
 
   const calculateEdge = () => {
-    if (!golfer1 || !golfer2 || !odds) return null;
+    if (!selectedGolfer1 || !selectedGolfer2 || !odds) return null;
 
-    const projectedWinProb = golfer1.simulationStats.winPercentage /
-      (golfer1.simulationStats.winPercentage + golfer2.simulationStats.winPercentage);
+    const projectedWinProb = selectedGolfer1.simulationStats.winPercentage /
+      (selectedGolfer1.simulationStats.winPercentage + selectedGolfer2.simulationStats.winPercentage);
     
     const oddsDecimal = parseInt(odds);
     const impliedProb = oddsDecimal > 0 
@@ -42,7 +112,15 @@ function MatchupTool() {
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold mb-6">Matchup Analysis Tool</h2>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold">Matchup Analysis Tool</h2>
+          <button
+            onClick={runSimulation}
+            className="bg-sharpside-green text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+          >
+            Run Simulation
+          </button>
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-green-50 p-4 rounded-lg border-2 border-green-200">
@@ -56,14 +134,19 @@ function MatchupTool() {
             </div>
             <select
               className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-              value={golfer1?.id || ''}
-              onChange={(e) => setGolfer1(golfers.find(g => g.id === e.target.value) || null)}
+              value={selectedMatchup ? (isYourPickP1 ? selectedMatchup.p1_player_name : selectedMatchup.p2_player_name) : ''}
+              onChange={(e) => handlePlayerSelect(e.target.value)}
             >
               <option value="">Select Golfer</option>
-              {golfers.map((golfer) => (
-                <option key={golfer.id} value={golfer.id}>
-                  {golfer.name}
-                </option>
+              {filteredMatchups.map((matchup) => (
+                <>
+                  <option key={matchup.p1_player_name} value={matchup.p1_player_name}>
+                    {matchup.p1_player_name}
+                  </option>
+                  <option key={matchup.p2_player_name} value={matchup.p2_player_name}>
+                    {matchup.p2_player_name}
+                  </option>
+                </>
               ))}
             </select>
           </div>
@@ -79,14 +162,19 @@ function MatchupTool() {
             </div>
             <select
               className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-              value={golfer2?.id || ''}
-              onChange={(e) => setGolfer2(golfers.find(g => g.id === e.target.value) || null)}
+              value={selectedMatchup ? (isYourPickP1 ? selectedMatchup.p2_player_name : selectedMatchup.p1_player_name) : ''}
+              disabled
             >
               <option value="">Select Golfer</option>
-              {golfers.map((golfer) => (
-                <option key={golfer.id} value={golfer.id}>
-                  {golfer.name}
-                </option>
+              {filteredMatchups.map((matchup) => (
+                <>
+                  <option key={matchup.p1_player_name} value={matchup.p1_player_name}>
+                    {matchup.p1_player_name}
+                  </option>
+                  <option key={matchup.p2_player_name} value={matchup.p2_player_name}>
+                    {matchup.p2_player_name}
+                  </option>
+                </>
               ))}
             </select>
           </div>
@@ -100,7 +188,6 @@ function MatchupTool() {
               className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
               value={odds}
               onChange={(e) => setOdds(e.target.value)}
-              placeholder="Enter odds"
             />
           </div>
 
@@ -113,21 +200,20 @@ function MatchupTool() {
               className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
               value={betAmount}
               onChange={(e) => setBetAmount(e.target.value)}
-              placeholder="Enter bet amount"
             />
           </div>
         </div>
 
-        {golfer1 && golfer2 && odds && (
+        {selectedGolfer1 && selectedGolfer2 && odds && (
           <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-gray-50 p-4 rounded-lg">
               <h3 className="text-sm font-medium text-gray-500 mb-1">Projected Win Probability</h3>
               <p className="text-2xl font-bold text-gray-900">
-                {((golfer1.simulationStats.winPercentage /
-                  (golfer1.simulationStats.winPercentage + golfer2.simulationStats.winPercentage)) * 100).toFixed(1)}%
+                {((selectedGolfer1.simulationStats.winPercentage /
+                  (selectedGolfer1.simulationStats.winPercentage + selectedGolfer2.simulationStats.winPercentage)) * 100).toFixed(1)}%
               </p>
               <p className="text-sm text-gray-500 mt-1">
-                For {golfer1.name}
+                For {selectedGolfer1.name}
               </p>
             </div>
 
@@ -147,14 +233,14 @@ function MatchupTool() {
                 ${payout || '-'}
               </p>
               <p className="text-sm text-gray-500 mt-1">
-                If {golfer1?.name} wins
+                If {selectedGolfer1?.name} wins
               </p>
             </div>
           </div>
         )}
       </div>
 
-      {golfer1 && golfer2 && (
+      {selectedGolfer1 && selectedGolfer2 && (
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold mb-4">Head-to-Head Comparison</h3>
           <div className="overflow-x-auto">
@@ -165,10 +251,10 @@ function MatchupTool() {
                     Metric
                   </th>
                   <th className="px-6 py-3 bg-green-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {golfer1.name} (Your Pick)
+                    {selectedGolfer1.name} (Your Pick)
                   </th>
                   <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {golfer2.name}
+                    {selectedGolfer2.name}
                   </th>
                 </tr>
               </thead>
@@ -178,10 +264,10 @@ function MatchupTool() {
                     SG: Total
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 bg-green-50">
-                    {golfer1.strokesGainedTotal.toFixed(2)}
+                    {selectedGolfer1.strokesGainedTotal.toFixed(2)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                    {golfer2.strokesGainedTotal.toFixed(2)}
+                    {selectedGolfer2.strokesGainedTotal.toFixed(2)}
                   </td>
                 </tr>
                 <tr>
@@ -189,10 +275,10 @@ function MatchupTool() {
                     Win Probability
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 bg-green-50">
-                    {golfer1.simulationStats.winPercentage.toFixed(1)}%
+                    {selectedGolfer1.simulationStats.winPercentage.toFixed(1)}%
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                    {golfer2.simulationStats.winPercentage.toFixed(1)}%
+                    {selectedGolfer2.simulationStats.winPercentage.toFixed(1)}%
                   </td>
                 </tr>
                 <tr>
@@ -200,10 +286,10 @@ function MatchupTool() {
                     Average Finish
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 bg-green-50">
-                    {golfer1.simulationStats.averageFinish.toFixed(1)}
+                    {selectedGolfer1.simulationStats.averageFinish.toFixed(1)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                    {golfer2.simulationStats.averageFinish.toFixed(1)}
+                    {selectedGolfer2.simulationStats.averageFinish.toFixed(1)}%
                   </td>
                 </tr>
               </tbody>
