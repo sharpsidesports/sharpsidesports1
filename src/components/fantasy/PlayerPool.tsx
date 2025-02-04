@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Golfer } from '../../types/golf';
+import { FantasyPlayer } from '../../types/fantasy';
 
 interface PlayerPoolProps {
-  golfers: Golfer[];
+  golfers: FantasyPlayer[];
   selectedPlayers: string[];
   onSelectPlayer: (players: string[]) => void;
   lockedPlayers: string[];
@@ -17,31 +17,33 @@ export default function PlayerPool({
   excludedPlayers
 }: PlayerPoolProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortField, setSortField] = useState<'name' | 'rank' | 'salary'>('rank');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [sortField, setSortField] = useState<'name' | 'salary' | 'projectedPoints' | 'ownership'>('projectedPoints');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   const filteredGolfers = golfers
     .filter(golfer => 
       golfer.name.toLowerCase().includes(searchTerm.toLowerCase())
     )
     .sort((a, b) => {
+      const aValue = a[sortField] ?? 0;
+      const bValue = b[sortField] ?? 0;
       if (sortDirection === 'asc') {
-        return a[sortField] > b[sortField] ? 1 : -1;
+        return aValue > bValue ? 1 : -1;
       }
-      return a[sortField] < b[sortField] ? 1 : -1;
+      return aValue < bValue ? 1 : -1;
     });
 
-  const handleSort = (field: 'name' | 'rank' | 'salary') => {
+  const handleSort = (field: typeof sortField) => {
     if (field === sortField) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
       setSortField(field);
-      setSortDirection('asc');
+      setSortDirection('desc');
     }
   };
 
   return (
-    <div className="bg-gray-50 rounded-lg p-4">
+    <div className="bg-white rounded-lg shadow p-4">
       <h2 className="text-lg font-semibold mb-4">Player Pool</h2>
       
       <div className="mb-4">
@@ -50,7 +52,7 @@ export default function PlayerPool({
           placeholder="Search players..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500"
         />
       </div>
 
@@ -68,14 +70,6 @@ export default function PlayerPool({
               </th>
               <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 <button 
-                  onClick={() => handleSort('rank')}
-                  className="hover:text-gray-700"
-                >
-                  Rank
-                </button>
-              </th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <button 
                   onClick={() => handleSort('salary')}
                   className="hover:text-gray-700"
                 >
@@ -83,31 +77,52 @@ export default function PlayerPool({
                 </button>
               </th>
               <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
+                <button 
+                  onClick={() => handleSort('projectedPoints')}
+                  className="hover:text-gray-700"
+                >
+                  Proj. Pts
+                </button>
               </th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <button 
+                  onClick={() => handleSort('ownership')}
+                  className="hover:text-gray-700"
+                >
+                  Own%
+                </button>
+              </th>
+              <th className="px-4 py-2"></th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="divide-y divide-gray-200">
             {filteredGolfers.map((golfer) => (
               <tr 
                 key={golfer.id}
                 className={`
-                  hover:bg-gray-50 cursor-pointer
+                  ${selectedPlayers.includes(golfer.id) ? 'bg-indigo-50' : ''}
                   ${lockedPlayers.includes(golfer.id) ? 'bg-green-50' : ''}
                   ${excludedPlayers.includes(golfer.id) ? 'bg-red-50' : ''}
+                  hover:bg-gray-50
                 `}
               >
-                <td className="px-4 py-2 whitespace-nowrap">{golfer.name}</td>
-                <td className="px-4 py-2 whitespace-nowrap">{golfer.rank}</td>
-                <td className="px-4 py-2 whitespace-nowrap">${golfer.salary}</td>
-                <td className="px-4 py-2 whitespace-nowrap">
-                  {lockedPlayers.includes(golfer.id) ? (
-                    <span className="text-green-600">Locked</span>
-                  ) : excludedPlayers.includes(golfer.id) ? (
-                    <span className="text-red-600">Excluded</span>
-                  ) : (
-                    <span className="text-gray-400">Available</span>
-                  )}
+                <td className="px-4 py-2 text-sm">{golfer.name}</td>
+                <td className="px-4 py-2 text-sm">${(golfer.salary || 0).toLocaleString()}</td>
+                <td className="px-4 py-2 text-sm">{typeof golfer.projectedPoints === 'number' ? golfer.projectedPoints.toFixed(1) : 'N/A'}</td>
+                <td className="px-4 py-2 text-sm">
+                  {golfer.ownership ? `${(golfer.ownership * 100).toFixed(1)}%` : 'N/A'}
+                </td>
+                <td className="px-4 py-2 text-sm space-x-2">
+                  <button
+                    onClick={() => onSelectPlayer(
+                      selectedPlayers.includes(golfer.id)
+                        ? selectedPlayers.filter(id => id !== golfer.id)
+                        : [...selectedPlayers, golfer.id]
+                    )}
+                    className="text-indigo-600 hover:text-indigo-900"
+                  >
+                    {selectedPlayers.includes(golfer.id) ? 'Remove' : 'Add'}
+                  </button>
                 </td>
               </tr>
             ))}

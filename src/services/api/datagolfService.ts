@@ -1,6 +1,7 @@
 import { apiClient } from './apiClient';
 import { ENDPOINTS } from './endpoints';
 import { GolferData, GolferStats } from '../../types/golf';
+import { DFSEvent, DFSEventData, DFSSite, DFSTour } from '../../types/fantasy';
 
 export const datagolfService = {
   async getPlayerRankings() {
@@ -101,6 +102,40 @@ export const datagolfService = {
       return response;
     } catch (error) {
       console.error('Error fetching matchups:', error);
+      throw error;
+    }
+  },
+
+  async getDFSEventList() {
+    try {
+      const response = await apiClient.get<DFSEvent[]>(ENDPOINTS.DFS_EVENT_LIST, {
+        file_format: 'json'
+      });
+      return response;
+    } catch (error) {
+      console.error('Error fetching DFS event list:', error);
+      throw error;
+    }
+  },
+
+  async getDFSEventData(params: {
+    tour: DFSTour;
+    site?: DFSSite;
+    event_id: number | string;
+    year: number;
+  }) {
+    try {
+      const { tour, site = 'draftkings', event_id, year } = params;
+      const response = await apiClient.get<DFSEventData>(ENDPOINTS.DFS_POINTS, {
+        tour,
+        site,
+        event_id,
+        year,
+        file_format: 'json'
+      });
+      return response;
+    } catch (error) {
+      console.error('Error fetching DFS event data:', error);
       throw error;
     }
   }

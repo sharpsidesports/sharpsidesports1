@@ -15,14 +15,22 @@ interface Matchup {
 }
 
 function MatchupTool() {
-  const { golfers, runSimulation } = useGolfStore();
+  const { golfers, runSimulation, fetchGolferData } = useGolfStore();
   const [matchups, setMatchups] = useState<Matchup[]>([]);
   const [selectedMatchup, setSelectedMatchup] = useState<Matchup | null>(null);
   const [odds, setOdds] = useState<string>('');
-  const [betAmount, setBetAmount] = useState<string>('');
+  const [betAmount, setBetAmount] = useState<string>('100');
   const [isYourPickP1, setIsYourPickP1] = useState<boolean>(true);
   const [selectedGolfer1, setSelectedGolfer1] = useState<Golfer | null>(null);
   const [selectedGolfer2, setSelectedGolfer2] = useState<Golfer | null>(null);
+
+  useEffect(() => {
+    const init = async () => {
+      await fetchGolferData();
+      runSimulation();
+    };
+    init();
+  }, [fetchGolferData, runSimulation]);
 
   useEffect(() => {
     const fetchMatchups = async () => {
@@ -35,6 +43,12 @@ function MatchupTool() {
     };
     fetchMatchups();
   }, []);
+
+  useEffect(() => {
+    if (selectedGolfer1 && selectedGolfer2) {
+      runSimulation();
+    }
+  }, [selectedGolfer1, selectedGolfer2, runSimulation]);
 
   const getFilteredMatchups = () => {
     return matchups.filter(matchup => {
@@ -76,6 +90,7 @@ function MatchupTool() {
 
       setSelectedGolfer1(golfer1 || null);
       setSelectedGolfer2(golfer2 || null);
+      runSimulation();
     }
   };
 

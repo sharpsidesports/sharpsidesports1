@@ -4,9 +4,10 @@ import { createGolfersSlice, GolfersSlice } from './slices/golfersSlice';
 import { createSimulationSlice, SimulationSlice } from './slices/simulationSlice';
 import { createConditionsSlice, ConditionsSlice } from './slices/conditionsSlice';
 import { createAnalyticalModelsSlice, AnalyticalModelsState } from './slices/analyticalModelsSlice';
+import { createFantasySlice, FantasySlice } from './slices/fantasySlice';
 import { simulateGolfers } from '../utils/simulation/simulateGolfers';
 
-export type GolfStore = GolfersSlice & SimulationSlice & ConditionsSlice & AnalyticalModelsState & {
+export type GolfStore = GolfersSlice & SimulationSlice & ConditionsSlice & AnalyticalModelsState & FantasySlice & {
   runSimulation: () => void;
 };
 
@@ -17,6 +18,7 @@ export const useGolfStore = create<GolfStore>()(
       ...createSimulationSlice(set, get, ...a),
       ...createConditionsSlice(set, get, ...a),
       ...createAnalyticalModelsSlice(set, get, ...a),
+      ...createFantasySlice(set, get, ...a),
       runSimulation: () => {
         console.log('Simulating results in useGolfStore');
         const { golfers, weights } = get();
