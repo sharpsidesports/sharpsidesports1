@@ -51,17 +51,25 @@ export interface DFSPlayerData {
   total_pts: number;
 }
 
+export interface DFSProjection {
+  dg_id: number;
+  early_late_wave: number;
+  player_name: string;
+  proj_ownership: number;
+  proj_points_finish: number;
+  proj_points_scoring: number;
+  proj_points_total: number;
+  r1_teetime: string;
+  salary: number;
+  site_name_id: string;
+}
+
 export interface DFSEventData {
-  tour: string;
-  year: number;
-  season: number;
   event_name: string;
-  event_id: string;
-  event_completed: string;
-  ownerships_from: string;
-  site: string;
-  dfs_points: DFSPlayerData[];
+  last_updated: string;
+  note: string;
+  projections: DFSProjection[];
 }
 
 export type DFSSite = 'draftkings' | 'fanduel';
-export type DFSTour = 'pga' | 'euro';
+export type DFSTour = 'pga';

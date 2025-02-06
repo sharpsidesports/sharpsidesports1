@@ -13,13 +13,10 @@ import { generateOptimalLineups } from '../utils/optimizers/lineupOptimizer';
 export default function FantasyOptimizer() {
   const { 
     golfers, 
-    dfsEvents, 
-    currentEvent, 
     fantasyPlayers,
     loading,
-    fetchDFSEvents, 
-    setCurrentEvent, 
-    fetchDFSEventData,
+    dfsEventData,
+    fetchDFSProjections,
     updateFantasyPlayers,
     setGolfers 
   } = useGolfStore();
@@ -29,24 +26,25 @@ export default function FantasyOptimizer() {
     lineups: 1,
     maxExposure: 100,
     budget: 50000,
-    minSalary: 45000,
+    minSalary: 5000,
   });
   const [generatedLineups, setGeneratedLineups] = useState<FantasyLineup[]>([]);
   const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
   const [lockedPlayers, setLockedPlayers] = useState<string[]>([]);
   const [excludedPlayers, setExcludedPlayers] = useState<string[]>([]);
 
-  // Fetch DFS events on component mount
+  // Fetch DFS projections on component mount and when site changes
   useEffect(() => {
-    fetchDFSEvents();
-  }, [fetchDFSEvents]);
+    fetchDFSProjections(settings.site as DFSSite);
+  }, [fetchDFSProjections, settings.site]);
 
-  // Fetch event data when current event changes
+  // Update budget when site changes
   useEffect(() => {
-    if (currentEvent) {
-      fetchDFSEventData(currentEvent);
-    }
-  }, [currentEvent, fetchDFSEventData]);
+    setSettings(prev => ({
+      ...prev,
+      budget: prev.site === 'draftkings' ? 50000 : 80000
+    }));
+  }, [settings.site]);
 
   // Fetch top 10 players if golfers are not available
   useEffect(() => {
@@ -106,40 +104,27 @@ export default function FantasyOptimizer() {
     }
   };
 
-  if (!currentEvent || loading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <div className="text-gray-600">Loading DFS events...</div>
+          <div className="text-gray-600">Loading DFS projections...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto px-4 py-8">
       <div className="bg-white rounded-lg shadow p-6">
-        <h1 className="text-2xl font-bold mb-6">Fantasy Golf Optimizer</h1>
-        
-        {/* Event Selector */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700">Event</label>
-          <select 
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-            value={currentEvent.event_id}
-            onChange={(e) => {
-              const event = dfsEvents.find(ev => ev.event_id === parseInt(e.target.value));
-              if (event) setCurrentEvent(event);
-            }}
-          >
-            {dfsEvents.map(event => (
-              <option key={`${event.event_id}-${event.calendar_year}`} value={event.event_id}>
-                {event.event_name} ({new Date(event.date).toLocaleDateString()})
-              </option>
-            ))}
-          </select>
-        </div>
+        <h1 className="text-2xl font-bold mb-2">Fantasy Golf Optimizer</h1>
+        {dfsEventData && (
+          <div className="text-sm text-gray-600 mb-6">
+            <div>Event: {dfsEventData.event_name}</div>
+            <div>Last Updated: {new Date(dfsEventData.last_updated).toLocaleString()}</div>
+            {dfsEventData.note && <div className="text-green-600">{dfsEventData.note}</div>}
+          </div>
+        )}
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>

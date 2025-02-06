@@ -28,7 +28,7 @@ export const transformGolferData = async (
     // Sort rankings by datagolf_rank and take only top 10
     const top10Rankings = rankings
       .sort((a, b) => (a.datagolf_rank || 0) - (b.datagolf_rank || 0))
-      .slice(0, 50);
+      .slice(0, 20);
 
     // Get the dg_ids for the top 10 players
     const dgIds = top10Rankings.map(p => {
