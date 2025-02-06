@@ -56,6 +56,25 @@ export default function OptimizationSettings({ settings, onSettingsChange }: Opt
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
+            Salary Cap
+          </label>
+          <input
+            type="number"
+            min="10000"
+            max="100000"
+            step="1000"
+            value={settings.budget}
+            onChange={(e) => onSettingsChange({ 
+              ...settings, 
+              budget: parseInt(e.target.value),
+              minSalary: Math.min(parseInt(e.target.value), settings.minSalary) 
+            })}
+            className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             Minimum Salary Used
           </label>
           <input

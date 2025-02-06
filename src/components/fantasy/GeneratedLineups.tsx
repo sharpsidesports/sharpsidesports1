@@ -7,9 +7,9 @@ interface GeneratedLineupsProps {
 }
 
 export default function GeneratedLineups({ lineups }: GeneratedLineupsProps) {
-  const { golfers } = useGolfStore();
+  const { fantasyPlayers } = useGolfStore();
 
-  const getGolferById = (id: string) => golfers.find(g => g.id === id);
+  const getPlayerById = (id: string) => fantasyPlayers.find(p => p.id === id);
 
   return (
     <div className="bg-white rounded-lg shadow">
@@ -28,7 +28,7 @@ export default function GeneratedLineups({ lineups }: GeneratedLineupsProps) {
                 <div className="flex justify-between items-center">
                   <h4 className="text-sm font-medium text-gray-900">Lineup {index + 1}</h4>
                   <div className="text-sm text-gray-500">
-                    <span className="mr-4">Salary: ${lineup.totalSalary}</span>
+                    <span className="mr-4">Salary: ${lineup.totalSalary.toLocaleString()}</span>
                     <span>Projected: {lineup.projectedPoints.toFixed(1)}</span>
                   </div>
                 </div>
@@ -36,17 +36,15 @@ export default function GeneratedLineups({ lineups }: GeneratedLineupsProps) {
               <div className="px-4 py-4 sm:px-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {lineup.players.map(playerId => {
-                    const golfer = getGolferById(playerId);
-                    return golfer ? (
+                    const player = getPlayerById(playerId);
+                    return player ? (
                       <div key={playerId} className="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg">
-                        <img
-                          src={golfer.imageUrl}
-                          alt={golfer.name}
-                          className="h-10 w-10 rounded-full object-cover"
-                        />
+                        <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
+                          {player.name.charAt(0)}
+                        </div>
                         <div>
-                          <div className="text-sm font-medium text-gray-900">{golfer.name}</div>
-                          <div className="text-sm text-gray-500">${golfer.salary}</div>
+                          <div className="text-sm font-medium text-gray-900">{player.name}</div>
+                          <div className="text-sm text-gray-500">${player.salary.toLocaleString()}</div>
                         </div>
                       </div>
                     ) : null;

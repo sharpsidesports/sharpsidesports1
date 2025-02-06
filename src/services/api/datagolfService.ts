@@ -95,9 +95,7 @@ export const datagolfService = {
   async getMatchups() {
     try {
       const response = await apiClient.get(ENDPOINTS.MATCHUPS, {
-        tour: 'pga',
-        market: 'round_matchups',
-        odds_format: 'american'
+        tour: 'pga'
       });
       return response;
     } catch (error) {
@@ -106,36 +104,20 @@ export const datagolfService = {
     }
   },
 
-  async getDFSEventList() {
-    try {
-      const response = await apiClient.get<DFSEvent[]>(ENDPOINTS.DFS_EVENT_LIST, {
-        file_format: 'json'
-      });
-      return response;
-    } catch (error) {
-      console.error('Error fetching DFS event list:', error);
-      throw error;
-    }
-  },
-
-  async getDFSEventData(params: {
+  async getDFSProjections(params: {
     tour: DFSTour;
-    site?: DFSSite;
-    event_id: number | string;
-    year: number;
-  }) {
+    site: DFSSite;
+  }): Promise<DFSEventData> {
     try {
-      const { tour, site = 'draftkings', event_id, year } = params;
-      const response = await apiClient.get<DFSEventData>(ENDPOINTS.DFS_POINTS, {
-        tour,
-        site,
-        event_id,
-        year,
+      const response = await apiClient.get(ENDPOINTS.FANTASY_PROJECTIONS, {
+        tour: params.tour,
+        site: params.site,
+        slate: 'main',
         file_format: 'json'
       });
       return response;
     } catch (error) {
-      console.error('Error fetching DFS event data:', error);
+      console.error('Error fetching DFS projections:', error);
       throw error;
     }
   }

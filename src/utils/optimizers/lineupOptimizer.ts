@@ -5,9 +5,11 @@ interface LineupConstraints {
   playerCount: number;
 }
 
-const CONSTRAINTS: Record<string, LineupConstraints> = {
+const CONSTRAINTS: Record<string, Omit<LineupConstraints, 'totalSalary'>> = {
   draftkings: {
-    totalSalary: 50000,
+    playerCount: 6
+  },
+  fanduel: {
     playerCount: 6
   }
 };
@@ -18,10 +20,15 @@ export function generateOptimalLineups(
   lockedPlayers: string[],
   excludedPlayers: string[]
 ): FantasyLineup[] {
-  const constraints = CONSTRAINTS[settings.site];
-  if (!constraints) {
+  const siteConstraints = CONSTRAINTS[settings.site];
+  if (!siteConstraints) {
     throw new Error(`Unsupported site: ${settings.site}`);
   }
+
+  const constraints: LineupConstraints = {
+    ...siteConstraints,
+    totalSalary: settings.budget
+  };
 
   // Filter out excluded players and get available players
   const availablePlayers = players.filter(p => !excludedPlayers.includes(p.id));
@@ -85,6 +92,10 @@ function generateSingleLineup(
 
     // Check if adding this player would exceed salary cap
     if (player.salary > remainingSalary) continue;
+
+    // Check if adding this player would make it impossible to fill remaining spots
+    const minSalaryForRemaining = (remainingSpots - 1) * Math.min(...sortedPlayers.map(p => p.salary));
+    if (player.salary + minSalaryForRemaining > remainingSalary) continue;
 
     // Check if player is already heavily used in other lineups (exposure limit)
     const playerExposure = existingLineups.filter(l => 

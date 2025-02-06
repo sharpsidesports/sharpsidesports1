@@ -6,6 +6,5 @@ export const ENDPOINTS = {
   EVENT_LIST: 'historical-raw-data/event-list',
   BETTING_ODDS: 'betting-tools/outrights',
   MATCHUPS: 'betting-tools/matchups',
-  DFS_EVENT_LIST: 'historical-dfs-data/event-list',
-  DFS_POINTS: 'historical-dfs-data/points',
+  FANTASY_PROJECTIONS: 'preds/fantasy-projection-defaults'
 } as const;
