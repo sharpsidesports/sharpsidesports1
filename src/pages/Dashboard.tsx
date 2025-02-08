@@ -36,12 +36,16 @@ export default function Dashboard() {
       {error && <p className="text-red-500">{error}</p>}
       <RoundRangeSelector />
       
-      <div className="flex gap-4 items-stretch">
-        <CourseDifficultyFilters />
-        <CourseSelection />
+      <div className="flex gap-4">
+        <div className="space-y-4">
+          <CourseDifficultyFilters />
+          <CourseConditions />
+        </div>
+        <div className="flex-1 flex">
+          <CourseSelection />
+        </div>
       </div>
 
-      <CourseConditions />
       <AnalyticalModel />
 
       <div className="flex justify-center mb-6">

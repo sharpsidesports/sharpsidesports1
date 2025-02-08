@@ -1,8 +1,6 @@
 export interface CourseConditions {
   grass: 'all' | 'bermuda' | 'bentgrass' | 'other';
-  wind: 'all' | 'calm' | 'breezy' | 'windy';
   course: 'all' | 'pete-dye' | 'donald-ross' | 'other';
-  speed: 'all' | 'slow' | 'moderate' | 'fast';
   driving: 'easy' | 'medium' | 'hard';
   approach: 'easy' | 'medium' | 'hard';
   scoring: 'easy' | 'medium' | 'hard';
@@ -21,6 +19,11 @@ export interface Golfer {
   gir: number;
   drivingAccuracy: number;
   drivingDistance: number;
+  odds?: {
+    fanduel?: number;
+    impliedProbability?: number;
+    lastUpdated?: string;
+  };
   proximityMetrics: {
     '100-125': number;
     '125-150': number;
@@ -45,7 +48,6 @@ export interface Golfer {
     birdieAverage: number;
     birdieOrBetterPercentage: number;
     // consecutiveHolesBelowPar: number;
-    odds: number;
     simulatedRank: number;
   };
   simulationStats: {

@@ -15,15 +15,13 @@ interface ConditionDropdownProps {
 
 function ConditionDropdown({ title, options, selectedId, onSelect }: ConditionDropdownProps) {
   return (
-    <div className="bg-white rounded-lg shadow p-4">
-      <label className="block text-sm font-semibold mb-2" htmlFor={title}>
-        {title}
-      </label>
+    <div className="mb-2 last:mb-0">
+      <div className="text-xs font-medium text-gray-700 mb-1">{title}</div>
       <select
         id={title}
         value={selectedId}
         onChange={(e) => onSelect(e.target.value)}
-        className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-sm"
+        className="w-full rounded-md border border-gray-300 bg-white py-1.5 px-2 text-xs font-medium text-gray-700 shadow-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
       >
         {options.map((option) => (
           <option key={option.id} value={option.id}>
@@ -43,13 +41,6 @@ const GRASS_OPTIONS = [
   { id: 'paspalum', label: 'Paspalum' }
 ];
 
-const WIND_OPTIONS = [
-  { id: 'all', label: 'All Wind' },
-  { id: 'calm', label: 'Calm' },
-  { id: 'breezy', label: 'Breezy' },
-  { id: 'windy', label: 'Wind' }
-];
-
 const DESIGNER_OPTIONS = [
   { id: 'all', label: 'All Designers' },
   { id: 'pete-dye', label: 'Pete Dye' },
@@ -57,13 +48,6 @@ const DESIGNER_OPTIONS = [
   { id: 'donald-ross', label: 'Donald Ross' },
   { id: 'tom-weiskopf', label: 'Tom Weiskopf' },
   { id: 'arnold-palmer', label: 'Arnold Palmer' }
-];
-
-const SPEED_OPTIONS = [
-  { id: 'all', label: 'All Speeds' },
-  { id: 'slow', label: 'Slow' },
-  { id: 'moderate', label: 'Moderate' },
-  { id: 'fast', label: 'Fast' }
 ];
 
 // Course mappings
@@ -235,31 +219,22 @@ export default function CourseConditions() {
   };
 
   return (
-    <div className="grid grid-cols-4 gap-4 mb-6">
-      <ConditionDropdown
-        title="Course Grass"
-        options={GRASS_OPTIONS}
-        selectedId={conditions.grass}
-        onSelect={handleGrassTypeChange}
-      />
-      <ConditionDropdown
-        title="Wind Conditions"
-        options={WIND_OPTIONS}
-        selectedId={conditions.wind}
-        onSelect={(id) => updateConditions({ ...conditions, wind: id })}
-      />
-      <ConditionDropdown
-        title="Course Designer"
-        options={DESIGNER_OPTIONS}
-        selectedId={conditions.course}
-        onSelect={handleDesignerChange}
-      />
-      <ConditionDropdown
-        title="Green Speed"
-        options={SPEED_OPTIONS}
-        selectedId={conditions.speed}
-        onSelect={(id) => updateConditions({ ...conditions, speed: id })}
-      />
+    <div className="bg-white rounded-lg shadow p-4 w-[320px]">
+      <h3 className="text-sm font-medium text-gray-700 mb-3">Course Conditions</h3>
+      <div className="space-y-3">
+        <ConditionDropdown
+          title="Course Grass"
+          options={GRASS_OPTIONS}
+          selectedId={conditions.grass}
+          onSelect={handleGrassTypeChange}
+        />
+        <ConditionDropdown
+          title="Course Designer"
+          options={DESIGNER_OPTIONS}
+          selectedId={conditions.course}
+          onSelect={handleDesignerChange}
+        />
+      </div>
     </div>
   );
 }

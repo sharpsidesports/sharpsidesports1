@@ -23,6 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 # Data files
-# *.json
-# *.csv
+*.json
+*.csv
 .vercel

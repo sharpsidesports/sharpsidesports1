@@ -37,6 +37,12 @@ export const createGolfersSlice: StateCreator<GolfersSlice> = (set) => ({
         datagolfService.getApproachStats(),
       ]);
 
+      console.log('API Responses:', {
+        rankings: rankingsResponse?.rankings?.length || 0,
+        odds: oddsResponse?.odds?.length || 0,
+        approach: approachResponse?.data?.length || 0
+      });
+
       if (!rankingsResponse?.rankings || !Array.isArray(rankingsResponse.rankings)) {
         throw new Error('Invalid rankings data received');
       }
@@ -55,14 +61,12 @@ export const createGolfersSlice: StateCreator<GolfersSlice> = (set) => ({
       if (!Array.isArray(enrichedData)) {
         throw new Error('Transformed data is not an array');
       }
+      console.log('Fetched and transformed data:', enrichedData);
 
       set({ golfers: enrichedData, error: null });
     } catch (err) {
-      console.error('Failed to fetch or transform data:', err);
-      set({ 
-        golfers: [], 
-        error: err instanceof Error ? err.message : 'Failed to fetch live data'
-      });
+      console.error('Error in fetchGolferData:', err);
+      set({ error: err instanceof Error ? err.message : 'Failed to fetch golfer data', loading: false });
     } finally {
       set({ loading: false });
     }

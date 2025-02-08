@@ -89,7 +89,7 @@ export default function CourseSelection() {
   const { selectedCourses, toggleCourse } = useGolfStore();
 
   return (
-    <div className="bg-white rounded-lg shadow p-4 flex-1">
+    <div className="bg-white rounded-lg shadow p-4 flex-1 flex flex-col h-[420px]">
       <div className="flex justify-between items-center mb-3">
         <h3 className="text-sm font-medium text-gray-700">Course Filter</h3>
         <div className="flex items-center gap-2 text-xs">
@@ -111,7 +111,7 @@ export default function CourseSelection() {
         </div>
       </div>
 
-      <div className="h-[200px] overflow-y-auto">
+      <div className="flex-1 overflow-y-auto min-h-0">
         <div className="grid grid-cols-2 gap-2">
           {COURSE_OPTIONS.map((course) => (
             <button
@@ -127,7 +127,6 @@ export default function CourseSelection() {
               `}
             >
               <span className="truncate">{course.name}</span>
-              <span className="text-xs opacity-60 ml-1">{course.tournament}</span>
             </button>
           ))}
         </div>
