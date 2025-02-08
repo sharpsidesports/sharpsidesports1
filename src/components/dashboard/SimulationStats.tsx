@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useGolfStore } from '../../store/useGolfStore';
 import { Golfer } from '../../types/golf';
 import GolferProfileModal from './GolferProfileModal';
+import { formatAmericanOdds } from '../../utils/calculations/oddsCalculator';
 
 export default function SimulationStats() {
   const { golfers } = useGolfStore();
@@ -11,12 +12,15 @@ export default function SimulationStats() {
   );
 
   const getWinPercentageColor = (winPercentage: number, impliedProbability: number) => {
+    // If there's no implied probability, use the default text color
+    if (!impliedProbability) return 'text-gray-500';
+    
     if (winPercentage > impliedProbability) {
       return 'text-green-600';
     } else if (winPercentage < impliedProbability) {
       return 'text-red-600';
     }
-    return 'text-gray-600';
+    return 'text-gray-500';
   };
 
   return (
@@ -75,10 +79,13 @@ export default function SimulationStats() {
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {golfer.odds > 0 ? '+' : ''}{golfer.odds}
+                  {golfer.odds?.fanduel ? formatAmericanOdds(golfer.odds.fanduel) : 'N/A'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {golfer.simulationStats.impliedProbability.toFixed(1)}%
+                  {golfer.odds?.impliedProbability ? 
+                    `${(golfer.odds.impliedProbability * 100).toFixed(1)}%` : 
+                    'N/A'
+                  }
                 </td>
               </tr>
             ))}

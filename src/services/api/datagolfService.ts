@@ -3,6 +3,20 @@ import { ENDPOINTS } from './endpoints';
 import { GolferData, GolferStats } from '../../types/golf';
 import { DFSEvent, DFSEventData, DFSSite, DFSTour } from '../../types/fantasy';
 
+interface BettingOddsResponse {
+  event_name: string;
+  last_updated: string;
+  market: string;
+  odds: Array<{
+    player_name: string;
+    fanduel?: number;
+    datagolf?: {
+      baseline?: number;
+      baseline_history_fit?: number;
+    };
+  }>;
+}
+
 export const datagolfService = {
   async getPlayerRankings() {
     try {
@@ -28,11 +42,28 @@ export const datagolfService = {
 
   async getBettingOdds() {
     try {
-      const response = await apiClient.get(ENDPOINTS.BETTING_ODDS, {
+      const response = await apiClient.get<{
+        event_name: string;
+        last_updated: string;
+        market: string;
+        odds: Array<{
+          player_name: string;
+          dg_id: string;
+          fanduel?: number;
+        }>;
+      }>(ENDPOINTS.BETTING_ODDS, {
         tour: 'pga',
         market: 'win',
         odds_format: 'american'
       });
+
+      console.log('Betting odds response:', {
+        eventName: response?.event_name,
+        lastUpdated: response?.last_updated,
+        oddsCount: response?.odds?.length || 0,
+        sampleOdds: response?.odds?.[0]
+      });
+
       return response;
     } catch (error) {
       console.error('Error fetching betting odds:', error);

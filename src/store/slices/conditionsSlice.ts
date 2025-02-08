@@ -11,9 +11,7 @@ export interface ConditionsSlice {
 export const createConditionsSlice: StateCreator<ConditionsSlice> = (set) => ({
   conditions: {
     grass: 'all',
-    wind: 'all',
     course: 'all',
-    speed: 'all',
     driving: 'medium',
     approach: 'medium',
     scoring: 'medium'

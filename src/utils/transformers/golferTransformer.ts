@@ -158,6 +158,11 @@ export const transformGolferData = async (
         gir: calculateAverageFromRounds('gir'),
         drivingAccuracy: calculateAverageFromRounds('driving_acc'),
         drivingDistance: calculateAverageFromRounds('driving_dist'),
+        odds: playerOdds.fanduel ? {
+          fanduel: playerOdds.fanduel,
+          impliedProbability: calculateImpliedProbability(playerOdds.fanduel),
+          lastUpdated: new Date().toISOString()
+        } : undefined,
         proximityMetrics: {
           '100-125': approachData?.['100_150_fw_proximity_per_shot'] || 0,
           '125-150': approachData?.['100_150_fw_proximity_per_shot'] || 0,
@@ -182,13 +187,12 @@ export const transformGolferData = async (
           birdieAverage: calculateAverageFromStats('156'),
           birdieOrBetterPercentage: calculateAverageFromStats('352'),
           // consecutiveHolesBelowPar: calculateAverageFromStats('452'),
-          odds: playerOdds.odds_outright || 0,
           simulatedRank: 0
         },
         simulationStats: {
           averageFinish: 0,
           winPercentage: 0,
-          impliedProbability: calculateImpliedProbability(playerOdds.odds_outright || 0)
+          impliedProbability: playerOdds.fanduel ? calculateImpliedProbability(playerOdds.fanduel) : 0
         },
         recentRounds: roundsByCourse
       };

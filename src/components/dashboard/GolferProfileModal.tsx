@@ -1,5 +1,6 @@
 import React from 'react';
 import { Golfer } from '../../types/golf';
+import { formatAmericanOdds } from '../../utils/calculations/oddsCalculator';
 import {
   LineChart,
   Line,
@@ -151,7 +152,13 @@ function GolferProfileModal({ golfer, onClose }: GolferProfileModalProps) {
               <div className="bg-white p-4 rounded-lg">
                 <div className="text-sm text-gray-600">FanDuel Odds</div>
                 <div className="text-2xl font-bold">
-                  {golfer.odds > 0 ? '+' : ''}{golfer.odds}
+                  {golfer.odds?.fanduel ? formatAmericanOdds(golfer.odds.fanduel) : 'N/A'}
+                </div>
+                <div className="text-sm text-gray-500">
+                  Implied: {golfer.odds?.impliedProbability ? 
+                    `${(golfer.odds.impliedProbability * 100).toFixed(1)}%` : 
+                    'N/A'
+                  }
                 </div>
               </div>
             </div>
