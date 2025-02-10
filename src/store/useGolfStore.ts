@@ -21,8 +21,8 @@ export const useGolfStore = create<GolfStore>()(
       ...createFantasySlice(set, get, ...a),
       runSimulation: () => {
         console.log('Simulating results in useGolfStore');
-        const { golfers, weights } = get();
-        const simulatedGolfers = simulateGolfers(golfers, weights);
+        const { golfers, weights, roundRange } = get();
+        const simulatedGolfers = simulateGolfers(golfers, weights, roundRange);
         set({ golfers: simulatedGolfers });
       },
     }),

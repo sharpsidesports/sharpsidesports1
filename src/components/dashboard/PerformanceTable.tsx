@@ -3,8 +3,9 @@ import { useGolfStore } from '../../store/useGolfStore';
 import GolferProfileModal from './GolferProfileModal';
 import { Golfer } from '../../types/golf';
 import { SharpsideMetric } from '../../types/metrics';
+import { formatAmericanOdds } from '../../utils/calculations/oddsCalculator';
 
-type SortField = 'rank' | 'name' | SharpsideMetric;
+type SortField = 'rank' | 'name' | 'averageFinish' | 'winPercentage' | 'fanduelOdds' | 'impliedProbability' | SharpsideMetric;
 type SortDirection = 'asc' | 'desc';
 
 function PerformanceTable() {
@@ -37,6 +38,34 @@ function PerformanceTable() {
         return sortDirection === 'asc'
           ? a.rank - b.rank
           : b.rank - a.rank;
+      }
+
+      if (sortField === 'averageFinish') {
+        return sortDirection === 'asc'
+          ? a.simulationStats.averageFinish - b.simulationStats.averageFinish
+          : b.simulationStats.averageFinish - a.simulationStats.averageFinish;
+      }
+
+      if (sortField === 'winPercentage') {
+        return sortDirection === 'asc'
+          ? a.simulationStats.winPercentage - b.simulationStats.winPercentage
+          : b.simulationStats.winPercentage - a.simulationStats.winPercentage;
+      }
+
+      if (sortField === 'fanduelOdds') {
+        const aOdds = a.odds?.fanduel || 0;
+        const bOdds = b.odds?.fanduel || 0;
+        return sortDirection === 'asc'
+          ? aOdds - bOdds
+          : bOdds - aOdds;
+      }
+
+      if (sortField === 'impliedProbability') {
+        const aProb = a.odds?.impliedProbability || 0;
+        const bProb = b.odds?.impliedProbability || 0;
+        return sortDirection === 'asc'
+          ? aProb - bProb
+          : bProb - aProb;
       }
 
       // Get values based on metric type
@@ -275,8 +304,21 @@ function PerformanceTable() {
     }
   };
 
+  const getWinPercentageColor = (winPercentage: number, impliedProbability: number) => {
+    // If there's no implied probability, use the default text color
+    if (!impliedProbability) return 'text-gray-500';
+    
+    // Compare raw values directly, just like in SimulationStats
+    if (winPercentage > impliedProbability) {
+      return 'text-green-600';
+    } else if (winPercentage < impliedProbability) {
+      return 'text-red-600';
+    }
+    return 'text-gray-500';
+  };
+
   return (
-    <>
+    <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-white">
           <tr>
@@ -287,10 +329,37 @@ function PerformanceTable() {
             >
               Golfer
             </th>
+            <th 
+              scope="col" 
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+              onClick={() => handleSort('averageFinish')}
+            >
+              Average Finish
+            </th>
+            <th 
+              scope="col" 
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+              onClick={() => handleSort('winPercentage')}
+            >
+              Win %
+            </th>
+            <th 
+              scope="col" 
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+              onClick={() => handleSort('fanduelOdds')}
+            >
+              FanDuel Odds
+            </th>
+            <th 
+              scope="col" 
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+              onClick={() => handleSort('impliedProbability')}
+            >
+              Implied Win %
+            </th>
             {weights.map(({ metric }) => (
               <th
                 key={metric}
-                scope="col"
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                 onClick={() => handleSort(metric)}
               >
@@ -301,29 +370,44 @@ function PerformanceTable() {
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {getSortedGolfers().map((golfer) => (
-            <tr
-              key={golfer.id}
+            <tr 
+              key={golfer.id} 
               className="hover:bg-gray-50 cursor-pointer"
               onClick={() => setSelectedGolfer(golfer)}
             >
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center">
                   <div className="flex-shrink-0 h-10 w-10">
-                    <img
-                      className="h-10 w-10 rounded-full"
-                      src={golfer.imageUrl}
-                      alt={golfer.name}
+                    <img 
+                      className="h-10 w-10 rounded-full object-cover" 
+                      src={golfer.imageUrl} 
+                      alt={golfer.name} 
                     />
                   </div>
                   <div className="ml-4">
-                    <div className="text-sm font-medium text-gray-900">
-                      {golfer.name}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      Rank: {golfer.rank}
-                    </div>
+                    <div className="font-medium text-gray-900">{golfer.name}</div>
                   </div>
                 </div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {golfer.simulationStats.averageFinish.toFixed(2)}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <span className={`text-sm font-medium ${getWinPercentageColor(
+                  golfer.simulationStats.winPercentage,
+                  golfer.odds?.impliedProbability || 0
+                )}`}>
+                  {golfer.simulationStats.winPercentage.toFixed(1)}%
+                </span>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {golfer.odds?.fanduel ? formatAmericanOdds(golfer.odds.fanduel) : 'N/A'}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {golfer.odds?.impliedProbability ? 
+                  `${(golfer.odds.impliedProbability * 100).toFixed(1)}%` : 
+                  'N/A'
+                }
               </td>
               {weights.map(({ metric }) => (
                 <td key={metric} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -341,7 +425,7 @@ function PerformanceTable() {
           onClose={() => setSelectedGolfer(null)}
         />
       )}
-    </>
+    </div>
   );
 }
 
