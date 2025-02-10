@@ -57,10 +57,10 @@ export default function Dashboard() {
         </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
+      {/* <div className="bg-white rounded-lg shadow p-6 mb-6">
         <h2 className="text-xl font-semibold mb-4">Simulation Statistics</h2>
         <SimulationStats />
-      </div>
+      </div> */}
 
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <h2 className="text-xl font-semibold mb-4">Model Analysis</h2>
