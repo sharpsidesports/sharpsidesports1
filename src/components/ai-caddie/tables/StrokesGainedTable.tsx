@@ -35,7 +35,7 @@ export default function StrokesGainedTable() {
   };
 
   const sortedGolfers = [...golfers]
-    .sort((a, b) => b.strokesGainedTotal - a.strokesGainedTotal)
+    .sort((a, b) => calculateStrokesGainedScore(b) - calculateStrokesGainedScore(a))
     .slice(0, 10);
 
   return (
@@ -50,10 +50,10 @@ export default function StrokesGainedTable() {
               Player
             </th>
             <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Total
+              Driving Distance
             </th>
             <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Off Tee
+              Driving Accuracy
             </th>
             <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
               Approach
@@ -64,12 +64,6 @@ export default function StrokesGainedTable() {
             <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
               Putting
             </th>
-            <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Driving Accuracy
-            </th>
-            <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Driving Distance
-            </th> 
             <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
               Score
             </th>
@@ -98,10 +92,10 @@ export default function StrokesGainedTable() {
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                {golfer.strokesGainedTotal.toFixed(2)}
+                {golfer.drivingDistance.toFixed(1)}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                {golfer.strokesGainedTee.toFixed(2)}
+                {(golfer.drivingAccuracy * 100).toFixed(1)}%
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
                 {golfer.strokesGainedApproach.toFixed(2)}
@@ -113,15 +107,6 @@ export default function StrokesGainedTable() {
                 {golfer.strokesGainedPutting.toFixed(2)}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                {golfer.gir.toFixed(2)}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                {golfer.drivingAccuracy.toFixed(2)}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                {golfer.drivingDistance.toFixed(2)}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-green-600">
                 {calculateStrokesGainedScore(golfer).toFixed(2)}
               </td>
             </tr>
