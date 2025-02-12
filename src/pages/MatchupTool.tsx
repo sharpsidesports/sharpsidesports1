@@ -346,7 +346,18 @@ function MatchupTool() {
                     {selectedGolfer1.simulationStats.averageFinish.toFixed(1)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                    {selectedGolfer2.simulationStats.averageFinish.toFixed(1)}%
+                    {selectedGolfer2.simulationStats.averageFinish.toFixed(1)}
+                  </td>
+                </tr>
+                <tr>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    Top 10 %
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 bg-green-50">
+                    {selectedGolfer1.simulationStats.top10Percentage.toFixed(1)}%
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
+                    {selectedGolfer2.simulationStats.top10Percentage.toFixed(1)}%
                   </td>
                 </tr>
               </tbody>

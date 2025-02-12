@@ -39,6 +39,9 @@ export default function SimulationStats() {
                 Win %
               </th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Top 10 %
+              </th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 FanDuel Odds
               </th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -70,13 +73,11 @@ export default function SimulationStats() {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {golfer.simulationStats.averageFinish.toFixed(2)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`text-sm font-medium ${getWinPercentageColor(
-                    golfer.simulationStats.winPercentage,
-                    golfer.simulationStats.impliedProbability
-                  )}`}>
-                    {golfer.simulationStats.winPercentage.toFixed(1)}%
-                  </span>
+                <td className={`px-6 py-4 whitespace-nowrap text-sm ${getWinPercentageColor(golfer.simulationStats.winPercentage, golfer.simulationStats.impliedProbability)}`}>
+                  {golfer.simulationStats.winPercentage.toFixed(1)}%
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {golfer.simulationStats.top10Percentage.toFixed(1)}%
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {golfer.odds?.fanduel ? formatAmericanOdds(golfer.odds.fanduel) : 'N/A'}

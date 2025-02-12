@@ -22,6 +22,7 @@ export const simulateMultipleRounds = (
 
   let totalPosition = 0;
   let wins = 0;
+  let top10Finishes = 0;
 
   for (let i = 0; i < numRounds; i++) {
     const simulatedScore = simulateRound(recentGolferData, weights);
@@ -31,16 +32,24 @@ export const simulateMultipleRounds = (
       .filter(g => g.id !== golfer.id)
       .map(g => simulateRound(g, weights));
 
-    if (otherScores.every(score => simulatedScore < score)) {
+    // Count how many competitors beat this golfer
+    const position = otherScores.filter(score => score < simulatedScore).length + 1;
+    
+    if (position === 1) {
       wins++;
+    }
+    if (position <= 10) {
+      top10Finishes++;
     }
   }
 
   const averageFinish = totalPosition / numRounds;
   const winPercentage = (wins / numRounds) * 100;
+  const top10Percentage = (top10Finishes / numRounds) * 100;
 
   return {
     averageFinish,
-    winPercentage
+    winPercentage,
+    top10Percentage
   };
 };
