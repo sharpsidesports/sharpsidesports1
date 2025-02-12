@@ -192,6 +192,7 @@ export const transformGolferData = async (
         simulationStats: {
           averageFinish: 0,
           winPercentage: 0,
+          top10Percentage: 0,
           impliedProbability: playerOdds.fanduel ? calculateImpliedProbability(playerOdds.fanduel) : 0
         },
         recentRounds: roundsByCourse

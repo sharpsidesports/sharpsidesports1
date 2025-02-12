@@ -462,6 +462,20 @@ function ThreeBallTool() {
                         {golfer3.simulationStats.averageFinish.toFixed(1)}
                       </td>
                     </tr>
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        Top 10 %
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 bg-green-50">
+                        {golfer1.simulationStats.top10Percentage.toFixed(1)}%
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
+                        {golfer2.simulationStats.top10Percentage.toFixed(1)}%
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
+                        {golfer3.simulationStats.top10Percentage.toFixed(1)}%
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>

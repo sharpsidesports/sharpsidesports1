@@ -5,7 +5,7 @@ import { Golfer } from '../../types/golf';
 import { SharpsideMetric } from '../../types/metrics';
 import { formatAmericanOdds } from '../../utils/calculations/oddsCalculator';
 
-type SortField = 'rank' | 'name' | 'averageFinish' | 'winPercentage' | 'fanduelOdds' | 'impliedProbability' | SharpsideMetric;
+type SortField = 'rank' | 'name' | 'averageFinish' | 'top10Percentage' | 'winPercentage' | 'fanduelOdds' | 'impliedProbability' | SharpsideMetric;
 type SortDirection = 'asc' | 'desc';
 
 function PerformanceTable() {
@@ -44,6 +44,12 @@ function PerformanceTable() {
         return sortDirection === 'asc'
           ? a.simulationStats.averageFinish - b.simulationStats.averageFinish
           : b.simulationStats.averageFinish - a.simulationStats.averageFinish;
+      }
+
+      if (sortField === 'top10Percentage') {
+        return sortDirection === 'asc'
+          ? a.simulationStats.top10Percentage - b.simulationStats.top10Percentage
+          : b.simulationStats.top10Percentage - a.simulationStats.top10Percentage;
       }
 
       if (sortField === 'winPercentage') {
@@ -329,12 +335,19 @@ function PerformanceTable() {
             >
               Golfer
             </th>
-            <th 
+            {/* <th 
               scope="col" 
               className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
               onClick={() => handleSort('averageFinish')}
             >
               Average Finish
+            </th> */}
+            <th 
+              scope="col" 
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+              onClick={() => handleSort('top10Percentage')}
+            >
+              Top 10 %
             </th>
             <th 
               scope="col" 
@@ -389,8 +402,11 @@ function PerformanceTable() {
                   </div>
                 </div>
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {golfer.simulationStats.averageFinish.toFixed(2)}
+              </td> */}
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {golfer.simulationStats.top10Percentage.toFixed(1)}%
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <span className={`text-sm font-medium ${getWinPercentageColor(

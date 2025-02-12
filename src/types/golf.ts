@@ -53,6 +53,7 @@ export interface Golfer {
   simulationStats: {
     averageFinish: number;
     winPercentage: number;
+    top10Percentage: number;
     impliedProbability: number;
   };
   recentRounds: {

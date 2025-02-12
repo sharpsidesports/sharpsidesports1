@@ -4,7 +4,7 @@ import { MetricWeight } from '../../types/metrics';
 
 export const simulateGolfers = (golfers: Golfer[], weights: MetricWeight[], roundRange: number = 12): Golfer[] => {
   const simulatedGolfers = golfers.map(golfer => {
-    const { averageFinish, winPercentage } = simulateMultipleRounds(
+    const { averageFinish, winPercentage, top10Percentage } = simulateMultipleRounds(
       golfer,
       weights,
       1000,
@@ -18,7 +18,8 @@ export const simulateGolfers = (golfers: Golfer[], weights: MetricWeight[], roun
       simulationStats: {
         ...golfer.simulationStats,
         averageFinish,
-        winPercentage
+        winPercentage,
+        top10Percentage
       }
     };
   });
