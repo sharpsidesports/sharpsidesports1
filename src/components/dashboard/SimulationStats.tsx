@@ -32,9 +32,9 @@ export default function SimulationStats() {
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Golfer
               </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Average Finish
-              </th>
+              </th> */}
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Win %
               </th>
@@ -70,9 +70,9 @@ export default function SimulationStats() {
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {golfer.simulationStats.averageFinish.toFixed(2)}
-                </td>
+                </td> */}
                 <td className={`px-6 py-4 whitespace-nowrap text-sm ${getWinPercentageColor(golfer.simulationStats.winPercentage, golfer.simulationStats.impliedProbability)}`}>
                   {golfer.simulationStats.winPercentage.toFixed(1)}%
                 </td>

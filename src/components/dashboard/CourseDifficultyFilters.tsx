@@ -4,9 +4,9 @@ import { useGolfStore } from '../../store/useGolfStore';
 type DifficultyLevel = 'easy' | 'medium' | 'hard';
 
 interface DifficultyFilters {
-  driving: DifficultyLevel;
-  approach: DifficultyLevel;
-  scoring: DifficultyLevel;
+  driving: Set<DifficultyLevel>;
+  approach: Set<DifficultyLevel>;
+  scoring: Set<DifficultyLevel>;
 }
 
 const COURSE_DIFFICULTY = {
@@ -705,21 +705,41 @@ const COURSE_DIFFICULTY = {
 export default function CourseDifficultyFilters() {
   const { conditions, updateConditions, selectedCourses, toggleCourse } = useGolfStore();
 
+  // Convert string difficulty to Set for internal component use
+  const getDifficultySet = (type: keyof DifficultyFilters): Set<DifficultyLevel> => {
+    const value = conditions[type];
+    return new Set(Array.isArray(value) ? value : [value]);
+  };
+
   const handleFilterChange = (type: keyof DifficultyFilters, value: DifficultyLevel) => {
     // Clear previously selected courses
     selectedCourses.forEach(course => {
       toggleCourse(course);
     });
 
-    // Update conditions
+    // Toggle the difficulty level
+    const currentSet = getDifficultySet(type);
+    if (currentSet.has(value)) {
+      currentSet.delete(value);
+    } else {
+      currentSet.add(value);
+    }
+
+    // Update conditions with the new set
     const newConditions = {
       ...conditions,
-      [type]: value
+      [type]: Array.from(currentSet)
     };
 
-    // Find courses that match the difficulty criteria
+    // If no difficulties are selected, don't filter courses
+    if (currentSet.size === 0) {
+      updateConditions(newConditions);
+      return;
+    }
+
+    // Find courses that match any of the selected difficulty criteria
     const matchingCourses = Object.entries(COURSE_DIFFICULTY)
-      .filter(([_, data]) => data.difficulty[type] === value)
+      .filter(([_, data]) => currentSet.has(data.difficulty[type]))
       .map(([course]) => course);
 
     // Select matching courses
@@ -737,7 +757,7 @@ export default function CourseDifficultyFilters() {
   }: { 
     label: string; 
     type: keyof DifficultyFilters; 
-    value: DifficultyLevel;
+    value: Set<DifficultyLevel>;
   }) => (
     <div className="mb-2 last:mb-0">
       <div className="text-xs font-medium text-gray-700 mb-1">{label}</div>
@@ -748,7 +768,7 @@ export default function CourseDifficultyFilters() {
             onClick={() => handleFilterChange(type, difficulty)}
             className={`
               px-2 py-1 text-xs font-medium rounded-md capitalize
-              ${value === difficulty
+              ${value.has(difficulty)
                 ? 'bg-green-600 text-white'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }
@@ -769,17 +789,17 @@ export default function CourseDifficultyFilters() {
         <FilterRow
           label="Driving Difficulty"
           type="driving"
-          value={conditions.driving as DifficultyLevel}
+          value={getDifficultySet('driving')}
         />
         <FilterRow
           label="Approach Difficulty"
           type="approach"
-          value={conditions.approach as DifficultyLevel}
+          value={getDifficultySet('approach')}
         />
         <FilterRow
           label="Scoring Difficulty"
           type="scoring"
-          value={conditions.scoring as DifficultyLevel}
+          value={getDifficultySet('scoring')}
         />
       </div>
     </div>

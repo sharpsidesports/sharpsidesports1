@@ -27,8 +27,10 @@ export default function Dashboard() {
   const { runSimulation, golfers, fetchGolferData, selectedCourses, loading, error } = useGolfStore();
 
   useEffect(() => {
-    fetchGolferData();
-  }, [fetchGolferData, selectedCourses]);
+    fetchGolferData().then(() => {
+      runSimulation();
+    });
+  }, [fetchGolferData, runSimulation, selectedCourses]);
 
   return (
     <div className="space-y-6">

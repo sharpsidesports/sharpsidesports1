@@ -1,9 +1,9 @@
 export interface CourseConditions {
   grass: 'all' | 'bermuda' | 'bentgrass' | 'other';
   course: 'all' | 'pete-dye' | 'donald-ross' | 'other';
-  driving: 'easy' | 'medium' | 'hard';
-  approach: 'easy' | 'medium' | 'hard';
-  scoring: 'easy' | 'medium' | 'hard';
+  driving: ('easy' | 'medium' | 'hard')[];
+  approach: ('easy' | 'medium' | 'hard')[];
+  scoring: ('easy' | 'medium' | 'hard')[];
 }
 
 export interface Golfer {

@@ -12,9 +12,9 @@ export const createConditionsSlice: StateCreator<ConditionsSlice> = (set) => ({
   conditions: {
     grass: 'all',
     course: 'all',
-    driving: 'medium',
-    approach: 'medium',
-    scoring: 'medium'
+    driving: ['medium'],
+    approach: ['medium'],
+    scoring: ['medium']
   },
   selectedCourses: [
     'Augusta National Golf Club'

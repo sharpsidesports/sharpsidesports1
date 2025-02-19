@@ -109,6 +109,7 @@ export async function getScoringStatsByDgIds(
     if (options.categories?.length) {
       query = query.in('category', options.categories);
     }
+    query = query.limit(10000);
 
     const { data, error } = await query;
     

@@ -138,9 +138,9 @@ function GolferProfileModal({ golfer, onClose }: GolferProfileModalProps) {
             <h3 className="text-lg font-semibold mb-4">Simulation Results</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-white p-4 rounded-lg">
-                <div className="text-sm text-gray-600">Average Finish</div>
+                <div className="text-sm text-gray-600">Top 10%</div>
                 <div className="text-2xl font-bold">
-                  {golfer.simulationStats.averageFinish.toFixed(1)}
+                  {golfer.simulationStats.top10Percentage.toFixed(1)}%
                 </div>
               </div>
               <div className="bg-white p-4 rounded-lg">

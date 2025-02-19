@@ -107,7 +107,7 @@ export const useCourseFitStore = create<CourseFitState>()(
             dgIds,
             courseIds,
             {
-              limit: 1000,
+              limit: 10000,
               startDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString(),
             }
           );
