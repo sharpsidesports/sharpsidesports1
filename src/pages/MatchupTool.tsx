@@ -10,8 +10,10 @@ interface Matchup {
     [bookmaker: string]: {
       p1: string;
       p2: string;
+      tie?: string;
     };
   };
+  ties: "void" | "separate bet offered";
 }
 
 interface MatchupResponse {
@@ -36,14 +38,21 @@ function MatchupTool() {
 
   useEffect(() => {
     const init = async () => {
-      await fetchGolferData();
-      runSimulation();
+      try {
+        await fetchGolferData();  // First get all golfer data including odds
+        runSimulation();  // Run simulation once on initial load
+      } catch (error) {
+        console.error('Error fetching golfer data:', error);
+        setError('Failed to fetch golfer data. Please try again later.');
+      }
     };
     init();
   }, [fetchGolferData, runSimulation]);
 
   useEffect(() => {
     const fetchMatchups = async () => {
+      if (golfers.length === 0) return; // Wait for golfers to be loaded
+
       try {
         const response = await datagolfService.getMatchups() as MatchupResponse;
 
@@ -64,57 +73,99 @@ function MatchupTool() {
       }
     };
     fetchMatchups();
-  }, []);
+  }, [golfers.length]); // Only run when golfers are loaded
 
   useEffect(() => {
     if (selectedGolfer1 && selectedGolfer2) {
-      runSimulation();
+      // Keep this empty - no automatic simulation on golfer selection
     }
-  }, [selectedGolfer1, selectedGolfer2, runSimulation]);
+  }, [selectedGolfer1, selectedGolfer2]);
 
   const getFilteredMatchups = () => {
-    return matchups.filter(matchup => {
+    console.log('Total matchups before filtering:', matchups.length);
+    console.log('Total golfers in data:', golfers.length);
+
+    const missingGolfers = new Set<string>();
+    
+    const filtered = matchups.filter(matchup => {
       const p1InGolfers = golfers.some(g => g.name.toLowerCase() === matchup.p1_player_name.toLowerCase());
       const p2InGolfers = golfers.some(g => g.name.toLowerCase() === matchup.p2_player_name.toLowerCase());
+      
+      if (!p1InGolfers) {
+        missingGolfers.add(matchup.p1_player_name);
+      }
+      if (!p2InGolfers) {
+        missingGolfers.add(matchup.p2_player_name);
+      }
+
       return p1InGolfers && p2InGolfers;
     });
+
+    console.log('Matchups after filtering:', filtered.length);
+    console.log('Players missing from golfer data:', Array.from(missingGolfers).sort());
+
+    // Log some sample golfer names to help debug potential name mismatches
+    console.log('Sample golfer names in our data:', golfers.slice(0, 5).map(g => g.name));
+    
+    return filtered;
   };
 
   const filteredMatchups = getFilteredMatchups();
 
-  const handlePlayerSelect = (playerName: string) => {
-    const matchup = filteredMatchups.find(m =>
-      m.p1_player_name === playerName || m.p2_player_name === playerName
+  const getMatchupKey = (matchup: Matchup) => {
+    return `${matchup.p1_player_name}-${matchup.p2_player_name}-${matchup.ties}`;
+  };
+
+  const getMatchupDisplayText = (matchup: Matchup) => {
+    const tieText = matchup.ties === "void" ? "(Tie: Void)" : "(Tie: Offered)";
+    return `${matchup.p1_player_name} ${tieText}`;
+  };
+
+  const handlePlayerSelect = (value: string) => {
+    // value format: "p1Name|p2Name|tieTerms"
+    const [p1Name, p2Name, tieTerm] = value.split('|');
+    
+    const matchup = filteredMatchups.find(m => 
+      m.p1_player_name === p1Name && 
+      m.p2_player_name === p2Name && 
+      m.ties === tieTerm
     );
 
     if (matchup) {
       setSelectedMatchup(matchup);
-      const isP1 = playerName === matchup.p1_player_name;
-      setIsYourPickP1(isP1);
+      setIsYourPickP1(true);  // Always true since we're only showing p1 in left dropdown
 
       // Set odds based on selection (using bet365 odds if available, otherwise first available book)
       if (matchup.odds.bet365) {
-        setOdds(isP1 ? matchup.odds.bet365.p1 : matchup.odds.bet365.p2);
+        setOdds(matchup.odds.bet365.p1);
       } else {
         const firstBook = Object.keys(matchup.odds)[0];
         if (firstBook) {
-          setOdds(isP1 ? matchup.odds[firstBook].p1 : matchup.odds[firstBook].p2);
+          setOdds(matchup.odds[firstBook].p1);
         }
       }
 
       // Find golfers in our simulation data
-      const golfer1 = golfers.find(g =>
-        g.name.toLowerCase() === (isP1 ? matchup.p1_player_name : matchup.p2_player_name).toLowerCase()
-      );
-      const golfer2 = golfers.find(g =>
-        g.name.toLowerCase() === (isP1 ? matchup.p2_player_name : matchup.p1_player_name).toLowerCase()
-      );
+      const golfer1 = golfers.find(g => g.name.toLowerCase() === p1Name.toLowerCase());
+      const golfer2 = golfers.find(g => g.name.toLowerCase() === p2Name.toLowerCase());
 
       setSelectedGolfer1(golfer1 || null);
       setSelectedGolfer2(golfer2 || null);
-      runSimulation();
     }
   };
+
+  useEffect(() => {
+    if (selectedMatchup && golfers.length > 0) {
+      const golfer1Name = isYourPickP1 ? selectedMatchup.p1_player_name : selectedMatchup.p2_player_name;
+      const golfer2Name = isYourPickP1 ? selectedMatchup.p2_player_name : selectedMatchup.p1_player_name;
+      
+      const golfer1 = golfers.find(g => g.name.toLowerCase() === golfer1Name.toLowerCase());
+      const golfer2 = golfers.find(g => g.name.toLowerCase() === golfer2Name.toLowerCase());
+
+      setSelectedGolfer1(golfer1 || null);
+      setSelectedGolfer2(golfer2 || null);
+    }
+  }, [golfers, selectedMatchup, isYourPickP1]);
 
   const calculateEdge = () => {
     if (!selectedGolfer1 || !selectedGolfer2 || !odds) return null;
@@ -193,19 +244,17 @@ function MatchupTool() {
           </div>
           <select
             className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-            value={selectedMatchup ? (isYourPickP1 ? selectedMatchup.p1_player_name : selectedMatchup.p2_player_name) : ''}
+            value={selectedMatchup ? `${selectedMatchup.p1_player_name}|${selectedMatchup.p2_player_name}|${selectedMatchup.ties}` : ''}
             onChange={(e) => handlePlayerSelect(e.target.value)}
           >
             <option value="">Select Golfer</option>
             {filteredMatchups.map((matchup) => (
-              <>
-                <option key={matchup.p1_player_name} value={matchup.p1_player_name}>
-                  {matchup.p1_player_name}
-                </option>
-                <option key={matchup.p2_player_name} value={matchup.p2_player_name}>
-                  {matchup.p2_player_name}
-                </option>
-              </>
+              <option 
+                key={getMatchupKey(matchup)} 
+                value={`${matchup.p1_player_name}|${matchup.p2_player_name}|${matchup.ties}`}
+              >
+                {getMatchupDisplayText(matchup)}
+              </option>
             ))}
           </select>
         </div>
@@ -221,20 +270,15 @@ function MatchupTool() {
           </div>
           <select
             className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-            value={selectedMatchup ? (isYourPickP1 ? selectedMatchup.p2_player_name : selectedMatchup.p1_player_name) : ''}
+            value={selectedMatchup ? selectedMatchup.p2_player_name : ''}
             disabled
           >
             <option value="">Select Golfer</option>
-            {filteredMatchups.map((matchup) => (
-              <>
-                <option key={matchup.p1_player_name} value={matchup.p1_player_name}>
-                  {matchup.p1_player_name}
-                </option>
-                <option key={matchup.p2_player_name} value={matchup.p2_player_name}>
-                  {matchup.p2_player_name}
-                </option>
-              </>
-            ))}
+            {selectedMatchup && (
+              <option value={selectedMatchup.p2_player_name}>
+                {selectedMatchup.p2_player_name}
+              </option>
+            )}
           </select>
         </div>
 
@@ -248,6 +292,18 @@ function MatchupTool() {
             value={odds}
             onChange={(e) => setOdds(e.target.value)}
           />
+          {selectedMatchup && (
+            <div className="mt-1 text-sm text-gray-500">
+              Ties: {selectedMatchup.ties === "void" ? (
+                <span className="text-orange-600">Void (push if tied)</span>
+              ) : (
+                <span className="text-purple-600">
+                  Separate bet available
+                  {selectedMatchup.odds.bet365?.tie && ` (${selectedMatchup.odds.bet365.tie})`}
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
         <div>
@@ -329,28 +385,6 @@ function MatchupTool() {
                 </tr>
                 <tr>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    Win Probability
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 bg-green-50">
-                    {selectedGolfer1.simulationStats.winPercentage.toFixed(1)}%
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                    {selectedGolfer2.simulationStats.winPercentage.toFixed(1)}%
-                  </td>
-                </tr>
-                <tr>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    Average Finish
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 bg-green-50">
-                    {selectedGolfer1.simulationStats.averageFinish.toFixed(1)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                    {selectedGolfer2.simulationStats.averageFinish.toFixed(1)}
-                  </td>
-                </tr>
-                <tr>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     Top 10 %
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 bg-green-50">
@@ -360,6 +394,30 @@ function MatchupTool() {
                     {selectedGolfer2.simulationStats.top10Percentage.toFixed(1)}%
                   </td>
                 </tr>
+                <tr>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    Win Probability
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 bg-green-50">
+                    {selectedGolfer1.simulationStats.winPercentage.toFixed(1)}%
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
+                    {selectedGolfer2.simulationStats.winPercentage.toFixed(1)}%
+                  </td>
+                </tr>
+
+                {/* <tr>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    Average Finish
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 bg-green-50">
+                    {selectedGolfer1.simulationStats.averageFinish.toFixed(1)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
+                    {selectedGolfer2.simulationStats.averageFinish.toFixed(1)}
+                  </td>
+                </tr> */}
+
               </tbody>
             </table>
           </div>

@@ -10,8 +10,9 @@ type SortDirection = 'asc' | 'desc';
 
 function PerformanceTable() {
   const { golfers, weights } = useGolfStore();
-  const [sortField, setSortField] = useState<SortField>('rank');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+  console.log('Number of golfers:', golfers.length);
+  const [sortField, setSortField] = useState<SortField>('winPercentage');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [selectedGolfer, setSelectedGolfer] = useState<Golfer | null>(null);
 
   const handleSort = (field: SortField) => {
@@ -24,7 +25,7 @@ function PerformanceTable() {
   };
 
   const getSortedGolfers = () => {
-    return [...golfers].sort((a, b) => {
+    const sorted = [...golfers].sort((a, b) => {
       let aValue: number | string;
       let bValue: number | string;
 
@@ -188,6 +189,8 @@ function PerformanceTable() {
         ? (aValue as number) - (bValue as number)
         : (bValue as number) - (aValue as number);
     });
+    console.log('Number of sorted golfers:', sorted.length);
+    return sorted;
   };
 
   const getMetricValue = (golfer: Golfer, metric: SharpsideMetric): number => {

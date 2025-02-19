@@ -31,14 +31,14 @@ export default function GolferCard({ golfer }: GolferCardProps) {
         </div>
 
 
-        <div className="mt-4 pt-4 border-t">
+        {/* <div className="mt-4 pt-4 border-t">
           <div className="flex justify-between items-center">
             <span className="text-gray-600">Simulated Rank:</span>
             <span className="text-lg font-bold text-green-600">
               {Math.round(golfer.simulatedRank)}
             </span>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -103,5 +103,5 @@ export const calculateSimulatedScore = (
   }, 0);
 
   // return (strokesGainedScore + proximityScore + scoringScore) ;
-  return (strokesGainedScore + proximityScore + scoringScore) * (1 + randomFactor * 1.1);
+  return (strokesGainedScore + proximityScore + scoringScore) * (1 + randomFactor * 0.5);
 };

@@ -51,7 +51,7 @@ export const datagolfService = {
           dg_id: string;
           fanduel?: number;
         }>;
-      }>(ENDPOINTS.BETTING_ODDS, {
+      }>(ENDPOINTS.OUTRIGHTS, {
         tour: 'pga',
         market: 'win',
         odds_format: 'american'
@@ -126,7 +126,10 @@ export const datagolfService = {
   async getMatchups() {
     try {
       const response = await apiClient.get(ENDPOINTS.MATCHUPS, {
-        tour: 'pga'
+        tour: 'pga',
+        market: 'round_matchups',
+        odds_format: 'american',
+        file_format: 'json'
       });
       return response;
     } catch (error) {

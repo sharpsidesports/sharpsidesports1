@@ -4,7 +4,7 @@ export const ENDPOINTS = {
   SKILL_RATINGS: 'preds/skill-ratings',
   HISTORICAL_ROUNDS: 'historical-raw-data/rounds',
   EVENT_LIST: 'historical-raw-data/event-list',
-  BETTING_ODDS: 'betting-tools/outrights',
+  OUTRIGHTS: 'betting-tools/outrights',
   MATCHUPS: 'betting-tools/matchups',
   FANTASY_PROJECTIONS: 'preds/fantasy-projection-defaults'
 } as const;

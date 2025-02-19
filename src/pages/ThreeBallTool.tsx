@@ -40,46 +40,51 @@ function ThreeBallTool() {
 
   useEffect(() => {
     const init = async () => {
-      await fetchGolferData();
-      runSimulation();
+      try {
+        await fetchGolferData();  // First get all golfer data including odds
+        runSimulation();  // Run simulation once on initial load
+      } catch (error) {
+        console.error('Error fetching golfer data:', error);
+        setError('Failed to fetch golfer data. Please try again later.');
+      }
     };
     init();
   }, [fetchGolferData, runSimulation]);
 
   useEffect(() => {
-    fetchThreeBallOdds();
-  }, []);
+    const fetchThreeBallData = async () => {
+      if (golfers.length === 0) return; // Wait for golfers to be loaded
+
+      try {
+        setLoading(true);
+        const response = await datagolfService.getThreeBallOdds() as ThreeBallResponse;
+        
+        setEventName(response.event_name);
+        setLastUpdated(response.last_updated);
+
+        if (typeof response.match_list === 'string') {
+          setError(response.match_list);
+          setThreeBallOdds([]);
+        } else {
+          setThreeBallOdds(response.match_list || []);
+          setError('');
+        }
+      } catch (err) {
+        setError('Failed to fetch odds. Please try again later.');
+        console.error('Error fetching three ball odds:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchThreeBallData();
+  }, [golfers.length]); // Only run when golfers are loaded
 
   useEffect(() => {
     if (selectedGolfer && selectedMatchup) {
       runSimulation();
     }
   }, [selectedGolfer, selectedMatchup, runSimulation]);
-
-
-  
-  const fetchThreeBallOdds = async () => {
-    try {
-      setLoading(true);
-      const response = await datagolfService.getThreeBallOdds() as ThreeBallResponse;
-      
-      setEventName(response.event_name);
-      setLastUpdated(response.last_updated);
-
-      if (typeof response.match_list === 'string') {
-        setError(response.match_list);
-        setThreeBallOdds([]);
-      } else {
-        setThreeBallOdds(response.match_list || []);
-        setError('');
-      }
-    } catch (err) {
-      setError('Failed to fetch odds. Please try again later.');
-      console.error('Error fetching three ball odds:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const calculateThreeBallProbability = () => {
     if (!golfer1 || !golfer2 || !golfer3) return null;
@@ -436,34 +441,6 @@ function ThreeBallTool() {
                     </tr>
                     <tr>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        Win Probability
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 bg-green-50">
-                        {golfer1.simulationStats.winPercentage.toFixed(1)}%
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                        {golfer2.simulationStats.winPercentage.toFixed(1)}%
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                        {golfer3.simulationStats.winPercentage.toFixed(1)}%
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        Average Finish
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 bg-green-50">
-                        {golfer1.simulationStats.averageFinish.toFixed(1)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                        {golfer2.simulationStats.averageFinish.toFixed(1)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                        {golfer3.simulationStats.averageFinish.toFixed(1)}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         Top 10 %
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 bg-green-50">
@@ -476,6 +453,35 @@ function ThreeBallTool() {
                         {golfer3.simulationStats.top10Percentage.toFixed(1)}%
                       </td>
                     </tr>
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        Win Probability
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 bg-green-50">
+                        {golfer1.simulationStats.winPercentage.toFixed(1)}%
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
+                        {golfer2.simulationStats.winPercentage.toFixed(1)}%
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
+                        {golfer3.simulationStats.winPercentage.toFixed(1)}%
+                      </td>
+                    </tr>
+                    {/* <tr>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        Average Finish
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 bg-green-50">
+                        {golfer1.simulationStats.averageFinish.toFixed(1)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
+                        {golfer2.simulationStats.averageFinish.toFixed(1)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
+                        {golfer3.simulationStats.averageFinish.toFixed(1)}
+                      </td>
+                    </tr> */}
+
                   </tbody>
                 </table>
               </div>

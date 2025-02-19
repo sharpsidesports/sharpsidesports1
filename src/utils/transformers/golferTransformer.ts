@@ -25,18 +25,32 @@ export const transformGolferData = async (
       return [];
     }
 
-    // Sort rankings by datagolf_rank and take only top 10
-    const top10Rankings = rankings
-      .sort((a, b) => (a.datagolf_rank || 0) - (b.datagolf_rank || 0))
-      .slice(0, 20);
+    // Sort odds by Fanduel odds (lower odds = better chance of winning)
+    // and take top 20 players
+    const topPlayerIds = new Set(
+      odds
+        .filter(player => player.fanduel) // Only consider players with Fanduel odds
+        .sort((a, b) => (a.fanduel || Infinity) - (b.fanduel || Infinity)) // Sort by odds ascending
+        .slice(0, 500) // Take top 20
+        .map(player => player.dg_id) // Get their IDs
+    );
+    
+    // Filter rankings to only include top tournament players
+    const tournamentRankings = rankings.filter(player => 
+      topPlayerIds.has(player.dg_id)
+    );
 
-    // Get the dg_ids for the top 10 players
-    const dgIds = top10Rankings.map(p => {
-      console.log('Player dg_id:', {
-        name: p.player_name,
-        dg_id: p.dg_id,
-        type: typeof p.dg_id
-      });
+    // Sort rankings by datagolf_rank
+    const sortedRankings = tournamentRankings
+      .sort((a, b) => (a.datagolf_rank || 0) - (b.datagolf_rank || 0));
+
+    // Get the dg_ids for the tournament players
+    const dgIds = sortedRankings.map(p => {
+      // console.log('Player dg_id:', {
+      //   name: p.player_name,
+      //   dg_id: p.dg_id,
+      //   type: typeof p.dg_id
+      // });
       return String(p.dg_id);
     }).filter(Boolean);
 
@@ -53,7 +67,7 @@ export const transformGolferData = async (
           years: [new Date().getFullYear(), new Date().getFullYear() - 1],
         }),
         getPlayerRoundsByDgIds(dgIds, selectedCourses, {
-          limit: 100,
+          limit: 100000, 
           startDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         })
       ]);
@@ -77,11 +91,31 @@ export const transformGolferData = async (
     }
 
     // Transform the data into Golfer objects
-    const golfers: Golfer[] = top10Rankings.map(ranking => {
+    const golfers: Golfer[] = sortedRankings.map(ranking => {
       const playerOdds = odds.find(o => o.dg_id === ranking.dg_id) || {};
       const approachData = approachStats.find(s => s.dg_id === ranking.dg_id) || {};
       const playerScoringStats = scoringStats.filter(s => s.dg_id === String(ranking.dg_id));
       const playerSpecificRounds = playerRounds.filter(r => r.dg_id === String(ranking.dg_id));
+
+      // Validate essential data is present
+      const hasRequiredData = (
+        ranking.dg_id &&
+        ranking.player_name &&
+        playerScoringStats.length > 0 &&
+        playerSpecificRounds.length > 0 &&
+        playerOdds.fanduel // Ensure we have odds data
+      );
+
+      if (!hasRequiredData) {
+        console.log(`Skipping player ${ranking.player_name} (${ranking.dg_id}) due to missing data:`, {
+          hasDgId: !!ranking.dg_id,
+          hasName: !!ranking.player_name,
+          scoringStatsCount: playerScoringStats.length,
+          roundsCount: playerSpecificRounds.length,
+          hasOdds: !!playerOdds.fanduel
+        });
+        return null;
+      }
 
       console.log('Processing player:', {
         name: ranking.player_name,
@@ -197,7 +231,7 @@ export const transformGolferData = async (
         },
         recentRounds: roundsByCourse
       };
-    });
+    }).filter(Boolean);
 
     return golfers;
   } catch (error) {

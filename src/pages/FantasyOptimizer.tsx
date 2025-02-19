@@ -42,7 +42,7 @@ export default function FantasyOptimizer() {
   useEffect(() => {
     setSettings(prev => ({
       ...prev,
-      budget: prev.site === 'draftkings' ? 50000 : 80000
+      budget: prev.site === 'draftkings' ? 80000 : 80000
     }));
   }, [settings.site]);
 

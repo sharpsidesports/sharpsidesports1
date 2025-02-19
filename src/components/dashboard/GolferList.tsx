@@ -38,12 +38,12 @@ export default function GolferList() {
                 <span>Strokes Gained Total:</span>
                 <span className="font-medium">{golfer.strokesGainedTotal.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between">
+              {/* <div className="flex justify-between">
                 <span>Simulated Rank:</span>
                 <span className="font-medium text-green-600">
                   {Math.round(golfer.simulatedRank)}
                 </span>
-              </div>
+              </div> */}
             </div>
           </div>
         ))}
