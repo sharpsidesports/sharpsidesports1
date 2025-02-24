@@ -28,9 +28,8 @@ interface CourseStats {
   avgSgApp: number;
   avgSgArg: number;
   avgSgPutt: number;
-  avgGir: number;
-  avgDrivingAcc: number;
   avgDrivingDist: number;
+  avgDrivingAcc: number;
 }
 
 interface CourseComparisonProps {
@@ -46,27 +45,24 @@ const normalizeValue = (value: number, min: number, max: number) => {
   return Math.max(0, Math.min(100, normalized)); // Clamp between 0 and 100
 };
 
+// Define min/max values for normalization
+const ranges = {
+  drivingDist: { min: 270, max: 320 },
+  drivingAcc: { min: 40, max: 80 },
+  sgApp: { min: -1, max: 1 },
+  sgArg: { min: -1, max: 1 },
+  sgPutt: { min: -1, max: 1 },
+};
+
 const getChartData = (selectedCourse: CourseStats | null, comparisonCourse: CourseStats | null) => {
   if (!selectedCourse) return null;
-
-  // Define min/max values for normalization
-  const ranges = {
-    sgTotal: { min: -2, max: 2 },
-    sgOtt: { min: -1, max: 1 },
-    sgApp: { min: -1, max: 1 },
-    sgArg: { min: -1, max: 1 },
-    sgPutt: { min: -1, max: 1 },
-    gir: { min: 50, max: 80 },
-    drivingAcc: { min: 40, max: 80 },
-    drivingDist: { min: 270, max: 320 },
-  };
 
   const datasets = [
     {
       label: selectedCourse.courseName,
       data: [
-        normalizeValue(selectedCourse.avgSgTotal, ranges.sgTotal.min, ranges.sgTotal.max),
-        normalizeValue(selectedCourse.avgSgOtt, ranges.sgOtt.min, ranges.sgOtt.max),
+        normalizeValue(selectedCourse.avgDrivingDist, ranges.drivingDist.min, ranges.drivingDist.max),
+        normalizeValue(selectedCourse.avgDrivingAcc * 100, ranges.drivingAcc.min, ranges.drivingAcc.max),
         normalizeValue(selectedCourse.avgSgApp, ranges.sgApp.min, ranges.sgApp.max),
         normalizeValue(selectedCourse.avgSgArg, ranges.sgArg.min, ranges.sgArg.max),
         normalizeValue(selectedCourse.avgSgPutt, ranges.sgPutt.min, ranges.sgPutt.max),
@@ -87,8 +83,8 @@ const getChartData = (selectedCourse: CourseStats | null, comparisonCourse: Cour
     datasets.push({
       label: comparisonCourse.courseName,
       data: [
-        normalizeValue(comparisonCourse.avgSgTotal, ranges.sgTotal.min, ranges.sgTotal.max),
-        normalizeValue(comparisonCourse.avgSgOtt, ranges.sgOtt.min, ranges.sgOtt.max),
+        normalizeValue(comparisonCourse.avgDrivingDist, ranges.drivingDist.min, ranges.drivingDist.max),
+        normalizeValue(comparisonCourse.avgDrivingAcc * 100, ranges.drivingAcc.min, ranges.drivingAcc.max),
         normalizeValue(comparisonCourse.avgSgApp, ranges.sgApp.min, ranges.sgApp.max),
         normalizeValue(comparisonCourse.avgSgArg, ranges.sgArg.min, ranges.sgArg.max),
         normalizeValue(comparisonCourse.avgSgPutt, ranges.sgPutt.min, ranges.sgPutt.max),
@@ -107,8 +103,8 @@ const getChartData = (selectedCourse: CourseStats | null, comparisonCourse: Cour
 
   return {
     labels: [
-      'Strokes Gained Total',
-      'SG: Off the Tee',
+      'Driving Distance',
+      'Driving Accuracy',
       'SG: Approach',
       'SG: Around Green',
       'SG: Putting',
@@ -151,6 +147,36 @@ export default function CourseComparison({
             options={{
               responsive: true,
               maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: 'top' as const,
+                  labels: {
+                    padding: 20,
+                    usePointStyle: true,
+                    pointStyle: 'circle',
+                  },
+                },
+                tooltip: {
+                  callbacks: {
+                    label: function(context: any) {
+                      const value = context.raw;
+                      const label = context.dataset.label;
+                      const metric = context.chart.data.labels[context.dataIndex];
+                      
+                      // Get the original value before normalization
+                      let originalValue;
+                      if (metric === 'Driving Distance') {
+                        originalValue = value * (ranges.drivingDist.max - ranges.drivingDist.min) / 100 + ranges.drivingDist.min;
+                        return `${label}: ${originalValue.toFixed(1)} yards`;
+                      } else if (metric === 'Driving Accuracy') {
+                        originalValue = value * (ranges.drivingAcc.max - ranges.drivingAcc.min) / 100 + ranges.drivingAcc.min;
+                        return `${label}: ${originalValue.toFixed(1)}%`;
+                      }
+                      return `${label}: ${value.toFixed(2)}`;
+                    }
+                  }
+                }
+              },
               scales: {
                 r: {
                   min: 0,
@@ -173,26 +199,6 @@ export default function CourseComparison({
                     color: '#666',
                   },
                 },
-              },
-              plugins: {
-                legend: {
-                  position: 'top' as const,
-                  labels: {
-                    padding: 20,
-                    usePointStyle: true,
-                    pointStyle: 'circle',
-                  },
-                },
-                tooltip: {
-                  callbacks: {
-                    label: function(context: any) {
-                      const value = context.raw;
-                      const label = context.dataset.label;
-                      const metric = context.chart.data.labels[context.dataIndex];
-                      return `${label}: ${value.toFixed(1)}`;
-                    }
-                  }
-                }
               },
             }}
           />
