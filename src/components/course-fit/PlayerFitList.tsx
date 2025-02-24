@@ -25,24 +25,23 @@ export default function PlayerFitList({ courseId, loading = false }: PlayerFitLi
     return acc;
   }, {} as Record<string, { dg_id: string; rounds: typeof courseRounds }>);
 
-  // Calculate averages and sort by SG: Total
+  // Calculate averages and sort by driving distance
   const playerAverages = Object.values(playerStats)
     .map(player => {
       const avgStats = player.rounds.reduce(
         (acc, round) => ({
-          sgTotal: acc.sgTotal + (round.sg_total || 0),
-          sgOtt: acc.sgOtt + (round.sg_ott || 0),
+          drivingDist: acc.drivingDist + (round.driving_dist || 0),
+          drivingAcc: acc.drivingAcc + (round.driving_acc || 0),
           sgApp: acc.sgApp + (round.sg_app || 0),
           sgArg: acc.sgArg + (round.sg_arg || 0),
           sgPutt: acc.sgPutt + (round.sg_putt || 0),
-
         }),
         {
-          sgTotal: 0,
-          sgOtt: 0,
+          drivingDist: 0,
+          drivingAcc: 0,
           sgApp: 0,
           sgArg: 0,
-          sgPutt: 0
+          sgPutt: 0,
         }
       );
 
@@ -51,16 +50,15 @@ export default function PlayerFitList({ courseId, loading = false }: PlayerFitLi
         dg_id: player.dg_id,
         numRounds,
         playerName: getPlayerName(player.dg_id),
-        avgSgTotal: avgStats.sgTotal / numRounds,
-        avgSgOtt: avgStats.sgOtt / numRounds,
+        avgDrivingDist: avgStats.drivingDist / numRounds,
+        avgDrivingAcc: avgStats.drivingAcc / numRounds,
         avgSgApp: avgStats.sgApp / numRounds,
         avgSgArg: avgStats.sgArg / numRounds,
         avgSgPutt: avgStats.sgPutt / numRounds,
-
       };
     })
-    .sort((a, b) => b.avgSgTotal - a.avgSgTotal)
-    .slice(0, 10); // Show top 10 players
+    .sort((a, b) => b.avgDrivingDist - a.avgDrivingDist)
+    .slice(0, 10);
 
   if (loading) {
     return (
@@ -93,10 +91,10 @@ export default function PlayerFitList({ courseId, loading = false }: PlayerFitLi
                 Rounds
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                SG: Total
+                Driving Distance
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                SG: OTT
+                Driving Accuracy
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 SG: APP
@@ -107,11 +105,10 @@ export default function PlayerFitList({ courseId, loading = false }: PlayerFitLi
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 SG: PUTT
               </th>
-
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {playerAverages.map((player, index) => (
+            {playerAverages.map((player) => (
               <tr key={player.dg_id}>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {player.playerName}
@@ -120,10 +117,10 @@ export default function PlayerFitList({ courseId, loading = false }: PlayerFitLi
                   {player.numRounds}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {player.avgSgTotal.toFixed(2)}
+                  {player.avgDrivingDist.toFixed(1)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {player.avgSgOtt.toFixed(2)}
+                  {(player.avgDrivingAcc * 100).toFixed(1)}%
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {player.avgSgApp.toFixed(2)}
@@ -134,7 +131,6 @@ export default function PlayerFitList({ courseId, loading = false }: PlayerFitLi
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {player.avgSgPutt.toFixed(2)}
                 </td>
-
               </tr>
             ))}
           </tbody>

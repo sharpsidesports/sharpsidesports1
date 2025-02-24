@@ -49,9 +49,9 @@ function RoundRangeSelector() {
             </div>
           </div>
         </div>
-        <p className="text-sm text-gray-500">
+        {/* <p className="text-sm text-gray-500">
           Select how many recent rounds to consider when analyzing golfer performance
-        </p>
+        </p> */}
       </div>
     </div>
   );

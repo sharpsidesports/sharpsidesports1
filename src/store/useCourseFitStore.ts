@@ -17,6 +17,8 @@ interface CourseStats {
   avgSgApp: number;
   avgSgArg: number;
   avgSgPutt: number;
+  avgDrivingDist: number;
+  avgDrivingAcc: number;
 }
 
 interface CourseFitState extends SavedModelsSlice {
@@ -40,29 +42,41 @@ const calculateAverageStats = (rounds: PlayerRound[]): Omit<CourseStats, 'course
     avgSgApp: 0,
     avgSgArg: 0,
     avgSgPutt: 0,
+    avgDrivingDist: 0,
+    avgDrivingAcc: 0,
   };
 
+  // First calculate sums
   const sum = rounds.reduce((acc, round) => ({
     avgSgTotal: acc.avgSgTotal + (round.sg_total || 0),
     avgSgOtt: acc.avgSgOtt + (round.sg_ott || 0),
     avgSgApp: acc.avgSgApp + (round.sg_app || 0),
     avgSgArg: acc.avgSgArg + (round.sg_arg || 0),
     avgSgPutt: acc.avgSgPutt + (round.sg_putt || 0),
+    avgDrivingDist: acc.avgDrivingDist + (round.driving_dist || 0),
+    avgDrivingAcc: acc.avgDrivingAcc + (round.driving_acc || 0),
   }), {
     avgSgTotal: 0,
     avgSgOtt: 0,
     avgSgApp: 0,
     avgSgArg: 0,
     avgSgPutt: 0,
+    avgDrivingDist: 0,
+    avgDrivingAcc: 0,
   });
 
+  // Calculate averages
+  const numRounds = rounds.length;
   return {
-    rounds: rounds.length,
-    avgSgTotal: sum.avgSgTotal / rounds.length,
-    avgSgOtt: sum.avgSgOtt / rounds.length,
-    avgSgApp: sum.avgSgApp / rounds.length,
-    avgSgArg: sum.avgSgArg / rounds.length,
-    avgSgPutt: sum.avgSgPutt / rounds.length,
+    rounds: numRounds,
+    avgSgTotal: sum.avgSgTotal / numRounds,
+    avgSgOtt: sum.avgSgOtt / numRounds,
+    avgSgApp: sum.avgSgApp / numRounds,
+    avgSgArg: sum.avgSgArg / numRounds,
+    avgSgPutt: sum.avgSgPutt / numRounds,
+    avgDrivingDist: sum.avgDrivingDist / numRounds,
+    // Driving accuracy is already in percentage form (0-1), no need to multiply by 100 here
+    avgDrivingAcc: sum.avgDrivingAcc / numRounds,
   };
 };
 

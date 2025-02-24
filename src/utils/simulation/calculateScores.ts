@@ -102,6 +102,11 @@ export const calculateSimulatedScore = (
     return score;
   }, 0);
 
-  // return (strokesGainedScore + proximityScore + scoringScore) ;
-  return (strokesGainedScore + proximityScore + scoringScore) * (1 + randomFactor * 0.5);
+  // Calculate base score
+  const baseScore = strokesGainedScore + proximityScore + scoringScore;
+  
+  // Apply random factor with diminishing effect based on player skill
+  // Better players (lower base scores) should have less variance
+  const varianceFactor = Math.abs(baseScore) < 1 ? 0.4 : 0.3;
+  return baseScore * (1 + randomFactor * varianceFactor);
 };
