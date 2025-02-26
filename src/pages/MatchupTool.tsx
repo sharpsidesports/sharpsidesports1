@@ -35,6 +35,7 @@ function MatchupTool() {
   const [error, setError] = useState<string>('');
   const [eventName, setEventName] = useState<string>('');
   const [lastUpdated, setLastUpdated] = useState<string>('');
+  const [selectedBookmaker, setSelectedBookmaker] = useState<string>('');
 
   useEffect(() => {
     const init = async () => {
@@ -121,6 +122,14 @@ function MatchupTool() {
     return `${matchup.p1_player_name} ${tieText}`;
   };
 
+  const getAvailableBookmakers = (matchup: Matchup | null): string[] => {
+    if (!matchup) return [];
+    
+    // Get all bookmakers except datagolf
+    const bookmakers = Object.keys(matchup.odds).filter(book => book !== 'datagolf');
+    return bookmakers;
+  };
+
   const handlePlayerSelect = (value: string) => {
     // value format: "p1Name|p2Name|tieTerms"
     const [p1Name, p2Name, tieTerm] = value.split('|');
@@ -133,16 +142,16 @@ function MatchupTool() {
 
     if (matchup) {
       setSelectedMatchup(matchup);
-      setIsYourPickP1(true);  // Always true since we're only showing p1 in left dropdown
+      setIsYourPickP1(true);
 
-      // Set odds based on selection (using bet365 odds if available, otherwise first available book)
-      if (matchup.odds.bet365) {
-        setOdds(matchup.odds.bet365.p1);
-      } else {
-        const firstBook = Object.keys(matchup.odds)[0];
-        if (firstBook) {
-          setOdds(matchup.odds[firstBook].p1);
-        }
+      // Get available bookmakers and select the first one
+      const bookmakers = getAvailableBookmakers(matchup);
+      const firstBook = bookmakers[0] || '';
+      setSelectedBookmaker(firstBook);
+
+      // Set odds based on selected bookmaker
+      if (firstBook && matchup.odds[firstBook]) {
+        setOdds(matchup.odds[firstBook].p1);
       }
 
       // Find golfers in our simulation data
@@ -168,17 +177,42 @@ function MatchupTool() {
   }, [golfers, selectedMatchup, isYourPickP1]);
 
   const calculateEdge = () => {
-    if (!selectedGolfer1 || !selectedGolfer2 || !odds) return null;
+    if (!selectedMatchup || !selectedBookmaker) return null;
 
-    const projectedWinProb = selectedGolfer1.simulationStats.winPercentage /
-      (selectedGolfer1.simulationStats.winPercentage + selectedGolfer2.simulationStats.winPercentage);
+    // Get DataGolf's odds for the selected player
+    const dgOdds = selectedMatchup.odds.datagolf;
+    if (!dgOdds) return null;
 
-    const oddsDecimal = parseInt(odds);
-    const impliedProb = oddsDecimal > 0
-      ? 100 / (oddsDecimal + 100)
-      : Math.abs(oddsDecimal) / (Math.abs(oddsDecimal) + 100);
+    // Get selected bookmaker's odds
+    const bookOdds = selectedMatchup.odds[selectedBookmaker];
+    if (!bookOdds) return null;
 
-    return (projectedWinProb - impliedProb) * 100;
+    // Get the right odds based on which player was picked
+    const dgOddsStr = isYourPickP1 ? dgOdds.p1 : dgOdds.p2;
+    const bookOddsStr = isYourPickP1 ? bookOdds.p1 : bookOdds.p2;
+
+    // Convert DataGolf's American odds to implied probability
+    const dgOddsNum = parseInt(dgOddsStr);
+    const dgImpliedProb = dgOddsNum > 0
+      ? (100 / (dgOddsNum + 100))
+      : (Math.abs(dgOddsNum) / (Math.abs(dgOddsNum) + 100));
+
+    // Convert bookmaker's American odds to implied probability
+    const bookOddsNum = parseInt(bookOddsStr);
+    const bookImpliedProb = bookOddsNum > 0
+      ? (100 / (bookOddsNum + 100))
+      : (Math.abs(bookOddsNum) / (Math.abs(bookOddsNum) + 100));
+
+    // Calculate edge: datagolf implied prob - bookmaker implied prob
+    // Multiply by 100 to convert to percentage
+    const edge = (dgImpliedProb - bookImpliedProb) * 100;
+    
+    // For debugging
+    console.log('DataGolf odds:', dgOddsNum, 'implied prob:', dgImpliedProb * 100);
+    console.log('Bookmaker odds:', bookOddsNum, 'implied prob:', bookImpliedProb * 100);
+    console.log('Edge:', edge);
+
+    return edge;
   };
 
   const calculatePayout = () => {
@@ -201,12 +235,12 @@ function MatchupTool() {
     <div className="container mx-auto px-4 py-8">
       <h2 className="text-2xl font-bold mb-6">Matchup Analysis Tool</h2>
       
-      <button
+      {/* <button
         onClick={runSimulation}
         className="bg-sharpside-green text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
       >
         Run Simulation
-      </button>
+      </button> */}
 
       <div className="mb-6">
         <div className="text-sm text-gray-600">
@@ -290,7 +324,7 @@ function MatchupTool() {
             type="text"
             className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
             value={odds}
-            onChange={(e) => setOdds(e.target.value)}
+            readOnly
           />
           {selectedMatchup && (
             <div className="mt-1 text-sm text-gray-500">
@@ -319,9 +353,34 @@ function MatchupTool() {
         </div>
       </div>
 
+      {selectedMatchup && (
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Select Bookmaker</label>
+          <select
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            value={selectedBookmaker}
+            onChange={(e) => {
+              setSelectedBookmaker(e.target.value);
+              // Update odds when bookmaker changes
+              if (selectedMatchup.odds[e.target.value]) {
+                setOdds(isYourPickP1 
+                  ? selectedMatchup.odds[e.target.value].p1 
+                  : selectedMatchup.odds[e.target.value].p2
+                );
+              }
+            }}
+          >
+            <option value="">Select a bookmaker</option>
+            {getAvailableBookmakers(selectedMatchup).map(book => (
+              <option key={book} value={book}>{book}</option>
+            ))}
+          </select>
+        </div>
+      )}
+
       {selectedGolfer1 && selectedGolfer2 && odds && (
         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-gray-50 p-4 rounded-lg">
+          {/* <div className="bg-gray-50 p-4 rounded-lg">
             <h3 className="text-sm font-medium text-gray-500 mb-1">Projected Win Probability</h3>
             <p className="text-2xl font-bold text-gray-900">
               {((selectedGolfer1.simulationStats.winPercentage /
@@ -330,7 +389,7 @@ function MatchupTool() {
             <p className="text-sm text-gray-500 mt-1">
               For {selectedGolfer1.name}
             </p>
-          </div>
+          </div> */}
 
           <div className="bg-gray-50 p-4 rounded-lg">
             <h3 className="text-sm font-medium text-gray-500 mb-1">Model Edge</h3>
@@ -394,7 +453,7 @@ function MatchupTool() {
                     {selectedGolfer2.simulationStats.top10Percentage.toFixed(1)}%
                   </td>
                 </tr>
-                <tr>
+                {/* <tr>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     Win Probability
                   </td>
@@ -404,7 +463,7 @@ function MatchupTool() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
                     {selectedGolfer2.simulationStats.winPercentage.toFixed(1)}%
                   </td>
-                </tr>
+                </tr> */}
 
                 {/* <tr>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">

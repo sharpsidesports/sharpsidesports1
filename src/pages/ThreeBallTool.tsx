@@ -14,6 +14,7 @@ interface ThreeBallOdds {
   p1_player_name: string;
   p2_player_name: string;
   p3_player_name: string;
+  ties?: string;
 }
 
 interface ThreeBallResponse {
@@ -96,71 +97,10 @@ function ThreeBallTool() {
     return (golfer1.simulationStats.winPercentage / total) * 100;
   };
 
-  const getAvailableBookmakers = () => {
-    if (threeBallOdds.length === 0) return [];
-    const firstMatch = threeBallOdds[0];
-    return firstMatch ? Object.keys(firstMatch.odds) : [];
-  };
-
-  const calculateEdge = () => {
-    if (!golfer1 || !golfer2 || !golfer3) return null;
-
-    const projectedWinProb = calculateThreeBallProbability() || 0;
-    const americanOdds = getCurrentOdds();
-    
-    if (!americanOdds) return null;
-
-    // Convert American odds to implied probability
-    const impliedProb = americanOdds > 0 
-      ? (100 / (americanOdds + 100)) * 100
-      : (Math.abs(americanOdds) / (Math.abs(americanOdds) + 100)) * 100;
-
-    return projectedWinProb - impliedProb;
-  };
-
-  const calculatePayout = () => {
-    if (!betAmount) return null;
-    
-    const americanOdds = getCurrentOdds();
-    if (!americanOdds) return null;
-
-    const amount = parseFloat(betAmount);
-    if (americanOdds > 0) {
-      return ((amount * americanOdds) / 100).toFixed(2);
-    } else {
-      return ((amount * 100) / Math.abs(americanOdds)).toFixed(2);
-    }
-  };
-
-  const getCurrentOdds = () => {
-    if (!selectedBookmaker || !golfer1) return null;
-    
-    const matchup = threeBallOdds.find(match => 
-      match.p1_player_name.includes(golfer1.name) ||
-      match.p2_player_name.includes(golfer1.name) ||
-      match.p3_player_name.includes(golfer1.name)
-    );
-
-    if (!matchup) return null;
-
-    const bookmakerOdds = matchup.odds[selectedBookmaker];
-    if (!bookmakerOdds) return null;
-
-    // Find which position (p1, p2, p3) corresponds to our selected golfer
-    if (matchup.p1_player_name.includes(golfer1.name)) return bookmakerOdds.p1;
-    if (matchup.p2_player_name.includes(golfer1.name)) return bookmakerOdds.p2;
-    if (matchup.p3_player_name.includes(golfer1.name)) return bookmakerOdds.p3;
-
-    return null;
-  };
-
-  const getFilteredMatchups = () => {
-    return threeBallOdds.filter(matchup => {
-      const p1InGolfers = golfers.some(g => g.name.toLowerCase() === matchup.p1_player_name.toLowerCase());
-      const p2InGolfers = golfers.some(g => g.name.toLowerCase() === matchup.p2_player_name.toLowerCase());
-      const p3InGolfers = golfers.some(g => g.name.toLowerCase() === matchup.p3_player_name.toLowerCase());
-      return p1InGolfers && p2InGolfers && p3InGolfers;
-    });
+  const getAvailableBookmakers = (matchup: ThreeBallOdds | null): string[] => {
+    if (!matchup) return [];
+    // Get all bookmakers except datagolf
+    return Object.keys(matchup.odds).filter(book => book !== 'datagolf');
   };
 
   const handleGolferSelect = (playerName: string) => {
@@ -179,61 +119,136 @@ function ThreeBallTool() {
     // Clear any previous errors since we found a valid matchup
     setError('');
     
-    // Create a reordered matchup with the selected player as p1
     console.log('Matchup found:', matchup);
-    const reorderedMatchup = { ...matchup };
       
     // Find which position (p1, p2, p3) the selected player is in
     let selectedPosition = '1';
     if (matchup.p2_player_name === playerName) selectedPosition = '2';
     if (matchup.p3_player_name === playerName) selectedPosition = '3';
-
-    // Reorder player names
-    reorderedMatchup.p1_player_name = playerName;
-    if (selectedPosition === '1') {
-      reorderedMatchup.p2_player_name = matchup.p2_player_name;
-      reorderedMatchup.p3_player_name = matchup.p3_player_name;
-    } else if (selectedPosition === '2') {
-      reorderedMatchup.p2_player_name = matchup.p1_player_name;
-      reorderedMatchup.p3_player_name = matchup.p3_player_name;
-    } else {
-      reorderedMatchup.p2_player_name = matchup.p1_player_name;
-      reorderedMatchup.p3_player_name = matchup.p2_player_name;
-    }
-
-    // Reorder odds for each bookmaker
-    for (const bookmaker in reorderedMatchup.odds) {
-      const originalOdds = matchup.odds[bookmaker];
-      reorderedMatchup.odds[bookmaker] = {
-        p1: originalOdds[`p${selectedPosition}`],
-        p2: selectedPosition === '1' ? originalOdds.p2 :
-            selectedPosition === '2' ? originalOdds.p1 : originalOdds.p1,
-        p3: selectedPosition === '1' ? originalOdds.p3 :
-            selectedPosition === '2' ? originalOdds.p3 : originalOdds.p2
-      };
-    }
-
-    setSelectedMatchup(reorderedMatchup);
+    
+    // Set the selected golfer and matchup
+    setSelectedMatchup(matchup);
     setSelectedGolfer(playerName);
 
-    // Find and set the golfers from our golfers list in the new order
-    const g1 = golfers.find(g => g.name === reorderedMatchup.p1_player_name) || null;
-    const g2 = golfers.find(g => g.name === reorderedMatchup.p2_player_name) || null;
-    const g3 = golfers.find(g => g.name === reorderedMatchup.p3_player_name) || null;
+    // Get available bookmakers and select the first one
+    const bookmakers = getAvailableBookmakers(matchup);
+    const firstBook = bookmakers[0] || '';
+    setSelectedBookmaker(firstBook);
 
-    setGolfer1(g1);
-    setGolfer2(g2);
-    setGolfer3(g3);
-
-    // Set default bookmaker if not already set
-    if (!selectedBookmaker && Object.keys(reorderedMatchup.odds).length > 0) {
-      setSelectedBookmaker(Object.keys(reorderedMatchup.odds)[0]);
+    // Find golfers in our data
+    let g1, g2, g3;
+    
+    if (selectedPosition === '1') {
+      g1 = golfers.find(g => g.name.toLowerCase() === matchup.p1_player_name.toLowerCase());
+      g2 = golfers.find(g => g.name.toLowerCase() === matchup.p2_player_name.toLowerCase());
+      g3 = golfers.find(g => g.name.toLowerCase() === matchup.p3_player_name.toLowerCase());
+    } else if (selectedPosition === '2') {
+      g1 = golfers.find(g => g.name.toLowerCase() === matchup.p2_player_name.toLowerCase());
+      g2 = golfers.find(g => g.name.toLowerCase() === matchup.p1_player_name.toLowerCase());
+      g3 = golfers.find(g => g.name.toLowerCase() === matchup.p3_player_name.toLowerCase());
+    } else {
+      g1 = golfers.find(g => g.name.toLowerCase() === matchup.p3_player_name.toLowerCase());
+      g2 = golfers.find(g => g.name.toLowerCase() === matchup.p1_player_name.toLowerCase());
+      g3 = golfers.find(g => g.name.toLowerCase() === matchup.p2_player_name.toLowerCase());
     }
+
+    setGolfer1(g1 || null);
+    setGolfer2(g2 || null);
+    setGolfer3(g3 || null);
+  };
+
+  const calculateEdge = () => {
+    if (!selectedMatchup || !selectedBookmaker || !selectedGolfer) return null;
+
+    // Get DataGolf's odds for the selected player
+    const dgOdds = selectedMatchup.odds.datagolf;
+    if (!dgOdds) return null;
+
+    // Get selected bookmaker's odds
+    const bookOdds = selectedMatchup.odds[selectedBookmaker];
+    if (!bookOdds) return null;
+
+    // Find which position (p1, p2, p3) the selected golfer is in
+    let position = 'p1';
+    if (selectedMatchup.p2_player_name === selectedGolfer) position = 'p2';
+    if (selectedMatchup.p3_player_name === selectedGolfer) position = 'p3';
+
+    // Convert DataGolf's American odds to implied probability
+    const dgOddsStr = dgOdds[position].toString();
+    const dgOddsNum = parseInt(dgOddsStr);
+    const dgImpliedProb = dgOddsNum > 0
+      ? (100 / (dgOddsNum + 100))
+      : (Math.abs(dgOddsNum) / (Math.abs(dgOddsNum) + 100));
+
+    // Convert bookmaker's American odds to implied probability
+    const bookOddsStr = bookOdds[position].toString();
+    const bookOddsNum = parseInt(bookOddsStr);
+    const bookImpliedProb = bookOddsNum > 0
+      ? (100 / (bookOddsNum + 100))
+      : (Math.abs(bookOddsNum) / (Math.abs(bookOddsNum) + 100));
+
+    // Calculate edge: datagolf implied prob - bookmaker implied prob
+    // Multiply by 100 to convert to percentage
+    const edge = (dgImpliedProb - bookImpliedProb) * 100;
+    
+    // For debugging
+    console.log('Selected position:', position);
+    console.log('DataGolf odds:', dgOddsNum, 'implied prob:', dgImpliedProb);
+    console.log('Bookmaker odds:', bookOddsNum, 'implied prob:', bookImpliedProb);
+    console.log('Edge:', edge);
+
+    return edge;
+  };
+
+  const calculatePayout = () => {
+    if (!betAmount) return null;
+    
+    const americanOdds = getCurrentOdds();
+    if (!americanOdds) return null;
+
+    const amount = parseFloat(betAmount);
+    if (americanOdds > 0) {
+      return ((amount * americanOdds) / 100).toFixed(2);
+    } else {
+      return ((amount * 100) / Math.abs(americanOdds)).toFixed(2);
+    }
+  };
+
+  const getCurrentOdds = () => {
+    if (!selectedMatchup || !selectedBookmaker || !selectedGolfer) return null;
+    
+    const bookmakerOdds = selectedMatchup.odds[selectedBookmaker];
+    if (!bookmakerOdds) return null;
+
+    // Find which position (p1, p2, p3) the selected golfer is in
+    if (selectedMatchup.p1_player_name === selectedGolfer) return bookmakerOdds.p1;
+    if (selectedMatchup.p2_player_name === selectedGolfer) return bookmakerOdds.p2;
+    if (selectedMatchup.p3_player_name === selectedGolfer) return bookmakerOdds.p3;
+
+    return null;
+  };
+
+  const getFilteredMatchups = () => {
+    return threeBallOdds.filter(matchup => {
+      const p1InGolfers = golfers.some(g => g.name.toLowerCase() === matchup.p1_player_name.toLowerCase());
+      const p2InGolfers = golfers.some(g => g.name.toLowerCase() === matchup.p2_player_name.toLowerCase());
+      const p3InGolfers = golfers.some(g => g.name.toLowerCase() === matchup.p3_player_name.toLowerCase());
+      return p1InGolfers && p2InGolfers && p3InGolfers;
+    });
   };
 
   const edge = calculateEdge();
   const payout = calculatePayout();
   const winProbability = calculateThreeBallProbability();
+
+  // Function to get tie handling information
+  const getTieHandlingText = (matchup: ThreeBallOdds | null) => {
+    if (!matchup) return '';
+    
+    // Three-ball matchups typically have "dead heat" rules for ties
+    // Dead heat means if there's a tie for 1st place, the payout is divided
+    return matchup.ties || 'dead heat';
+  };
 
   return (
     <div className="space-y-6">
@@ -323,11 +338,18 @@ function ThreeBallTool() {
                 <input
                   type="text"
                   className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                  value={selectedMatchup && selectedBookmaker ? selectedMatchup.odds[selectedBookmaker].p1 : ''}
-                  onChange={(e) => {
-                    // Add handler if needed for manual odds entry
-                  }}
+                  value={getCurrentOdds() || ''}
+                  readOnly
                 />
+                {selectedMatchup && (
+                  <div className="mt-1 text-sm text-gray-500">
+                    Ties: {getTieHandlingText(selectedMatchup) === "dead heat" ? (
+                      <span className="text-blue-600">Dead Heat (payout divided if tied)</span>
+                    ) : (
+                      <span className="text-purple-600">{getTieHandlingText(selectedMatchup)}</span>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div>
@@ -346,30 +368,30 @@ function ThreeBallTool() {
           </div>
 
           <div className="col-span-1 md:col-span-3">
-            <div className="bg-white p-4 rounded-lg border-2 border-gray-200">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Select Bookmaker
-              </label>
-              <select
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                value={selectedBookmaker}
-                onChange={(e) => setSelectedBookmaker(e.target.value)}
-              >
-                <option value="">Select Bookmaker</option>
-                {getAvailableBookmakers().map((bookmaker) => (
-                  <option key={bookmaker} value={bookmaker}>
-                    {bookmaker}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {selectedMatchup && (
+              <div className="bg-white p-4 rounded-lg border-2 border-gray-200">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Select Bookmaker
+                </label>
+                <select
+                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                  value={selectedBookmaker}
+                  onChange={(e) => setSelectedBookmaker(e.target.value)}
+                >
+                  <option value="">Select Bookmaker</option>
+                  {getAvailableBookmakers(selectedMatchup).map(book => (
+                    <option key={book} value={book}>{book}</option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
         </div>
 
         {selectedMatchup && selectedBookmaker && (
           <div className="col-span-1 md:col-span-3 mt-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-gray-50 p-4 rounded-lg">
+              {/* <div className="bg-gray-50 p-4 rounded-lg">
                 <h3 className="text-sm font-medium text-gray-500 mb-1">Win Probability</h3>
                 <p className="text-2xl font-bold text-gray-900">
                   {winProbability ? `${winProbability.toFixed(1)}%` : '-'}
@@ -377,7 +399,7 @@ function ThreeBallTool() {
                 <p className="text-sm text-gray-500 mt-1">
                   For {golfer1?.name}
                 </p>
-              </div>
+              </div> */}
 
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h3 className="text-sm font-medium text-gray-500 mb-1">Model Edge</h3>
@@ -453,7 +475,7 @@ function ThreeBallTool() {
                         {golfer3.simulationStats.top10Percentage.toFixed(1)}%
                       </td>
                     </tr>
-                    <tr>
+                    {/* <tr>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         Win Probability
                       </td>
@@ -466,7 +488,7 @@ function ThreeBallTool() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
                         {golfer3.simulationStats.winPercentage.toFixed(1)}%
                       </td>
-                    </tr>
+                    </tr> */}
                     {/* <tr>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         Average Finish
