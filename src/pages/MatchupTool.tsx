@@ -82,6 +82,16 @@ function MatchupTool() {
     }
   }, [selectedGolfer1, selectedGolfer2]);
 
+  useEffect(() => {
+    if (selectedMatchup && selectedBookmaker && selectedMatchup.odds[selectedBookmaker]) {
+      // Update odds based on which player is selected
+      setOdds(isYourPickP1 
+        ? selectedMatchup.odds[selectedBookmaker].p1 
+        : selectedMatchup.odds[selectedBookmaker].p2
+      );
+    }
+  }, [isYourPickP1, selectedBookmaker, selectedMatchup]);
+
   const getFilteredMatchups = () => {
     console.log('Total matchups before filtering:', matchups.length);
     console.log('Total golfers in data:', golfers.length);
@@ -119,7 +129,7 @@ function MatchupTool() {
 
   const getMatchupDisplayText = (matchup: Matchup) => {
     const tieText = matchup.ties === "void" ? "(Tie: Void)" : "(Tie: Offered)";
-    return `${matchup.p1_player_name} ${tieText}`;
+    return `${matchup.p1_player_name} vs ${matchup.p2_player_name} ${tieText}`;
   };
 
   const getAvailableBookmakers = (matchup: Matchup | null): string[] => {
@@ -270,10 +280,10 @@ function MatchupTool() {
         <div className="bg-green-50 p-4 rounded-lg border-2 border-green-200">
           <div className="flex items-center justify-between mb-2">
             <label className="block text-sm font-medium text-gray-700">
-              Your Pick (Golfer to Bet On)
+              Select Matchup
             </label>
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-              Selected to Win
+              First Player Selected to Win
             </span>
           </div>
           <select
@@ -281,7 +291,7 @@ function MatchupTool() {
             value={selectedMatchup ? `${selectedMatchup.p1_player_name}|${selectedMatchup.p2_player_name}|${selectedMatchup.ties}` : ''}
             onChange={(e) => handlePlayerSelect(e.target.value)}
           >
-            <option value="">Select Golfer</option>
+            <option value="">Select Matchup</option>
             {filteredMatchups.map((matchup) => (
               <option 
                 key={getMatchupKey(matchup)} 
@@ -296,24 +306,36 @@ function MatchupTool() {
         <div className="bg-gray-50 p-4 rounded-lg border-2 border-gray-200">
           <div className="flex items-center justify-between mb-2">
             <label className="block text-sm font-medium text-gray-700">
-              Opponent
+              Your Pick
             </label>
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-              Betting Against
-            </span>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => setIsYourPickP1(true)}
+                className={`px-3 py-1 text-xs rounded-full ${isYourPickP1 
+                  ? 'bg-green-500 text-white' 
+                  : 'bg-gray-200 text-gray-700'}`}
+              >
+                {selectedMatchup?.p1_player_name || 'Player 1'}
+              </button>
+              <button
+                onClick={() => setIsYourPickP1(false)}
+                className={`px-3 py-1 text-xs rounded-full ${!isYourPickP1 
+                  ? 'bg-green-500 text-white' 
+                  : 'bg-gray-200 text-gray-700'}`}
+              >
+                {selectedMatchup?.p2_player_name || 'Player 2'}
+              </button>
+            </div>
           </div>
-          <select
-            className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-            value={selectedMatchup ? selectedMatchup.p2_player_name : ''}
-            disabled
-          >
-            <option value="">Select Golfer</option>
-            {selectedMatchup && (
-              <option value={selectedMatchup.p2_player_name}>
-                {selectedMatchup.p2_player_name}
-              </option>
+          <div className="text-center p-2 bg-gray-100 rounded-md">
+            {selectedMatchup ? (
+              <span className="font-medium">
+                {isYourPickP1 ? selectedMatchup.p1_player_name : selectedMatchup.p2_player_name}
+              </span>
+            ) : (
+              <span className="text-gray-500">Select a matchup first</span>
             )}
-          </select>
+          </div>
         </div>
 
         <div>

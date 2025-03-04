@@ -74,7 +74,7 @@ export const datagolfService = {
   async getApproachStats() {
     try {
       const response = await apiClient.get(ENDPOINTS.APPROACH_SKILL, {
-        period: 'l12'
+        period: 'l3'
       });
       return response;
     } catch (error) {
