@@ -37,7 +37,7 @@ function ThreeBallTool() {
   const [eventName, setEventName] = useState<string>('');
   const [lastUpdated, setLastUpdated] = useState<string>('');
   const [selectedMatchup, setSelectedMatchup] = useState<ThreeBallOdds | null>(null);
-  const [selectedGolfer, setSelectedGolfer] = useState<string>('');
+  const [selectedPosition, setSelectedPosition] = useState<'p1' | 'p2' | 'p3'>('p1');
 
   useEffect(() => {
     const init = async () => {
@@ -82,20 +82,11 @@ function ThreeBallTool() {
   }, [golfers.length]); // Only run when golfers are loaded
 
   useEffect(() => {
-    if (selectedGolfer && selectedMatchup) {
+    if (selectedMatchup && selectedBookmaker && selectedMatchup.odds[selectedBookmaker]) {
+      // Odds will be updated automatically through getCurrentOdds()
       runSimulation();
     }
-  }, [selectedGolfer, selectedMatchup, runSimulation]);
-
-  const calculateThreeBallProbability = () => {
-    if (!golfer1 || !golfer2 || !golfer3) return null;
-
-    const total = golfer1.simulationStats.winPercentage + 
-                 golfer2.simulationStats.winPercentage + 
-                 golfer3.simulationStats.winPercentage;
-
-    return (golfer1.simulationStats.winPercentage / total) * 100;
-  };
+  }, [selectedPosition, selectedBookmaker, selectedMatchup, runSimulation]);
 
   const getAvailableBookmakers = (matchup: ThreeBallOdds | null): string[] => {
     if (!matchup) return [];
@@ -103,16 +94,27 @@ function ThreeBallTool() {
     return Object.keys(matchup.odds).filter(book => book !== 'datagolf');
   };
 
-  const handleGolferSelect = (playerName: string) => {
-    console.log('Selected player:', playerName);
-    const matchup = getFilteredMatchups().find(m =>
-      m.p1_player_name === playerName || 
-      m.p2_player_name === playerName || 
-      m.p3_player_name === playerName
+  const getMatchupKey = (matchup: ThreeBallOdds) => {
+    return `${matchup.p1_player_name}-${matchup.p2_player_name}-${matchup.p3_player_name}`;
+  };
+
+  const getMatchupDisplayText = (matchup: ThreeBallOdds) => {
+    const tieText = matchup.ties === "dead heat" ? "(Ties: Dead Heat)" : "(Ties: " + (matchup.ties || "Dead Heat") + ")";
+    return `${matchup.p1_player_name} vs ${matchup.p2_player_name} vs ${matchup.p3_player_name} ${tieText}`;
+  };
+
+  const handleMatchupSelect = (value: string) => {
+    // value format: "p1Name|p2Name|p3Name"
+    const [p1Name, p2Name, p3Name] = value.split('|');
+    
+    const matchup = getFilteredMatchups().find(m => 
+      m.p1_player_name === p1Name && 
+      m.p2_player_name === p2Name &&
+      m.p3_player_name === p3Name
     );
 
     if (!matchup) {
-      setError(`No three-ball matchup found for ${playerName}. Please select a different golfer.`);
+      setError(`No three-ball matchup found. Please select a different matchup.`);
       return;
     }
 
@@ -121,14 +123,9 @@ function ThreeBallTool() {
     
     console.log('Matchup found:', matchup);
       
-    // Find which position (p1, p2, p3) the selected player is in
-    let selectedPosition = '1';
-    if (matchup.p2_player_name === playerName) selectedPosition = '2';
-    if (matchup.p3_player_name === playerName) selectedPosition = '3';
-    
-    // Set the selected golfer and matchup
+    // Set the selected matchup and default to player 1
     setSelectedMatchup(matchup);
-    setSelectedGolfer(playerName);
+    setSelectedPosition('p1');
 
     // Get available bookmakers and select the first one
     const bookmakers = getAvailableBookmakers(matchup);
@@ -136,29 +133,17 @@ function ThreeBallTool() {
     setSelectedBookmaker(firstBook);
 
     // Find golfers in our data
-    let g1, g2, g3;
+    const g1 = golfers.find(g => g.name.toLowerCase() === matchup.p1_player_name.toLowerCase());
+    const g2 = golfers.find(g => g.name.toLowerCase() === matchup.p2_player_name.toLowerCase());
+    const g3 = golfers.find(g => g.name.toLowerCase() === matchup.p3_player_name.toLowerCase());
     
-    if (selectedPosition === '1') {
-      g1 = golfers.find(g => g.name.toLowerCase() === matchup.p1_player_name.toLowerCase());
-      g2 = golfers.find(g => g.name.toLowerCase() === matchup.p2_player_name.toLowerCase());
-      g3 = golfers.find(g => g.name.toLowerCase() === matchup.p3_player_name.toLowerCase());
-    } else if (selectedPosition === '2') {
-      g1 = golfers.find(g => g.name.toLowerCase() === matchup.p2_player_name.toLowerCase());
-      g2 = golfers.find(g => g.name.toLowerCase() === matchup.p1_player_name.toLowerCase());
-      g3 = golfers.find(g => g.name.toLowerCase() === matchup.p3_player_name.toLowerCase());
-    } else {
-      g1 = golfers.find(g => g.name.toLowerCase() === matchup.p3_player_name.toLowerCase());
-      g2 = golfers.find(g => g.name.toLowerCase() === matchup.p1_player_name.toLowerCase());
-      g3 = golfers.find(g => g.name.toLowerCase() === matchup.p2_player_name.toLowerCase());
-    }
-
     setGolfer1(g1 || null);
     setGolfer2(g2 || null);
     setGolfer3(g3 || null);
   };
 
   const calculateEdge = () => {
-    if (!selectedMatchup || !selectedBookmaker || !selectedGolfer) return null;
+    if (!selectedMatchup || !selectedBookmaker) return null;
 
     // Get DataGolf's odds for the selected player
     const dgOdds = selectedMatchup.odds.datagolf;
@@ -168,20 +153,15 @@ function ThreeBallTool() {
     const bookOdds = selectedMatchup.odds[selectedBookmaker];
     if (!bookOdds) return null;
 
-    // Find which position (p1, p2, p3) the selected golfer is in
-    let position = 'p1';
-    if (selectedMatchup.p2_player_name === selectedGolfer) position = 'p2';
-    if (selectedMatchup.p3_player_name === selectedGolfer) position = 'p3';
-
     // Convert DataGolf's American odds to implied probability
-    const dgOddsStr = dgOdds[position].toString();
+    const dgOddsStr = dgOdds[selectedPosition].toString();
     const dgOddsNum = parseInt(dgOddsStr);
     const dgImpliedProb = dgOddsNum > 0
       ? (100 / (dgOddsNum + 100))
       : (Math.abs(dgOddsNum) / (Math.abs(dgOddsNum) + 100));
 
     // Convert bookmaker's American odds to implied probability
-    const bookOddsStr = bookOdds[position].toString();
+    const bookOddsStr = bookOdds[selectedPosition].toString();
     const bookOddsNum = parseInt(bookOddsStr);
     const bookImpliedProb = bookOddsNum > 0
       ? (100 / (bookOddsNum + 100))
@@ -192,12 +172,31 @@ function ThreeBallTool() {
     const edge = (dgImpliedProb - bookImpliedProb) * 100;
     
     // For debugging
-    console.log('Selected position:', position);
+    console.log('Selected position:', selectedPosition);
     console.log('DataGolf odds:', dgOddsNum, 'implied prob:', dgImpliedProb);
     console.log('Bookmaker odds:', bookOddsNum, 'implied prob:', bookImpliedProb);
     console.log('Edge:', edge);
 
     return edge;
+  };
+
+  const getCurrentOdds = () => {
+    if (!selectedMatchup || !selectedBookmaker) return null;
+    
+    const bookmakerOdds = selectedMatchup.odds[selectedBookmaker];
+    if (!bookmakerOdds) return null;
+
+    return bookmakerOdds[selectedPosition];
+  };
+
+  const getSelectedGolferName = () => {
+    if (!selectedMatchup) return '';
+    
+    if (selectedPosition === 'p1') return selectedMatchup.p1_player_name;
+    if (selectedPosition === 'p2') return selectedMatchup.p2_player_name;
+    if (selectedPosition === 'p3') return selectedMatchup.p3_player_name;
+    
+    return '';
   };
 
   const calculatePayout = () => {
@@ -214,20 +213,6 @@ function ThreeBallTool() {
     }
   };
 
-  const getCurrentOdds = () => {
-    if (!selectedMatchup || !selectedBookmaker || !selectedGolfer) return null;
-    
-    const bookmakerOdds = selectedMatchup.odds[selectedBookmaker];
-    if (!bookmakerOdds) return null;
-
-    // Find which position (p1, p2, p3) the selected golfer is in
-    if (selectedMatchup.p1_player_name === selectedGolfer) return bookmakerOdds.p1;
-    if (selectedMatchup.p2_player_name === selectedGolfer) return bookmakerOdds.p2;
-    if (selectedMatchup.p3_player_name === selectedGolfer) return bookmakerOdds.p3;
-
-    return null;
-  };
-
   const getFilteredMatchups = () => {
     return threeBallOdds.filter(matchup => {
       const p1InGolfers = golfers.some(g => g.name.toLowerCase() === matchup.p1_player_name.toLowerCase());
@@ -239,7 +224,6 @@ function ThreeBallTool() {
 
   const edge = calculateEdge();
   const payout = calculatePayout();
-  const winProbability = calculateThreeBallProbability();
 
   // Function to get tie handling information
   const getTieHandlingText = (matchup: ThreeBallOdds | null) => {
@@ -281,51 +265,69 @@ function ThreeBallTool() {
           <div className="bg-green-50 p-4 rounded-lg border-2 border-green-200">
             <div className="flex items-center justify-between mb-2">
               <label className="block text-sm font-medium text-gray-700">
-                Your Pick (Golfer to Bet On)
+                Select Three Ball Matchup
               </label>
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                Selected to Win
+                Three Golfer Group
               </span>
             </div>
             <select
               className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-              value={golfer1?.name || ''}
-              onChange={(e) => handleGolferSelect(e.target.value)}
+              value={selectedMatchup ? `${selectedMatchup.p1_player_name}|${selectedMatchup.p2_player_name}|${selectedMatchup.p3_player_name}` : ''}
+              onChange={(e) => handleMatchupSelect(e.target.value)}
             >
-              <option value="">Select Golfer</option>
-              {golfers.map((golfer) => (
-                <option key={golfer.id} value={golfer.name}>
-                  {golfer.name}
+              <option value="">Select Matchup</option>
+              {getFilteredMatchups().map((matchup) => (
+                <option 
+                  key={getMatchupKey(matchup)} 
+                  value={`${matchup.p1_player_name}|${matchup.p2_player_name}|${matchup.p3_player_name}`}
+                >
+                  {getMatchupDisplayText(matchup)}
                 </option>
               ))}
             </select>
           </div>
 
-          <div className="bg-gray-50 p-4 rounded-lg border-2 border-gray-200">
+          <div className="bg-gray-50 p-4 rounded-lg border-2 border-gray-200 col-span-2">
             <div className="flex items-center justify-between mb-2">
               <label className="block text-sm font-medium text-gray-700">
-                Opponent 1
+                Your Pick
               </label>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                Betting Against
-              </span>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => setSelectedPosition('p1')}
+                  className={`px-3 py-1 text-xs rounded-full ${selectedPosition === 'p1' 
+                    ? 'bg-green-500 text-white' 
+                    : 'bg-gray-200 text-gray-700'}`}
+                >
+                  {selectedMatchup?.p1_player_name || 'Player 1'}
+                </button>
+                <button
+                  onClick={() => setSelectedPosition('p2')}
+                  className={`px-3 py-1 text-xs rounded-full ${selectedPosition === 'p2' 
+                    ? 'bg-green-500 text-white' 
+                    : 'bg-gray-200 text-gray-700'}`}
+                >
+                  {selectedMatchup?.p2_player_name || 'Player 2'}
+                </button>
+                <button
+                  onClick={() => setSelectedPosition('p3')}
+                  className={`px-3 py-1 text-xs rounded-full ${selectedPosition === 'p3' 
+                    ? 'bg-green-500 text-white' 
+                    : 'bg-gray-200 text-gray-700'}`}
+                >
+                  {selectedMatchup?.p3_player_name || 'Player 3'}
+                </button>
+              </div>
             </div>
-            <div className="w-full p-2 bg-gray-100 rounded-md border border-gray-300">
-              {golfer2?.name || 'Auto-selected based on your pick'}
-            </div>
-          </div>
-
-          <div className="bg-gray-50 p-4 rounded-lg border-2 border-gray-200">
-            <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-gray-700">
-                Opponent 2
-              </label>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                Betting Against
-              </span>
-            </div>
-            <div className="w-full p-2 bg-gray-100 rounded-md border border-gray-300">
-              {golfer3?.name || 'Auto-selected based on your pick'}
+            <div className="text-center p-2 bg-gray-100 rounded-md">
+              {selectedMatchup ? (
+                <span className="font-medium">
+                  {getSelectedGolferName()}
+                </span>
+              ) : (
+                <span className="text-gray-500">Select a matchup first</span>
+              )}
             </div>
           </div>
 
@@ -391,16 +393,6 @@ function ThreeBallTool() {
         {selectedMatchup && selectedBookmaker && (
           <div className="col-span-1 md:col-span-3 mt-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="text-sm font-medium text-gray-500 mb-1">Win Probability</h3>
-                <p className="text-2xl font-bold text-gray-900">
-                  {winProbability ? `${winProbability.toFixed(1)}%` : '-'}
-                </p>
-                <p className="text-sm text-gray-500 mt-1">
-                  For {golfer1?.name}
-                </p>
-              </div> */}
-
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h3 className="text-sm font-medium text-gray-500 mb-1">Model Edge</h3>
                 <p className={`text-2xl font-bold ${edge && edge > 0 ? 'text-green-600' : 'text-red-600'}`}>
@@ -417,7 +409,7 @@ function ThreeBallTool() {
                   ${payout || '-'}
                 </p>
                 <p className="text-sm text-gray-500 mt-1">
-                  If {golfer1?.name} wins
+                  If {getSelectedGolferName()} wins
                 </p>
               </div>
             </div>
@@ -436,13 +428,13 @@ function ThreeBallTool() {
                         Metric
                       </th>
                       <th className="px-6 py-3 bg-green-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {golfer1.name} (Your Pick)
+                        {selectedPosition === 'p1' ? `${golfer1.name} (Your Pick)` : golfer1.name}
                       </th>
                       <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {golfer2.name}
+                        {selectedPosition === 'p2' ? `${golfer2.name} (Your Pick)` : golfer2.name}
                       </th>
                       <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {golfer3.name}
+                        {selectedPosition === 'p3' ? `${golfer3.name} (Your Pick)` : golfer3.name}
                       </th>
                     </tr>
                   </thead>
@@ -451,13 +443,13 @@ function ThreeBallTool() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         SG: Total
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 bg-green-50">
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 ${selectedPosition === 'p1' ? 'bg-green-50' : ''}`}>
                         {golfer1.strokesGainedTotal.toFixed(2)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 ${selectedPosition === 'p2' ? 'bg-green-50' : ''}`}>
                         {golfer2.strokesGainedTotal.toFixed(2)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 ${selectedPosition === 'p3' ? 'bg-green-50' : ''}`}>
                         {golfer3.strokesGainedTotal.toFixed(2)}
                       </td>
                     </tr>
@@ -465,51 +457,22 @@ function ThreeBallTool() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         Top 10 %
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 bg-green-50">
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 ${selectedPosition === 'p1' ? 'bg-green-50' : ''}`}>
                         {golfer1.simulationStats.top10Percentage.toFixed(1)}%
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 ${selectedPosition === 'p2' ? 'bg-green-50' : ''}`}>
                         {golfer2.simulationStats.top10Percentage.toFixed(1)}%
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 ${selectedPosition === 'p3' ? 'bg-green-50' : ''}`}>
                         {golfer3.simulationStats.top10Percentage.toFixed(1)}%
                       </td>
                     </tr>
-                    {/* <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        Win Probability
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 bg-green-50">
-                        {golfer1.simulationStats.winPercentage.toFixed(1)}%
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                        {golfer2.simulationStats.winPercentage.toFixed(1)}%
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                        {golfer3.simulationStats.winPercentage.toFixed(1)}%
-                      </td>
-                    </tr> */}
-                    {/* <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        Average Finish
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 bg-green-50">
-                        {golfer1.simulationStats.averageFinish.toFixed(1)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                        {golfer2.simulationStats.averageFinish.toFixed(1)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                        {golfer3.simulationStats.averageFinish.toFixed(1)}
-                      </td>
-                    </tr> */}
-
                   </tbody>
                 </table>
               </div>
             </div>
-        </div>
-          )}
+          </div>
+        )}
       </div>
     </div>
   );
