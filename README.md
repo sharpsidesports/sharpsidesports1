@@ -10,8 +10,28 @@ ${VERSION.features.map(feature => `- ${feature}`).join('\n')}
 
 ### Getting Started
 
+1. Install Homebrew (macOS package manager)
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+2. Use Homebrew to install Node.js (which includes npm)
+
+```bash
+brew install node
+```
+
+3. Install project dependencies
+
 ```bash
 npm install
+```
+
+4. Set up your environment variables
+5. Start the development server
+
+```bash
 npm run dev
 ```
 

@@ -3,8 +3,8 @@ import { MetricWeight } from '../../types/metrics';
 import { calculateSimulatedScore } from './calculateScores';
 import { generateRandomFactor } from '../random';
 
-export const simulateRound = (golfer: Golfer, weights: MetricWeight[], ) => {
-  return calculateSimulatedScore(golfer, weights, generateRandomFactor());
+export const simulateRound = (golfer: Golfer, weights: MetricWeight[], allGolfers: Golfer[] = []) => {
+  return calculateSimulatedScore(golfer, weights, generateRandomFactor(), allGolfers);
 };
 
 export const simulateMultipleRounds = (
@@ -20,44 +20,80 @@ export const simulateMultipleRounds = (
     // Add logic here to filter recent rounds if we add historical round tracking
   };
 
+  // Create a full list of golfers including the current golfer
+  const allGolfers = [golfer, ...competitors];
+
   let totalPosition = 0;
   let wins = 0;
   let top10Finishes = 0;
   let top25Finishes = 0;
   let totalScore = 0;
 
-  // Pre-calculate competitor base stats for efficiency
-  const competitorStats = competitors
-    .filter(g => g.id !== golfer.id)
-    .map(g => ({
-      id: g.id,
-      baseScore: calculateSimulatedScore(g, weights, 0) // Get base score without random factor
-    }));
-
+  // Calculate field size for percentage-based thresholds
+  const fieldSize = competitors.length + 1; // +1 for the current golfer
+  const top10Threshold = Math.ceil(fieldSize * 0.1);
+  const top25Threshold = Math.ceil(fieldSize * 0.25);
+  
+  // Optimization: Calculate base scores once rather than on every iteration
+  // This is a major performance improvement when number of rounds is large
+  const allGolferBaseScores = new Map();
+  
+  allGolfers.forEach(g => {
+    // Base score calculation (without random component)
+    const baseScore = calculateSimulatedScore(g, weights, 0, allGolfers);
+    allGolferBaseScores.set(g.id, baseScore);
+  });
+  
+  // Run the simulation for each round
   for (let i = 0; i < numRounds; i++) {
-    // Simulate this golfer's round
-    const simulatedScore = simulateRound(recentGolferData, weights);
-    totalScore += simulatedScore;
-
-    // Simulate competitor rounds
-    const roundScores = competitorStats.map(comp => ({
-      id: comp.id,
-      score: comp.baseScore * (1 + generateRandomFactor() * 0.3) // Apply random factor to base score
-    }));
-
-    // Count how many competitors beat this golfer
-    const position = roundScores.filter(score => score.score < simulatedScore).length + 1;
+    const roundScores = [];
+    
+    // Generate scores for this round
+    for (const g of allGolfers) {
+      // Get the pre-calculated base score
+      const baseScore = allGolferBaseScores.get(g.id);
+      
+      // Add random component
+      const randomFactor = generateRandomFactor();
+      
+      // Calculate the final score with randomness
+      // Allow more randomness for all players to ensure upsets can happen
+      // Get implied probability to scale randomness
+      const impliedProb = g.odds?.impliedProbability || 
+                        (g.odds?.fanduel ? calculateImpliedProbability(g.odds.fanduel) : 0);
+      
+      // Top players (high implied probability) get more moderate randomness
+      // Lower players get higher randomness
+      // This ensures favorites can still lose sometimes
+      const probabilityFactor = impliedProb > 0 ? impliedProb : 0.01;
+      
+      // Higher minimum variance ensures upsets can happen
+      // Scale is reduced for top players but still allows for some bad rounds
+      const randomVariance = 0.4 + (1 - probabilityFactor) * 0.6;
+      
+      const finalScore = baseScore * (1 + randomFactor * randomVariance);
+      
+      roundScores.push({
+        id: g.id,
+        score: finalScore
+      });
+    }
+    
+    // Sort scores for this round (lower is better)
+    roundScores.sort((a, b) => a.score - b.score);
+    
+    // Find our golfer's position (1-indexed)
+    const position = roundScores.findIndex(s => s.id === golfer.id) + 1;
     totalPosition += position;
     
-    if (position === 1) {
-      wins++;
-    }
-    if (position <= 10) {
-      top10Finishes++;
-    }
-    if (position <= 25) {
-      top25Finishes++;
-    }
+    // Record the score for average calculation
+    const golferScore = roundScores.find(s => s.id === golfer.id)?.score || 0;
+    totalScore += golferScore;
+    
+    // Track stats
+    if (position === 1) wins++;
+    if (position <= top10Threshold) top10Finishes++;
+    if (position <= top25Threshold) top25Finishes++;
   }
 
   const averageFinish = totalPosition / numRounds;
