@@ -68,7 +68,154 @@ const calculateMetricValue = (golfer: Golfer, metric: SharpsideMetric): number =
   }
 };
 
+// Determine if a higher value is better for a given metric
+const isHigherBetter = (metric: SharpsideMetric): boolean => {
+  // For these metrics, lower values are better
+  const lowerIsBetter = [
+    'Prox100_125', 'Prox125_150', 'Prox175_200', 'Prox200_225', 'Prox225Plus',
+    'Par3Scoring', 'Par4Scoring', 'Par5Scoring'
+  ];
+  
+  return !lowerIsBetter.includes(metric);
+};
+
+// Used for caching odds ranks
+let cachedOddsRanks: Map<string, number> | null = null;
+let cachedNormalizedProbs: Map<string, number> | null = null;
+
+// Reset the cache when needed (e.g., when golfer data changes)
+export const resetOddsCache = () => {
+  cachedOddsRanks = null;
+  cachedNormalizedProbs = null;
+};
+
+// Calculate ranks for all golfers for each metric
+export const calculateRanks = (golfers: Golfer[], metrics: SharpsideMetric[]): Map<string, Map<SharpsideMetric, number>> => {
+  // Create a map to hold all ranks
+  const ranks = new Map<string, Map<SharpsideMetric, number>>();
+  
+  // Initialize maps for each golfer
+  golfers.forEach(golfer => {
+    ranks.set(golfer.id, new Map<SharpsideMetric, number>());
+  });
+  
+  // Calculate ranks for each metric
+  metrics.forEach(metric => {
+    // Get values for this metric for all golfers
+    const golferValues = golfers.map(golfer => ({
+      id: golfer.id,
+      value: calculateMetricValue(golfer, metric)
+    }));
+    
+    // Sort golfers by metric value
+    const sortedGolfers = [...golferValues].sort((a, b) => {
+      // Handle missing values - place them at the end
+      if (a.value === undefined || a.value === null) return 1;
+      if (b.value === undefined || b.value === null) return -1;
+      
+      // For most metrics, higher value is better
+      // For Bogey%, Double Bogey%, or any 'negative' metric, lower is better
+      const isNegativeMetric = metric === 'bogeyPercent' || metric === 'doubleBogeyPercent';
+      return isNegativeMetric 
+        ? a.value - b.value  // Lower is better for negative metrics
+        : b.value - a.value; // Higher is better for positive metrics
+    });
+    
+    // Assign ranks
+    sortedGolfers.forEach((golfer, index) => {
+      const golferRanks = ranks.get(golfer.id);
+      if (golferRanks) {
+        golferRanks.set(metric, index + 1);
+      }
+    });
+  });
+  
+  return ranks;
+};
+
+// Calculate the implied probability from American odds
+// This converts the betting line to a win probability percentage
+export const calculateImpliedProbability = (americanOdds: number): number => {
+  if (americanOdds === 0) return 0;
+  
+  let impliedProb: number;
+  
+  // For positive odds (underdogs)
+  if (americanOdds > 0) {
+    impliedProb = 100 / (americanOdds + 100);
+  } 
+  // For negative odds (favorites)
+  else {
+    impliedProb = Math.abs(americanOdds) / (Math.abs(americanOdds) + 100);
+  }
+  
+  return impliedProb;
+};
+
 export const calculateSimulatedScore = (
+  golfer: Golfer,
+  weights: MetricWeight[],
+  randomFactor: number,
+  allGolfers: Golfer[] = [], // Add all golfers parameter for ranking
+): number => {
+  // If no golfers provided or only one golfer, fall back to original calculation
+  if (allGolfers.length <= 1) {
+    return calculateLegacySimulatedScore(golfer, weights, randomFactor);
+  }
+  
+  // Get active metrics from weights
+  const activeMetrics = weights
+    .filter(weight => weight.weight > 0)
+    .map(weight => weight.metric);
+  
+  // Calculate ranks for all golfers for each metric
+  const metricRanks = calculateRanks(allGolfers, activeMetrics);
+  
+  // Get this golfer's ranks
+  const golferRanks = metricRanks.get(golfer.id);
+  if (!golferRanks) {
+    return calculateLegacySimulatedScore(golfer, weights, randomFactor);
+  }
+  
+  // Calculate average stats rank (weighted by the specified weights)
+  let totalWeight = 0;
+  let weightedRankSum = 0;
+  
+  weights.forEach(weightItem => {
+    if (weightItem.weight > 0) {
+      const rank = golferRanks.get(weightItem.metric) || 0;
+      if (rank > 0) {
+        weightedRankSum += rank * (weightItem.weight / 100);
+        totalWeight += weightItem.weight / 100;
+      }
+    }
+  });
+  
+  const averageStatsRank = totalWeight > 0 ? weightedRankSum / totalWeight : 0;
+  
+  // Get the raw implied probability for this golfer
+  const impliedProb = golfer.odds?.impliedProbability || 
+                     (golfer.odds?.fanduel ? calculateImpliedProbability(golfer.odds.fanduel) : 0);
+  
+  // Simplified calculation: combine stats rank and implied probability directly
+  // Normalize stats rank to 0-100 scale (lower is better)
+  const normStatsRank = (averageStatsRank / allGolfers.length) * 100;
+  
+  // Create a score based on 70% stats rank and 30% implied probability
+  // This balances player statistics with some influence from betting odds
+  // For both components, lower score is better
+  const baseScore = (normStatsRank * 0.30) + ((1 - impliedProb) * 100 * 0.70);
+  
+  // Add randomness with less computation
+  // More random variation for lower-ranked players
+  const randomComponent = randomFactor * (0.2 + (1 - impliedProb) * 0.5);
+  
+  // Return final score - lower is better
+  return baseScore * (1 + randomComponent);
+};
+
+// Keep the original calculation method for backward compatibility
+const calculateLegacySimulatedScore = (
   golfer: Golfer,
   weights: MetricWeight[],
   randomFactor: number,

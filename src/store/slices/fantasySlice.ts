@@ -38,7 +38,7 @@ export const createFantasySlice: StateCreator<FantasySlice> = (set, get) => ({
           ownership: proj.proj_ownership / 100
         }))
         .sort((a, b) => b.ownership - a.ownership)  // Sort by ownership descending
-        .slice(0, 20);  // Take top 20
+        // .slice(0, 20);  // Take top 20
       
       set({ fantasyPlayers });
     } catch (error) {
