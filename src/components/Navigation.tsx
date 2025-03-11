@@ -64,7 +64,7 @@ export default function Navigation() {
               }`
             }
           >
-            Course Fit Tool
+            Course Fit
           </NavLink>
           <NavLink
             to="/ai-caddie"
