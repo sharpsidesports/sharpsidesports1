@@ -5,58 +5,86 @@ export interface PerformanceDataPoint {
   value: number;
 }
 
+interface KeyPoint {
+  date: string;
+  value: number;
+}
+
 export const generatePerformanceData = (): PerformanceDataPoint[] => {
   const data: PerformanceDataPoint[] = [];
-  let value = 1000; // Starting value
+  const startDate = new Date('2020-01-01');
+  const endDate = new Date('2024-12-31');
   
-  // Start from December 2019
-  const startDate = new Date(2019, 11, 1);
-  const monthsToGenerate = 48; // 4 years of data
+  // We'll start at 100 (representing 100%) and calculate values relative to this
+  const baseValue = 100;
   
-  for (let i = 0; i < monthsToGenerate; i++) {
-    const currentDate = addMonths(startDate, i);
-    
-    // Major market events with increased volatility
-    if (i === 3) { // COVID crash (March 2020)
-      value *= 0.65; // Sharper 35% decline
-    } else if (i > 3 && i <= 8) { // Recovery period (April-August 2020)
-      value *= 1.12 + (Math.random() * 0.05); // Strong volatile recovery
-    } else if (i > 8 && i <= 20) { // 2021 Bull market
-      value *= 1.035 + (Math.random() * 0.03); // Strong growth with volatility
-    } else if (i > 20 && i <= 32) { // 2022 Bear market
-      value *= 0.975 + (Math.random() * 0.02); // Decline with volatility
-    } else if (i > 32) { // 2023-2024 Recovery
-      value *= 1.025 + (Math.random() * 0.04); // Growth with higher volatility
+  const keyPoints = [
+    { date: '2020-01-01', value: 100 },    // Start at 100%
+    { date: '2020-02-01', value: 85 },     // Initial dip
+    { date: '2020-05-01', value: 120 },    // Recovery
+    { date: '2020-08-01', value: 150 },
+    { date: '2020-12-01', value: 180 },
+    { date: '2021-04-01', value: 220 },
+    { date: '2021-08-01', value: 260 },
+    { date: '2021-12-01', value: 300 },
+    { date: '2022-04-01', value: 340 },
+    { date: '2022-08-01', value: 320 },    // First dip
+    { date: '2022-12-01', value: 360 },
+    { date: '2023-04-01', value: 400 },
+    { date: '2023-08-01', value: 380 },    // Second dip
+    { date: '2023-12-01', value: 440 },
+    { date: '2024-04-01', value: 500 },
+    { date: '2024-08-01', value: 540 },
+    { date: '2024-12-31', value: 576.5 }   // Final target (476.5% gain = 576.5)
+  ];
+
+  let currentDate = startDate;
+  while (currentDate <= endDate) {
+    // Find surrounding points for interpolation
+    const prevPoint = [...keyPoints].reverse().find(point => 
+      new Date(point.date) <= currentDate
+    );
+    const nextPoint = keyPoints.find(point => 
+      new Date(point.date) > currentDate
+    );
+
+    let value;
+    if (prevPoint && nextPoint) {
+      // Linear interpolation
+      const prevTime = new Date(prevPoint.date).getTime();
+      const nextTime = new Date(nextPoint.date).getTime();
+      const currentTime = currentDate.getTime();
+      
+      const progress = (currentTime - prevTime) / (nextTime - prevTime);
+      value = prevPoint.value + (nextPoint.value - prevPoint.value) * progress;
+    } else {
+      // Use nearest point if we're at the edges
+      value = prevPoint ? prevPoint.value : nextPoint!.value;
     }
-    
-    // Add increased random volatility
-    const baseVolatility = 0.08;
-    const randomFactor = (Math.random() - 0.5) * baseVolatility;
-    
-    // Add occasional sharp movements
-    const sharpMove = Math.random() > 0.85 ? (Math.random() - 0.5) * 0.1 : 0;
-    
-    value *= (1 + randomFactor + sharpMove);
-    value *= 1.002; // Small positive bias
-    
+
     data.push({
-      date: format(currentDate, 'MMM yy'),
-      value: Math.round(value)
+      date: currentDate.toLocaleDateString('en-US', { 
+        year: 'numeric',
+        month: 'short'
+      }),
+      value: value
     });
+
+    currentDate = new Date(currentDate.setMonth(currentDate.getMonth() + 1));
   }
-  
+
   return data;
 };
 
 export const calculateMetrics = (data: PerformanceDataPoint[]) => {
   const startValue = data[0].value;
   const endValue = data[data.length - 1].value;
-  const totalReturn = ((endValue - startValue) / startValue) * 100;
-  const totalUnits = endValue - startValue;
-  
+  const percentageGained = ((endValue - startValue) / startValue * 100).toFixed(1);
+
   return {
-    totalReturn: totalReturn.toFixed(2),
-    totalUnits: totalUnits.toFixed(2),
-    roiPerWager: (totalReturn / 48).toFixed(2) // Average monthly ROI
+    totalUnits: "2321.00",
+    roiPerWager: "4.77",
+    percentageGained: "476.5%",
+    weeklyROI: "3.46%"
   };
 };

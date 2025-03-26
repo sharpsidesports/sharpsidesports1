@@ -36,6 +36,10 @@ function MatchupTool() {
   const [eventName, setEventName] = useState<string>('');
   const [lastUpdated, setLastUpdated] = useState<string>('');
   const [selectedBookmaker, setSelectedBookmaker] = useState<string>('');
+  const [filteredBookmakers, setFilteredBookmakers] = useState<string[]>([]);
+  const [bestOddsBookmaker, setBestOddsBookmaker] = useState<string>('');
+  const [selectedFilterBookmaker, setSelectedFilterBookmaker] = useState<string>('');
+  const [showOnlyPositiveEdge, setShowOnlyPositiveEdge] = useState<boolean>(false);
 
   useEffect(() => {
     const init = async () => {
@@ -92,6 +96,20 @@ function MatchupTool() {
     }
   }, [isYourPickP1, selectedBookmaker, selectedMatchup]);
 
+  // Add function to get all available bookmakers across all matchups
+  const getAllAvailableBookmakers = () => {
+    const bookmakers = new Set<string>();
+    matchups.forEach(matchup => {
+      Object.keys(matchup.odds).forEach(book => {
+        if (book !== 'datagolf') {
+          bookmakers.add(book);
+        }
+      });
+    });
+    return Array.from(bookmakers).sort();
+  };
+
+  // Modify getFilteredMatchups to include sportsbook filtering and positive edge filter
   const getFilteredMatchups = () => {
     console.log('Total matchups before filtering:', matchups.length);
     console.log('Total golfers in data:', golfers.length);
@@ -109,7 +127,20 @@ function MatchupTool() {
         missingGolfers.add(matchup.p2_player_name);
       }
 
-      return p1InGolfers && p2InGolfers;
+      // Add sportsbook filter
+      const matchesSportsbook = !selectedFilterBookmaker || 
+        (matchup.odds[selectedFilterBookmaker] !== undefined);
+
+      // Add positive edge filter
+      let hasPositiveEdge = true;
+      if (showOnlyPositiveEdge) {
+        // Check edge for both players in the matchup
+        const p1Edge = calculateEdgeForMatchup(matchup, true);
+        const p2Edge = calculateEdgeForMatchup(matchup, false);
+        hasPositiveEdge = (p1Edge > 0 || p2Edge > 0);
+      }
+
+      return p1InGolfers && p2InGolfers && matchesSportsbook && hasPositiveEdge;
     });
 
     console.log('Matchups after filtering:', filtered.length);
@@ -119,6 +150,41 @@ function MatchupTool() {
     console.log('Sample golfer names in our data:', golfers.slice(0, 5).map(g => g.name));
     
     return filtered;
+  };
+
+  // Add helper function to calculate edge for a specific matchup and player
+  const calculateEdgeForMatchup = (matchup: Matchup, isP1: boolean) => {
+    // Get DataGolf's odds
+    const dgOdds = matchup.odds.datagolf;
+    if (!dgOdds) return 0;
+
+    // Get the best odds from available bookmakers
+    let bestBookOdds = -Infinity;
+    Object.entries(matchup.odds).forEach(([bookmaker, odds]) => {
+      if (bookmaker === 'datagolf') return;
+      
+      const oddsStr = isP1 ? odds.p1 : odds.p2;
+      const oddsNum = parseInt(oddsStr);
+      
+      // Convert to decimal odds for comparison
+      const decimalOdds = oddsNum > 0 ? (oddsNum + 100) / 100 : (100 / Math.abs(oddsNum)) + 1;
+      if (decimalOdds > bestBookOdds) {
+        bestBookOdds = decimalOdds;
+      }
+    });
+
+    // Get DataGolf's implied probability
+    const dgOddsStr = isP1 ? dgOdds.p1 : dgOdds.p2;
+    const dgOddsNum = parseInt(dgOddsStr);
+    const dgImpliedProb = dgOddsNum > 0
+      ? (100 / (dgOddsNum + 100))
+      : (Math.abs(dgOddsNum) / (Math.abs(dgOddsNum) + 100));
+
+    // Convert best book odds to implied probability
+    const bookImpliedProb = 1 / bestBookOdds;
+
+    // Calculate edge
+    return (dgImpliedProb - bookImpliedProb) * 100;
   };
 
   const filteredMatchups = getFilteredMatchups();
@@ -132,11 +198,40 @@ function MatchupTool() {
     return `${matchup.p1_player_name} vs ${matchup.p2_player_name} ${tieText}`;
   };
 
+  const findBestOdds = (matchup: Matchup | null, isP1: boolean) => {
+    if (!matchup) return { bookmaker: '', odds: '' };
+    
+    let bestOdds = -Infinity;
+    let bestBookmaker = '';
+    
+    Object.entries(matchup.odds).forEach(([bookmaker, odds]) => {
+      if (bookmaker === 'datagolf') return; // Skip datagolf odds
+      
+      const currentOdds = parseInt(isP1 ? odds.p1 : odds.p2);
+      if (currentOdds > bestOdds) {
+        bestOdds = currentOdds;
+        bestBookmaker = bookmaker;
+      }
+    });
+
+    return {
+      bookmaker: bestBookmaker,
+      odds: bestOdds.toString()
+    };
+  };
+
   const getAvailableBookmakers = (matchup: Matchup | null): string[] => {
     if (!matchup) return [];
     
     // Get all bookmakers except datagolf
-    const bookmakers = Object.keys(matchup.odds).filter(book => book !== 'datagolf');
+    const bookmakers = Object.keys(matchup.odds)
+      .filter(book => book !== 'datagolf')
+      .sort((a, b) => {
+        const aOdds = parseInt(isYourPickP1 ? matchup.odds[a].p1 : matchup.odds[a].p2);
+        const bOdds = parseInt(isYourPickP1 ? matchup.odds[b].p1 : matchup.odds[b].p2);
+        return bOdds - aOdds; // Sort descending (best odds first)
+      });
+    
     return bookmakers;
   };
 
@@ -185,6 +280,22 @@ function MatchupTool() {
       setSelectedGolfer2(golfer2 || null);
     }
   }, [golfers, selectedMatchup, isYourPickP1]);
+
+  useEffect(() => {
+    if (selectedMatchup) {
+      const bookmakers = getAvailableBookmakers(selectedMatchup);
+      setFilteredBookmakers(bookmakers);
+      
+      const { bookmaker, odds } = findBestOdds(selectedMatchup, isYourPickP1);
+      setBestOddsBookmaker(bookmaker);
+      
+      // If no bookmaker is selected, select the one with best odds
+      if (!selectedBookmaker && bookmaker) {
+        setSelectedBookmaker(bookmaker);
+        setOdds(odds);
+      }
+    }
+  }, [selectedMatchup, isYourPickP1]);
 
   const calculateEdge = () => {
     if (!selectedMatchup || !selectedBookmaker) return null;
@@ -241,6 +352,26 @@ function MatchupTool() {
   const edge = calculateEdge();
   const payout = calculatePayout();
 
+  // Add new function to determine value indicators
+  const getValueIndicator = (golfer1: Golfer, golfer2: Golfer) => {
+    const sg1 = golfer1.strokesGainedTotal;
+    const sg2 = golfer2.strokesGainedTotal;
+    const top10_1 = golfer1.simulationStats.top10Percentage;
+    const top10_2 = golfer2.simulationStats.top10Percentage;
+    
+    const sgDiff = sg1 - sg2;
+    const top10Diff = top10_1 - top10_2;
+    
+    if (sgDiff > 0.5 && top10Diff > 5) return 'Strong Value';
+    if (sgDiff > 0.2 || top10Diff > 2) return 'Potential Value';
+    return null;
+  };
+
+  // Add function to determine if a stat comparison is favorable
+  const isStatFavorable = (stat1: number, stat2: number) => {
+    return stat1 > stat2;
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h2 className="text-2xl font-bold mb-6">Matchup Analysis Tool</h2>
@@ -258,6 +389,71 @@ function MatchupTool() {
         </div>
         <div className="text-sm text-gray-600">
           Last Updated: {lastUpdated}
+        </div>
+      </div>
+
+      {/* Add Sportsbook Filter */}
+      <div className="mb-6">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Filter by Sportsbook
+        </label>
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => setSelectedFilterBookmaker('')}
+            className={`px-4 py-2 rounded-lg text-sm ${
+              !selectedFilterBookmaker
+                ? 'bg-green-500 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            All Sportsbooks
+          </button>
+          {getAllAvailableBookmakers().map(book => (
+            <button
+              key={book}
+              onClick={() => setSelectedFilterBookmaker(book)}
+              className={`px-4 py-2 rounded-lg text-sm ${
+                selectedFilterBookmaker === book
+                  ? 'bg-green-500 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {book}
+              <span className="ml-2 text-xs">
+                ({matchups.filter(m => m.odds[book]).length})
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Add Positive Edge Filter */}
+      <div className="mb-6">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowOnlyPositiveEdge(!showOnlyPositiveEdge)}
+            className={`px-4 py-2 rounded-lg text-sm flex items-center gap-2 ${
+              showOnlyPositiveEdge
+                ? 'bg-green-500 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            {showOnlyPositiveEdge ? (
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+            )}
+            Show Only Positive Edge Matchups
+          </button>
+          {showOnlyPositiveEdge && (
+            <span className="text-sm text-gray-500">
+              Showing {filteredMatchups.length} matchups with positive edge
+            </span>
+          )}
         </div>
       </div>
 
@@ -282,9 +478,15 @@ function MatchupTool() {
             <label className="block text-sm font-medium text-gray-700">
               Select Matchup
             </label>
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-              First Player Selected to Win
-            </span>
+            {selectedGolfer1 && selectedGolfer2 && (
+              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                getValueIndicator(selectedGolfer1, selectedGolfer2) 
+                  ? 'bg-green-100 text-green-800' 
+                  : 'bg-gray-100 text-gray-800'
+              }`}>
+                {getValueIndicator(selectedGolfer1, selectedGolfer2) || 'Even Matchup'}
+              </span>
+            )}
           </div>
           <select
             className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
@@ -377,49 +579,154 @@ function MatchupTool() {
 
       {selectedMatchup && (
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Select Bookmaker</label>
-          <select
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            value={selectedBookmaker}
-            onChange={(e) => {
-              setSelectedBookmaker(e.target.value);
-              // Update odds when bookmaker changes
-              if (selectedMatchup.odds[e.target.value]) {
-                setOdds(isYourPickP1 
-                  ? selectedMatchup.odds[e.target.value].p1 
-                  : selectedMatchup.odds[e.target.value].p2
-                );
-              }
-            }}
-          >
-            <option value="">Select a bookmaker</option>
-            {getAvailableBookmakers(selectedMatchup).map(book => (
-              <option key={book} value={book}>{book}</option>
+          <label className="block text-sm font-medium text-gray-700">Available Sportsbooks</label>
+          <div className="mt-1 grid grid-cols-1 md:grid-cols-3 gap-4">
+            {filteredBookmakers.map(book => (
+              <button
+                key={book}
+                onClick={() => {
+                  setSelectedBookmaker(book);
+                  setOdds(isYourPickP1 
+                    ? selectedMatchup.odds[book].p1 
+                    : selectedMatchup.odds[book].p2
+                  );
+                }}
+                className={`p-3 rounded-lg border ${
+                  selectedBookmaker === book 
+                    ? 'border-green-500 bg-green-50' 
+                    : 'border-gray-200 hover:border-green-300'
+                } ${
+                  book === bestOddsBookmaker 
+                    ? 'ring-2 ring-green-500' 
+                    : ''
+                }`}
+              >
+                <div className="flex justify-between items-center">
+                  <span className="font-medium">{book}</span>
+                  <span className={`text-sm ${
+                    book === bestOddsBookmaker 
+                      ? 'text-green-600 font-semibold' 
+                      : 'text-gray-500'
+                  }`}>
+                    {isYourPickP1 
+                      ? selectedMatchup.odds[book].p1 
+                      : selectedMatchup.odds[book].p2
+                    }
+                    {book === bestOddsBookmaker && (
+                      <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
+                        Best Odds
+                      </span>
+                    )}
+                  </span>
+                </div>
+              </button>
             ))}
-          </select>
+          </div>
         </div>
       )}
 
       {selectedGolfer1 && selectedGolfer2 && odds && (
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* <div className="bg-gray-50 p-4 rounded-lg">
-            <h3 className="text-sm font-medium text-gray-500 mb-1">Projected Win Probability</h3>
-            <p className="text-2xl font-bold text-gray-900">
-              {((selectedGolfer1.simulationStats.winPercentage /
-                (selectedGolfer1.simulationStats.winPercentage + selectedGolfer2.simulationStats.winPercentage)) * 100).toFixed(1)}%
-            </p>
-            <p className="text-sm text-gray-500 mt-1">
-              For {selectedGolfer1.name}
-            </p>
-          </div> */}
+        <div className="col-span-1 md:col-span-2">
+          <div className="bg-white rounded-lg shadow p-6">
+            <h3 className="text-lg font-semibold mb-4">Head-to-Head Comparison</h3>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead>
+                  <tr>
+                    <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Metric
+                    </th>
+                    <th className="px-6 py-3 bg-green-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {selectedGolfer1.name} {isYourPickP1 && '(Your Pick)'}
+                    </th>
+                    <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {selectedGolfer2.name} {!isYourPickP1 && '(Your Pick)'}
+                    </th>
+                    <th className="px-6 py-3 bg-gray-50 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Edge
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  <tr>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      SG: Total
+                    </td>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm text-right ${
+                      isStatFavorable(selectedGolfer1.strokesGainedTotal, selectedGolfer2.strokesGainedTotal)
+                        ? 'text-green-600 font-semibold'
+                        : 'text-gray-500'
+                    }`}>
+                      {selectedGolfer1.strokesGainedTotal.toFixed(2)}
+                    </td>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm text-right ${
+                      isStatFavorable(selectedGolfer2.strokesGainedTotal, selectedGolfer1.strokesGainedTotal)
+                        ? 'text-green-600 font-semibold'
+                        : 'text-gray-500'
+                    }`}>
+                      {selectedGolfer2.strokesGainedTotal.toFixed(2)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        Math.abs(selectedGolfer1.strokesGainedTotal - selectedGolfer2.strokesGainedTotal) > 0.5
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-gray-100 text-gray-600'
+                      }`}>
+                        {Math.abs(selectedGolfer1.strokesGainedTotal - selectedGolfer2.strokesGainedTotal).toFixed(2)}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      Top 10 %
+                    </td>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm text-right ${
+                      isStatFavorable(selectedGolfer1.simulationStats.top10Percentage, selectedGolfer2.simulationStats.top10Percentage)
+                        ? 'text-green-600 font-semibold'
+                        : 'text-gray-500'
+                    }`}>
+                      {selectedGolfer1.simulationStats.top10Percentage.toFixed(1)}%
+                    </td>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm text-right ${
+                      isStatFavorable(selectedGolfer2.simulationStats.top10Percentage, selectedGolfer1.simulationStats.top10Percentage)
+                        ? 'text-green-600 font-semibold'
+                        : 'text-gray-500'
+                    }`}>
+                      {selectedGolfer2.simulationStats.top10Percentage.toFixed(1)}%
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        Math.abs(selectedGolfer1.simulationStats.top10Percentage - selectedGolfer2.simulationStats.top10Percentage) > 5
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-gray-100 text-gray-600'
+                      }`}>
+                        {Math.abs(selectedGolfer1.simulationStats.top10Percentage - selectedGolfer2.simulationStats.top10Percentage).toFixed(1)}%
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
 
-          <div className="bg-gray-50 p-4 rounded-lg">
+      {selectedGolfer1 && selectedGolfer2 && odds && (
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 col-span-2">
+          <div className={`p-4 rounded-lg ${edge && edge > 0 ? 'bg-green-50 border-2 border-green-200' : 'bg-gray-50'}`}>
             <h3 className="text-sm font-medium text-gray-500 mb-1">Model Edge</h3>
             <p className={`text-2xl font-bold ${edge && edge > 0 ? 'text-green-600' : 'text-red-600'}`}>
               {edge ? `${edge.toFixed(1)}%` : '-'}
             </p>
             <p className="text-sm text-gray-500 mt-1">
-              {edge && edge > 0 ? 'Favorable Edge' : 'Unfavorable Edge'}
+              {edge && edge > 0 ? (
+                <span className="flex items-center">
+                  <svg className="w-4 h-4 text-green-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  Favorable Edge
+                </span>
+              ) : 'Unfavorable Edge'}
             </p>
           </div>
 
@@ -431,76 +738,6 @@ function MatchupTool() {
             <p className="text-sm text-gray-500 mt-1">
               If {selectedGolfer1?.name} wins
             </p>
-          </div>
-        </div>
-      )}
-      {selectedGolfer1 && selectedGolfer2 && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold mb-4">Head-to-Head Comparison</h3>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead>
-                <tr>
-                  <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Metric
-                  </th>
-                  <th className="px-6 py-3 bg-green-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {selectedGolfer1.name} (Your Pick)
-                  </th>
-                  <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {selectedGolfer2.name}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                <tr>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    SG: Total
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 bg-green-50">
-                    {selectedGolfer1.strokesGainedTotal.toFixed(2)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                    {selectedGolfer2.strokesGainedTotal.toFixed(2)}
-                  </td>
-                </tr>
-                <tr>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    Top 10 %
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 bg-green-50">
-                    {selectedGolfer1.simulationStats.top10Percentage.toFixed(1)}%
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                    {selectedGolfer2.simulationStats.top10Percentage.toFixed(1)}%
-                  </td>
-                </tr>
-                {/* <tr>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    Win Probability
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 bg-green-50">
-                    {selectedGolfer1.simulationStats.winPercentage.toFixed(1)}%
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                    {selectedGolfer2.simulationStats.winPercentage.toFixed(1)}%
-                  </td>
-                </tr> */}
-
-                {/* <tr>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    Average Finish
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 bg-green-50">
-                    {selectedGolfer1.simulationStats.averageFinish.toFixed(1)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                    {selectedGolfer2.simulationStats.averageFinish.toFixed(1)}
-                  </td>
-                </tr> */}
-
-              </tbody>
-            </table>
           </div>
         </div>
       )}
