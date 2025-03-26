@@ -38,6 +38,8 @@ function ThreeBallTool() {
   const [lastUpdated, setLastUpdated] = useState<string>('');
   const [selectedMatchup, setSelectedMatchup] = useState<ThreeBallOdds | null>(null);
   const [selectedPosition, setSelectedPosition] = useState<'p1' | 'p2' | 'p3'>('p1');
+  const [selectedFilterBookmaker, setSelectedFilterBookmaker] = useState<string>('');
+  const [showOnlyPositiveEdge, setShowOnlyPositiveEdge] = useState<boolean>(false);
 
   useEffect(() => {
     const init = async () => {
@@ -213,12 +215,71 @@ function ThreeBallTool() {
     }
   };
 
+  const getAllAvailableBookmakers = () => {
+    const bookmakers = new Set<string>();
+    threeBallOdds.forEach(matchup => {
+      Object.keys(matchup.odds).forEach(book => {
+        if (book !== 'datagolf') {
+          bookmakers.add(book);
+        }
+      });
+    });
+    return Array.from(bookmakers).sort();
+  };
+
+  const calculateEdgeForMatchup = (matchup: ThreeBallOdds, position: 'p1' | 'p2' | 'p3') => {
+    // Get DataGolf's odds
+    const dgOdds = matchup.odds.datagolf;
+    if (!dgOdds) return 0;
+
+    // Get the best odds from available bookmakers
+    let bestBookOdds = -Infinity;
+    Object.entries(matchup.odds).forEach(([bookmaker, odds]) => {
+      if (bookmaker === 'datagolf') return;
+      
+      const oddsNum = odds[position];
+      
+      // Convert to decimal odds for comparison
+      const decimalOdds = oddsNum > 0 ? (oddsNum + 100) / 100 : (100 / Math.abs(oddsNum)) + 1;
+      if (decimalOdds > bestBookOdds) {
+        bestBookOdds = decimalOdds;
+      }
+    });
+
+    // Get DataGolf's implied probability
+    const dgOddsNum = dgOdds[position];
+    const dgImpliedProb = dgOddsNum > 0
+      ? (100 / (dgOddsNum + 100))
+      : (Math.abs(dgOddsNum) / (Math.abs(dgOddsNum) + 100));
+
+    // Convert best book odds to implied probability
+    const bookImpliedProb = 1 / bestBookOdds;
+
+    // Calculate edge
+    return (dgImpliedProb - bookImpliedProb) * 100;
+  };
+
   const getFilteredMatchups = () => {
     return threeBallOdds.filter(matchup => {
       const p1InGolfers = golfers.some(g => g.name.toLowerCase() === matchup.p1_player_name.toLowerCase());
       const p2InGolfers = golfers.some(g => g.name.toLowerCase() === matchup.p2_player_name.toLowerCase());
       const p3InGolfers = golfers.some(g => g.name.toLowerCase() === matchup.p3_player_name.toLowerCase());
-      return p1InGolfers && p2InGolfers && p3InGolfers;
+
+      // Add sportsbook filter
+      const matchesSportsbook = !selectedFilterBookmaker || 
+        (matchup.odds[selectedFilterBookmaker] !== undefined);
+
+      // Add positive edge filter
+      let hasPositiveEdge = true;
+      if (showOnlyPositiveEdge) {
+        // Check edge for all three players in the matchup
+        const p1Edge = calculateEdgeForMatchup(matchup, 'p1');
+        const p2Edge = calculateEdgeForMatchup(matchup, 'p2');
+        const p3Edge = calculateEdgeForMatchup(matchup, 'p3');
+        hasPositiveEdge = (p1Edge > 0 || p2Edge > 0 || p3Edge > 0);
+      }
+
+      return p1InGolfers && p2InGolfers && p3InGolfers && matchesSportsbook && hasPositiveEdge;
     });
   };
 
@@ -473,6 +534,71 @@ function ThreeBallTool() {
             </div>
           </div>
         )}
+
+        {/* Add Sportsbook Filter */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Filter by Sportsbook
+          </label>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setSelectedFilterBookmaker('')}
+              className={`px-4 py-2 rounded-lg text-sm ${
+                !selectedFilterBookmaker
+                  ? 'bg-green-500 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              All Sportsbooks
+            </button>
+            {getAllAvailableBookmakers().map(book => (
+              <button
+                key={book}
+                onClick={() => setSelectedFilterBookmaker(book)}
+                className={`px-4 py-2 rounded-lg text-sm ${
+                  selectedFilterBookmaker === book
+                    ? 'bg-green-500 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {book}
+                <span className="ml-2 text-xs">
+                  ({threeBallOdds.filter(m => m.odds[book]).length})
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Add Positive Edge Filter */}
+        <div className="mb-6">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowOnlyPositiveEdge(!showOnlyPositiveEdge)}
+              className={`px-4 py-2 rounded-lg text-sm flex items-center gap-2 ${
+                showOnlyPositiveEdge
+                  ? 'bg-green-500 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {showOnlyPositiveEdge ? (
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+              )}
+              Show Only Positive Edge Matchups
+            </button>
+            {showOnlyPositiveEdge && (
+              <span className="text-sm text-gray-500">
+                Showing {getFilteredMatchups().length} matchups with positive edge
+              </span>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
