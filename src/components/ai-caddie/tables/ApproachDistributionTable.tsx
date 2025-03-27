@@ -1,50 +1,33 @@
 import React from 'react';
 import { useGolfStore } from '../../../store/useGolfStore';
 import { Golfer } from '../../../types/golf';
-import { googleSheetsService } from '../../../services/api/googleSheetsService';
+import { useApproachDistributionData } from '../hooks/useApproachDistributionData';
 
-export default function StrokesGainedTable() {
+export default function ApproachDistributionTable() {
   const { golfers } = useGolfStore();
-  const [courseWeights, setCourseWeights] = React.useState<any>(null);
+  const { weights } = useApproachDistributionData();
 
-  React.useEffect(() => {
-    const fetchWeights = async () => {
-      const weights = await googleSheetsService.getCourseWeights();
-      setCourseWeights(weights);
-    };
-    fetchWeights();
-  }, []);
-
-  // Define the calculateStrokesGainedScore function here
-  const calculateStrokesGainedScore = (golfer: Golfer) => {
-    // Use weights from Google Sheet if available, otherwise use equal weights
-    const rawWeights = courseWeights || {
-      ottWeight: 0.25,
-      approachWeight: 0.25,
-      aroundGreenWeight: 0.25,
-      puttingWeight: 0.25
-    };
-
-    // Scale the weights to 85% of their original values to account for the 15% SG: Total
-    const weights = {
-      total: 0.15, // Fixed at 15%
-      ottWeight: rawWeights.ottWeight * 0.85,
-      approachWeight: rawWeights.approachWeight * 0.85,
-      aroundGreenWeight: rawWeights.aroundGreenWeight * 0.85,
-      puttingWeight: rawWeights.puttingWeight * 0.85
-    };
-
-    return (
-      golfer.strokesGainedTotal * weights.total +
-      golfer.strokesGainedTee * weights.ottWeight +
-      golfer.strokesGainedApproach * weights.approachWeight +
-      golfer.strokesGainedAround * weights.aroundGreenWeight +
-      golfer.strokesGainedPutting * weights.puttingWeight
+  // Calculate weighted approach score for each golfer
+  const calculateApproachScore = (golfer: Golfer) => {
+    // Calculate proximity score (90% weight)
+    // Negative because lower proximity numbers are better (closer to the hole)
+    const proximityScore = -(
+      golfer.proximityMetrics['100-125'] * weights.prox100_125Weight * 0.9 +
+      golfer.proximityMetrics['125-150'] * weights.prox125_150Weight * 0.9 +
+      golfer.proximityMetrics['150-175'] * weights.prox150_175Weight * 0.9 +
+      golfer.proximityMetrics['175-200'] * weights.prox175_200Weight * 0.9 +
+      golfer.proximityMetrics['200-225'] * weights.prox200_225Weight * 0.9 +
+      golfer.proximityMetrics['225plus'] * weights.prox225plusWeight * 0.9
     );
+
+    // Add SG: Approach (10% weight)
+    const sgAppScore = golfer.strokesGainedApproach * 0.1;
+
+    return proximityScore + sgAppScore;
   };
 
   const sortedGolfers = [...golfers]
-    .sort((a, b) => calculateStrokesGainedScore(b) - calculateStrokesGainedScore(a))
+    .sort((a, b) => calculateApproachScore(b) - calculateApproachScore(a))
     .slice(0, 10);
 
   return (
@@ -59,19 +42,25 @@ export default function StrokesGainedTable() {
               Player
             </th>
             <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              SG: Total
+              SG: APP
             </th>
             <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              SG: OTT
+              100-125
             </th>
             <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Approach
+              125-150
             </th>
             <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Around Green
+              150-175
             </th>
             <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Putting
+              175-200
+            </th>
+            <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              200-225
+            </th>
+            <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              225+
             </th>
             <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
               Score
@@ -101,22 +90,28 @@ export default function StrokesGainedTable() {
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                {golfer.strokesGainedTotal.toFixed(2)}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                {golfer.strokesGainedTee.toFixed(2)}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
                 {golfer.strokesGainedApproach.toFixed(2)}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                {golfer.strokesGainedAround.toFixed(2)}
+                {golfer.proximityMetrics['100-125'].toFixed(1)}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                {golfer.strokesGainedPutting.toFixed(2)}
+                {golfer.proximityMetrics['125-150'].toFixed(1)}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
-                {calculateStrokesGainedScore(golfer).toFixed(2)}
+                {golfer.proximityMetrics['150-175'].toFixed(1)}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
+                {golfer.proximityMetrics['175-200'].toFixed(1)}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
+                {golfer.proximityMetrics['200-225'].toFixed(1)}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
+                {golfer.proximityMetrics['225plus'].toFixed(1)}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
+                {calculateApproachScore(golfer).toFixed(2)}
               </td>
             </tr>
           ))}
@@ -124,4 +119,4 @@ export default function StrokesGainedTable() {
       </table>
     </div>
   );
-}
+} 

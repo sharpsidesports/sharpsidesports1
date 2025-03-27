@@ -12,12 +12,14 @@ import AICaddie from './pages/AICaddie';
 import CourseFitTool from './pages/CourseFitTool';
 import Auth from './pages/Auth';
 import Subscription from './pages/Subscription';
+import ExpertInsights from './pages/ExpertInsights';
+import StrokesGainedStats from './pages/StrokesGainedStats';
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <div className="min-h-screen bg-green-50">
+        <div className="min-h-screen">
           <Header />
           <Navigation />
           <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -69,6 +71,22 @@ function App() {
                 element={
                   <ProtectedRoute requiredSubscription="pro" allowPreview>
                     <AICaddie />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/expert-insights" 
+                element={
+                  <ProtectedRoute allowPreview>
+                    <ExpertInsights />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/strokes-gained" 
+                element={
+                  <ProtectedRoute allowPreview>
+                    <StrokesGainedStats />
                   </ProtectedRoute>
                 } 
               />

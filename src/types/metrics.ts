@@ -11,6 +11,7 @@ export type SharpsideMetric =
   | 'DrivingDist'
   | 'Prox100_125'
   | 'Prox125_150'
+  | 'Prox150_175'
   | 'Prox175_200'
   | 'Prox200_225'
   | 'Prox225Plus'
@@ -35,7 +36,7 @@ export interface MetricWeight {
 
 export const METRICS: SharpsideMetric[] = [
   'Total', 'OTT', 'APP', 'ARG', 'T2G', 'P', 'BS', 'gir', 'DrivingAcc', 'DrivingDist',
-  'Prox100_125', 'Prox125_150', 'Prox175_200', 'Prox200_225', 'Prox225Plus',
+  'Prox100_125', 'Prox125_150', 'Prox150_175', 'Prox175_200', 'Prox200_225', 'Prox225Plus',
   // Scoring metrics
   'BogeyAvoid', 'TotalBirdies',
   'Par3BirdieOrBetter', 'Par4BirdieOrBetter', 'Par5BirdieOrBetter', 'BirdieConversion',
@@ -56,6 +57,7 @@ export const METRIC_LABELS: Record<SharpsideMetric, string> = {
   'DrivingDist': 'Driving Distance',
   'Prox100_125': 'Proximity 100-125',
   'Prox125_150': 'Proximity 125-150',
+  'Prox150_175': 'Proximity 150-175',
   'Prox175_200': 'Proximity 175-200',
   'Prox200_225': 'Proximity 200-225',
   'Prox225Plus': 'Proximity 225+',
@@ -76,7 +78,7 @@ export const METRIC_LABELS: Record<SharpsideMetric, string> = {
 
 export const METRIC_CATEGORIES = {
   COURSE: ['Total', 'OTT', 'APP', 'ARG', 'T2G', 'gir', 'DrivingAcc', 'DrivingDist', 'P', 'BS'] as SharpsideMetric[],
-  PROXIMITY: ['Prox100_125', 'Prox125_150', 'Prox175_200', 'Prox200_225', 'Prox225Plus'] as SharpsideMetric[],
+  PROXIMITY: ['Prox100_125', 'Prox125_150', 'Prox150_175', 'Prox175_200', 'Prox200_225', 'Prox225Plus'] as SharpsideMetric[],
   SCORING: [
     'BogeyAvoid', 'TotalBirdies',
     'Par3BirdieOrBetter', 'Par4BirdieOrBetter', 'Par5BirdieOrBetter', 'BirdieConversion',

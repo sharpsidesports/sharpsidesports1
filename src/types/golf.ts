@@ -9,6 +9,7 @@ export interface CourseConditions {
 export interface Golfer {
   id: string;
   name: string;
+  worldRanking: number;
   imageUrl: string;
   rank: number;
   strokesGainedTotal: number;
@@ -27,6 +28,7 @@ export interface Golfer {
   proximityMetrics: {
     '100-125': number;
     '125-150': number;
+    '150-175': number;
     '175-200': number;
     '200-225': number;
     '225plus': number;
@@ -99,6 +101,32 @@ export interface RoundResult {
   position: number;
   score: number;
   strokes: number;
+}
+
+export interface CourseWeights {
+  courseName: string;
+  ottWeight: number;
+  approachWeight: number;
+  aroundGreenWeight: number;
+  puttingWeight: number;
+  lastUpdated: string;
+}
+
+export interface ApproachDistributionWeights {
+  courseName: string;
+  prox100_125Weight: number;
+  prox125_150Weight: number;
+  prox150_175Weight: number;
+  prox175_200Weight: number;
+  prox200_225Weight: number;
+  prox225plusWeight: number;
+  lastUpdated: string;
+}
+
+export interface ApproachDistributionMetric {
+  name: string;
+  percentage: number;
+  description: string;
 }
 
 // // export interface SimulationWeights {

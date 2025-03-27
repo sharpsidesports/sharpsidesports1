@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",
+    "@heroicons/react": "^2.2.0",
     "@supabase/supabase-js": "^2.47.16",
     "@tailwindcss/typography": "^0.5.10",
     "@types/papaparse": "^5.3.15",

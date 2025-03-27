@@ -121,6 +121,10 @@ function PerformanceTable() {
           aValue = a.proximityMetrics['125-150'];
           bValue = b.proximityMetrics['125-150'];
           break;
+        case 'Prox150_175':
+          aValue = a.proximityMetrics['150-175'];
+          bValue = b.proximityMetrics['150-175'];
+          break;
         case 'Prox175_200':
           aValue = a.proximityMetrics['175-200'];
           bValue = b.proximityMetrics['175-200'];
@@ -218,6 +222,8 @@ function PerformanceTable() {
         return golfer.proximityMetrics['100-125'];
       case 'Prox125_150':
         return golfer.proximityMetrics['125-150'];
+      case 'Prox150_175':
+        return golfer.proximityMetrics['150-175'];
       case 'Prox175_200':
         return golfer.proximityMetrics['175-200'];
       case 'Prox200_225':
@@ -278,6 +284,8 @@ function PerformanceTable() {
         return 'Prox 100-125';
       case 'Prox125_150':
         return 'Prox 125-150';
+      case 'Prox150_175':
+        return 'Prox 150-175';
       case 'Prox175_200':
         return 'Prox 175-200';
       case 'Prox200_225':

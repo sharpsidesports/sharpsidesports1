@@ -1,24 +1,22 @@
 import React from 'react';
 import { useGolfStore } from '../../store/useGolfStore';
-import { Golfer } from '../types/golf';
-
-// Define the calculateProximityScore function directly in this file
-const calculateProximityScore = (golfer: Golfer): number => {
-  const weights = {
-    '100-125': 0.25,
-    '125-150': 0.20,
-    '175-200': 0.30,
-    '200-225': 0.15,
-    '225plus': 0.10
-  };
-
-  return Object.entries(weights).reduce((score, [range, weight]) => {
-    return score + (golfer.proximityMetrics[range as keyof typeof golfer.proximityMetrics] * weight);
-  }, 0);
-};
+import { Golfer } from '../../types/golf';
+import { useApproachDistributionData } from './hooks/useApproachDistributionData';
 
 export default function ProximityLeaderboard() {
   const { golfers } = useGolfStore();
+  const { weights } = useApproachDistributionData();
+  
+  const calculateProximityScore = (golfer: Golfer): number => {
+    return (
+      golfer.proximityMetrics['100-125'] * weights.prox100_125Weight +
+      golfer.proximityMetrics['125-150'] * weights.prox125_150Weight +
+      golfer.proximityMetrics['150-175'] * weights.prox150_175Weight +
+      golfer.proximityMetrics['175-200'] * weights.prox175_200Weight +
+      golfer.proximityMetrics['200-225'] * weights.prox200_225Weight +
+      golfer.proximityMetrics['225plus'] * weights.prox225plusWeight
+    );
+  };
   
   const sortedGolfers = [...golfers]
     .sort((a, b) => calculateProximityScore(b) - calculateProximityScore(a))
@@ -42,6 +40,9 @@ export default function ProximityLeaderboard() {
               </th>
               <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                 125-150
+              </th>
+              <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                150-175
               </th>
               <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                 175-200
@@ -86,6 +87,9 @@ export default function ProximityLeaderboard() {
                   {golfer.proximityMetrics['125-150'].toFixed(1)}'
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
+                  {golfer.proximityMetrics['150-175'].toFixed(1)}'
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
                   {golfer.proximityMetrics['175-200'].toFixed(1)}'
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
@@ -94,8 +98,8 @@ export default function ProximityLeaderboard() {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500">
                   {golfer.proximityMetrics['225plus'].toFixed(1)}'
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-green-600">
-                  {calculateProximityScore(golfer).toFixed(1)}
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-gray-900">
+                  {calculateProximityScore(golfer).toFixed(1)}'
                 </td>
               </tr>
             ))}
