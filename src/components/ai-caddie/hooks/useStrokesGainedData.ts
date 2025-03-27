@@ -1,5 +1,7 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { useGolfStore } from '../../../store/useGolfStore';
+import { googleSheetsService } from '../../../services/api/googleSheetsService';
+import { CourseWeights } from '../../../types/golf';
 
 export interface StrokesGainedMetric {
   name: string;
@@ -9,84 +11,90 @@ export interface StrokesGainedMetric {
 
 export function useStrokesGainedData() {
   const { golfers } = useGolfStore();
+  const [courseWeights, setCourseWeights] = useState<CourseWeights | null>(null);
+
+  useEffect(() => {
+    const fetchWeights = async () => {
+      const weights = await googleSheetsService.getCourseWeights();
+      setCourseWeights(weights);
+    };
+    fetchWeights();
+  }, []);
 
   const strokesGainedData = useMemo<StrokesGainedMetric[]>(() => {
     if (!golfers || golfers.length === 0) return [];
 
-    // Calculate average stats for all golfers
-    const avgStats = golfers.reduce((acc, golfer) => {
-      // Normalize driving distance to a 0-1 scale based on typical PGA Tour ranges
-      // Typical PGA driving distances range from ~280 to ~320 yards
-      const normalizedDrivingDistance = (golfer.drivingDistance - 280) / (320 - 280);
-      acc.drivingDistance += Math.max(0, Math.min(1, normalizedDrivingDistance));
-      
-      // Keep accuracy as percentage (0-100)
-      acc.drivingAccuracy += golfer.drivingAccuracy;
+    // Get top 10 players by strokes gained total in the current field
+    const top10Players = [...golfers]
+      .sort((a, b) => b.strokesGainedTotal - a.strokesGainedTotal)
+      .slice(0, 10);
+
+    // Calculate average stats for top 10 players
+    const avgStats = top10Players.reduce((acc, golfer) => {
+      acc.ott += Math.abs(golfer.strokesGainedTee);
       acc.approach += Math.abs(golfer.strokesGainedApproach);
       acc.around += Math.abs(golfer.strokesGainedAround);
       acc.putting += Math.abs(golfer.strokesGainedPutting);
       return acc;
     }, {
-      drivingDistance: 0,
-      drivingAccuracy: 0,
+      ott: 0,
       approach: 0,
       around: 0,
       putting: 0
     });
 
     // Calculate averages
-    const avgDrivingDistance = avgStats.drivingDistance / golfers.length;
-    const avgDrivingAccuracy = avgStats.drivingAccuracy / golfers.length;
-    const avgApproach = avgStats.approach / golfers.length;
-    const avgAround = avgStats.around / golfers.length;
-    const avgPutting = avgStats.putting / golfers.length;
+    const avgOtt = avgStats.ott / top10Players.length;
+    const avgApproach = avgStats.approach / top10Players.length;
+    const avgAround = avgStats.around / top10Players.length;
+    const avgPutting = avgStats.putting / top10Players.length;
 
-    // Scale factors to make metrics comparable
-    const drivingDistanceWeight = 1;
-    const drivingAccuracyWeight = 1;
-    const approachWeight = 1;
-    const aroundWeight = 1;
-    const puttingWeight = 1;
+    // Use weights from Google Sheets if available, otherwise use defaults
+    const weights = courseWeights || {
+      ottWeight: 1,
+      approachWeight: 1,
+      aroundGreenWeight: 1,
+      puttingWeight: 1
+    };
 
     // Calculate weighted sum for percentage calculation
     const weightedSum = 
-      (avgDrivingDistance * drivingDistanceWeight) +
-      (avgDrivingAccuracy * drivingAccuracyWeight) +
-      (avgApproach * approachWeight) +
-      (avgAround * aroundWeight) +
-      (avgPutting * puttingWeight);
+      (avgOtt * weights.ottWeight) +
+      (avgApproach * weights.approachWeight) +
+      (avgAround * weights.aroundGreenWeight) +
+      (avgPutting * weights.puttingWeight);
 
     const metrics = [
       {
-        name: 'Driving Distance',
-        percentage: (avgDrivingDistance * drivingDistanceWeight) / weightedSum,
-        description: 'Average driving distance in yards'
-      },
-      {
-        name: 'Driving Accuracy',
-        percentage: (avgDrivingAccuracy * drivingAccuracyWeight) / weightedSum,
-        description: 'Percentage of fairways hit off the tee'
+        name: 'SG: Off the Tee',
+        percentage: (avgOtt * weights.ottWeight) / weightedSum,
+        description: 'Performance on tee shots'
       },
       {
         name: 'SG: Approach',
-        percentage: (avgApproach * approachWeight) / weightedSum,
+        percentage: (avgApproach * weights.approachWeight) / weightedSum,
         description: 'Performance on approach shots to the green'
       },
       {
         name: 'SG: Around Green',
-        percentage: (avgAround * aroundWeight) / weightedSum,
+        percentage: (avgAround * weights.aroundGreenWeight) / weightedSum,
         description: 'Performance on shots within 30 yards of the green'
       },
       {
         name: 'SG: Putting',
-        percentage: (avgPutting * puttingWeight) / weightedSum,
+        percentage: (avgPutting * weights.puttingWeight) / weightedSum,
         description: 'Performance on putts on the green'
       }
     ];
 
     // Sort metrics by percentage in descending order
     return metrics.sort((a, b) => b.percentage - a.percentage);
-  }, [golfers]);
+  }, [golfers, courseWeights]);
 
-  return { strokesGainedData, isLoading: !golfers.length };
+  return { 
+    strokesGainedData, 
+    isLoading: !golfers.length,
+    courseWeights,
+    lastUpdated: courseWeights?.lastUpdated 
+  };
 }

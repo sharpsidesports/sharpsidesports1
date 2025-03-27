@@ -2,11 +2,27 @@ import React from 'react';
 import { useStrokesGainedData } from '../hooks/useStrokesGainedData';
 
 export default function StrokesGainedMetrics() {
-  const { strokesGainedData } = useStrokesGainedData();
+  const { strokesGainedData, courseWeights, lastUpdated } = useStrokesGainedData();
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium mb-3">Strokes Gained Impact Analysis</h3>
+      <div className="flex justify-between items-center mb-3">
+        <h3 className="text-lg font-medium">Strokes Gained Impact Analysis</h3>
+        {lastUpdated && (
+          <span className="text-sm text-gray-500">
+            Updated: {new Date(lastUpdated).toLocaleDateString()}
+          </span>
+        )}
+      </div>
+      
+      {courseWeights && (
+        <div className="bg-green-50 p-4 rounded-lg mb-4">
+          <p className="text-sm text-green-800">
+            Course: {courseWeights.courseName}
+          </p>
+        </div>
+      )}
+
       {strokesGainedData.map((metric) => (
         <div 
           key={metric.name}

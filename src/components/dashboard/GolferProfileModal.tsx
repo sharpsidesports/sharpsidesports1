@@ -99,6 +99,10 @@ function GolferProfileModal({ golfer, onClose }: GolferProfileModalProps) {
                   <span className="font-medium">{golfer.proximityMetrics['125-150'].toFixed(1)}'</span>
                 </div>
                 <div className="flex justify-between">
+                  <span>150-175 yards:</span>
+                  <span className="font-medium">{golfer.proximityMetrics['150-175'].toFixed(1)}'</span>
+                </div>
+                <div className="flex justify-between">
                   <span>175-200 yards:</span>
                   <span className="font-medium">{golfer.proximityMetrics['175-200'].toFixed(1)}'</span>
                 </div>

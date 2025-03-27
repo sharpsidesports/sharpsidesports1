@@ -97,8 +97,11 @@ export const useCourseFitStore = create<CourseFitState>()(
       fetchPlayerRounds: async (courseIds) => {
         set({ loading: true, error: null });
         try {
+          console.log('Fetching player rounds for courses:', courseIds);
+          
           // Get top 10 players from DataGolf rankings
           const rankingsResponse = await datagolfService.getPlayerRankings();
+          console.log('Rankings response:', rankingsResponse);
           
           if (!rankingsResponse?.rankings || !Array.isArray(rankingsResponse.rankings)) {
             throw new Error('Invalid rankings data received');
@@ -109,14 +112,18 @@ export const useCourseFitStore = create<CourseFitState>()(
             .sort((a, b) => (a.datagolf_rank || 0) - (b.datagolf_rank || 0))
             .slice(0, 10);
 
+          console.log('Top 10 rankings:', top10Rankings);
+
           // Get the dg_ids for the top 10 players
           const dgIds = top10Rankings.map(p => String(p.dg_id)).filter(Boolean);
+          console.log('Player dg_ids:', dgIds);
 
           if (dgIds.length === 0) {
             throw new Error('No valid player IDs found in rankings');
           }
 
           // Fetch rounds for the top 10 players at the selected courses
+          console.log('Fetching rounds from Supabase...');
           const rounds = await getPlayerRoundsByDgIds(
             dgIds,
             courseIds,
@@ -125,6 +132,11 @@ export const useCourseFitStore = create<CourseFitState>()(
               startDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString(),
             }
           );
+          console.log('Rounds fetched:', rounds.length);
+
+          if (rounds.length === 0) {
+            throw new Error('No rounds found for the selected courses');
+          }
 
           set({ playerRounds: rounds });
           

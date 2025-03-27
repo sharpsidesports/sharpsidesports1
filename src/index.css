@@ -8,7 +8,6 @@
   }
   
   body {
-    @apply bg-red-100;
     font-feature-settings: "ss01", "ss02", "cv01", "cv02";
   }
 
