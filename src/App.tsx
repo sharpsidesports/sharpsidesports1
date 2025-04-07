@@ -11,11 +11,16 @@ import FantasyOptimizer from './pages/FantasyOptimizer';
 import AICaddie from './pages/AICaddie';
 import CourseFitTool from './pages/CourseFitTool';
 import Auth from './pages/Auth';
+import AuthCallback from './pages/AuthCallback';
 import Subscription from './pages/Subscription';
 import ExpertInsights from './pages/ExpertInsights';
 import StrokesGainedStats from './pages/StrokesGainedStats';
+import LandingPage from './pages/LandingPage';
+import { useAuth } from './hooks/useAuth';
 
 function App() {
+  const { user } = useAuth();
+
   return (
     <BrowserRouter>
       <AuthProvider>
@@ -25,19 +30,42 @@ function App() {
           <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <Routes>
               <Route path="/auth" element={<Auth />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/subscription" element={<Subscription />} />
+              
+              {/* Landing Page - Default for non-authenticated users */}
               <Route 
                 path="/" 
                 element={
-                  <ProtectedRoute allowPreview>
+                  user ? <Navigate to="/dashboard" replace /> : <LandingPage />
+                } 
+              />
+
+              {/* Dashboard - With preview for non-authenticated users */}
+              <Route 
+                path="/dashboard" 
+                element={
+                  <ProtectedRoute requiredSubscription="basic" allowPreview>
                     <Dashboard />
                   </ProtectedRoute>
                 } 
               />
+
+              {/* Free Tier */}
+              <Route 
+                path="/strokes-gained" 
+                element={
+                  <ProtectedRoute allowPreview>
+                    <StrokesGainedStats />
+                  </ProtectedRoute>
+                } 
+              />
+
+              {/* Basic Tier */}
               <Route 
                 path="/matchups" 
                 element={
-                  <ProtectedRoute allowPreview>
+                  <ProtectedRoute requiredSubscription="basic" allowPreview>
                     <MatchupTool />
                   </ProtectedRoute>
                 } 
@@ -45,7 +73,7 @@ function App() {
               <Route 
                 path="/three-ball" 
                 element={
-                  <ProtectedRoute allowPreview>
+                  <ProtectedRoute requiredSubscription="basic" allowPreview>
                     <ThreeBallTool />
                   </ProtectedRoute>
                 } 
@@ -53,19 +81,13 @@ function App() {
               <Route 
                 path="/fantasy" 
                 element={
-                  <ProtectedRoute requiredSubscription="pro" allowPreview>
+                  <ProtectedRoute requiredSubscription="basic" allowPreview>
                     <FantasyOptimizer />
                   </ProtectedRoute>
                 } 
               />
-              <Route 
-                path="/course-fit" 
-                element={
-                  <ProtectedRoute allowPreview>
-                    <CourseFitTool />
-                  </ProtectedRoute>
-                } 
-              />
+
+              {/* Pro Tier */}
               <Route 
                 path="/ai-caddie" 
                 element={
@@ -75,21 +97,22 @@ function App() {
                 } 
               />
               <Route 
-                path="/expert-insights" 
+                path="/course-fit" 
                 element={
-                  <ProtectedRoute allowPreview>
-                    <ExpertInsights />
+                  <ProtectedRoute requiredSubscription="pro" allowPreview>
+                    <CourseFitTool />
                   </ProtectedRoute>
                 } 
               />
               <Route 
-                path="/strokes-gained" 
+                path="/expert-insights" 
                 element={
-                  <ProtectedRoute allowPreview>
-                    <StrokesGainedStats />
+                  <ProtectedRoute requiredSubscription="pro" allowPreview>
+                    <ExpertInsights />
                   </ProtectedRoute>
                 } 
               />
+
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>

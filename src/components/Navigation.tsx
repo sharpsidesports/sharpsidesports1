@@ -1,25 +1,16 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-
-const navigation = [
-  { name: 'Dashboard', href: '/' },
-  { name: 'Matchup Tool', href: '/matchups' },
-  { name: 'Three Ball Tool', href: '/three-ball' },
-  { name: 'Course Fit', href: '/course-fit' },
-  { name: 'Fantasy Optimizer', href: '/fantasy', requiresPro: true },
-  { name: 'AI Caddie', href: '/ai-caddie', requiresPro: true },
-  { name: 'Strokes Gained Stats', href: '/strokes-gained' },
-  { name: 'Expert Insights', href: '/expert-insights' },
-  { name: 'Pricing', href: '/subscription' },
-];
+import { useAuth } from '../hooks/useAuth';
 
 export default function Navigation() {
+  const { user } = useAuth();
+
   return (
     <nav className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex space-x-8 h-16">
           <NavLink
-            to="/"
+            to="/dashboard"
             className={({ isActive }) =>
               `inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
                 isActive
