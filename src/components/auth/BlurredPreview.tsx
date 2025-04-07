@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useAuthContext } from './AuthProvider';
+import { useAuthContext } from '../../context/AuthContext';
 
 interface BlurredPreviewProps {
   children: React.ReactNode;

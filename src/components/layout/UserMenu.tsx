@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import { Link } from 'react-router-dom';
-import { useAuthContext } from '../auth/AuthProvider';
+import { useAuthContext } from '../../context/AuthContext';
 
 export default function UserMenu() {
   const { user, signOut } = useAuthContext();
@@ -13,7 +13,7 @@ export default function UserMenu() {
       <Menu.Button className="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
         <span className="sr-only">Open user menu</span>
         <div className="h-8 w-8 rounded-full bg-green-600 flex items-center justify-center text-white">
-          {user.email[0].toUpperCase()}
+          {user.email ? user.email[0].toUpperCase() : 'U'}
         </div>
       </Menu.Button>
 
@@ -29,28 +29,16 @@ export default function UserMenu() {
         <Menu.Items className="absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
           <Menu.Item>
             {({ active }) => (
-              <div className="px-4 py-2 text-sm text-gray-700">
-                <div>{user.email}</div>
-                <div className="text-xs text-gray-500 mt-1">
-                  {user.subscription_tier.charAt(0).toUpperCase() + user.subscription_tier.slice(1)} Plan
-                </div>
-              </div>
-            )}
-          </Menu.Item>
-
-          <Menu.Item>
-            {({ active }) => (
               <Link
-                to="/subscription"
+                to="/account"
                 className={`${
                   active ? 'bg-gray-100' : ''
                 } block px-4 py-2 text-sm text-gray-700`}
               >
-                Subscription
+                Your Account
               </Link>
             )}
           </Menu.Item>
-
           <Menu.Item>
             {({ active }) => (
               <button

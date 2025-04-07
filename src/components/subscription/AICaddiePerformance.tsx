@@ -9,7 +9,7 @@ export default function AICaddiePerformance() {
   return (
     <div className="bg-gray-900 p-8 rounded-lg">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-green-400">AI CADDIE PERFORMANCE</h2>
+        <h2 className="text-xl font-semibold text-green-400">PRO PACKAGE PERFORMANCE</h2>
         <p className="text-gray-400 text-sm">HISTORICAL RESULTS</p>
       </div>
       

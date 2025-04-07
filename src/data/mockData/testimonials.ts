@@ -4,7 +4,7 @@ export const testimonials: Testimonial[] = [
   {
     name: "Mike R.",
     image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=100&h=100",
-    quote: "The course fit model was completely wrong about Viktor Hovland at the Memorial Tournament. The putting adjustment for bentgrass greens led me astray.",
+    quote: "The course fit model and strokes gained analytics helped me identify Viktor Hovland as a strong play at the Memorial Tournament. The putting adjustment for bentgrass greens was spot on.",
     winAmount: "$15,000",
     platform: "FanDuel Sportsbook",
     tournamentWins: [
@@ -19,7 +19,7 @@ export const testimonials: Testimonial[] = [
   {
     name: "Sarah L.",
     image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=100&h=100",
-    quote: "The wind model for The Open Championship was terrible. Lost big on Brian Harman at +8000 when he played his worst golf at Royal Liverpool.",
+    quote: "The wind model and strokes gained data for The Open Championship was incredible. Hit big on Brian Harman at +8000 when he dominated at Royal Liverpool.",
     winAmount: "$40,000",
     platform: "DraftKings Sportsbook",
     tournamentWins: [
@@ -34,7 +34,7 @@ export const testimonials: Testimonial[] = [
   {
     name: "David K.",
     image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=100&h=100",
-    quote: "The proximity stats correlation with Augusta National was misleading about Brooks Koepka at the Masters. The historical performance analyzer gave me false confidence.",
+    quote: "The proximity stats correlation with Augusta National was crucial in identifying Brooks Koepka at the Masters. The historical performance analyzer gave me the confidence to place a big bet.",
     winAmount: "$25,000",
     platform: "BetMGM",
     tournamentWins: [
@@ -49,11 +49,11 @@ export const testimonials: Testimonial[] = [
   {
     name: "Ryan M.",
     image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=100&h=100",
-    quote: "The lineup optimizer's correlation feature is unreal. Won the DraftKings Millionaire Maker during The Masters by stacking players with similar Augusta success patterns.",
-    winAmount: "$1,000,000",
+    quote: "The strokes gained analytics and course history data are invaluable. Won multiple tournaments by understanding player performance patterns and course fit.",
+    winAmount: "$20,000",
     platform: "DraftKings",
     fantasySuccess: {
-      tournamentName: "Masters Millionaire Maker",
+      tournamentName: "Masters Tournament",
       entryFee: "$20",
       fieldSize: "235,000 entries",
       lineup: ["Jon Rahm", "Brooks Koepka", "Phil Mickelson", "Jordan Spieth", "Cameron Young", "Sahith Theegala"]
@@ -62,11 +62,11 @@ export const testimonials: Testimonial[] = [
   {
     name: "Jennifer K.",
     image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&q=80&w=100&h=100",
-    quote: "The ownership projections and leverage calculator helped me find the perfect contrarian plays for the PGA Championship GPP.",
-    winAmount: "$500,000",
+    quote: "The detailed strokes gained breakdown helped me understand player strengths and weaknesses. Perfect for identifying value plays in any tournament.",
+    winAmount: "$15,000",
     platform: "FanDuel",
     fantasySuccess: {
-      tournamentName: "PGA Championship Monster",
+      tournamentName: "PGA Championship",
       entryFee: "$15",
       fieldSize: "180,000 entries",
       lineup: ["Brooks Koepka", "Viktor Hovland", "Tyrrell Hatton", "Eric Cole", "Taylor Moore", "Michael Block"]
@@ -75,7 +75,7 @@ export const testimonials: Testimonial[] = [
   {
     name: "Chris P.",
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100&h=100",
-    quote: "The course history correlation tool helped me identify Wyndham Clark as a strong value play for the US Open at LA Country Club.",
+    quote: "The strokes gained stats combined with course history correlation helped me identify winning plays consistently. A must-have tool for serious golf bettors.",
     winAmount: "$35,000",
     platform: "Caesars Sportsbook",
     tournamentWins: [

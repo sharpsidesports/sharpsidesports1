@@ -24,7 +24,8 @@ export default function LoginForm() {
       if (error) throw error;
 
       if (data.user) {
-        const from = (location.state as any)?.from?.pathname || '/';
+        // Get the redirect path from location state or default to dashboard
+        const from = (location.state as any)?.from || '/dashboard';
         navigate(from, { replace: true });
       }
     } catch (err) {
@@ -77,6 +78,12 @@ export default function LoginForm() {
         >
           {loading ? 'Signing in...' : 'Sign In'}
         </button>
+
+        <div className="text-sm text-center">
+          <a href="#" className="text-green-600 hover:text-green-500">
+            Forgot your password?
+          </a>
+        </div>
       </form>
     </div>
   );

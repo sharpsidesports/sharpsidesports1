@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './components/auth/AuthProvider';
+import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Header from './components/Header';
 import Navigation from './components/Navigation';
@@ -16,11 +16,15 @@ import Subscription from './pages/Subscription';
 import ExpertInsights from './pages/ExpertInsights';
 import StrokesGainedStats from './pages/StrokesGainedStats';
 import LandingPage from './pages/LandingPage';
-import { useAuth } from './hooks/useAuth';
+import { useAuthContext } from './context/AuthContext';
+
+// Separate component for handling the landing page redirect
+function LandingRedirect() {
+  const { user } = useAuthContext();
+  return user ? <Navigate to="/dashboard" replace /> : <LandingPage />;
+}
 
 function App() {
-  const { user } = useAuth();
-
   return (
     <BrowserRouter>
       <AuthProvider>
@@ -29,19 +33,16 @@ function App() {
           <Navigation />
           <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <Routes>
+              {/* Public Routes */}
               <Route path="/auth" element={<Auth />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/subscription" element={<Subscription />} />
+              <Route path="/strokes-gained" element={<StrokesGainedStats />} />
               
               {/* Landing Page - Default for non-authenticated users */}
-              <Route 
-                path="/" 
-                element={
-                  user ? <Navigate to="/dashboard" replace /> : <LandingPage />
-                } 
-              />
+              <Route path="/" element={<LandingRedirect />} />
 
-              {/* Dashboard - With preview for non-authenticated users */}
+              {/* Free Tier Routes - With Preview */}
               <Route 
                 path="/dashboard" 
                 element={
@@ -51,17 +52,7 @@ function App() {
                 } 
               />
 
-              {/* Free Tier */}
-              <Route 
-                path="/strokes-gained" 
-                element={
-                  <ProtectedRoute allowPreview>
-                    <StrokesGainedStats />
-                  </ProtectedRoute>
-                } 
-              />
-
-              {/* Pro Tier (previously Basic) */}
+              {/* Pro Tier Routes - With Preview */}
               <Route 
                 path="/matchups" 
                 element={
@@ -86,21 +77,21 @@ function App() {
                   </ProtectedRoute>
                 } 
               />
+              <Route 
+                path="/course-fit" 
+                element={
+                  <ProtectedRoute requiredSubscription="pro" allowPreview>
+                    <CourseFitTool />
+                  </ProtectedRoute>
+                } 
+              />
 
-              {/* Enterprise Tier (previously Pro) */}
+              {/* Enterprise Tier Routes - With Preview */}
               <Route 
                 path="/ai-caddie" 
                 element={
                   <ProtectedRoute requiredSubscription="enterprise" allowPreview>
                     <AICaddie />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/course-fit" 
-                element={
-                  <ProtectedRoute requiredSubscription="enterprise" allowPreview>
-                    <CourseFitTool />
                   </ProtectedRoute>
                 } 
               />
@@ -112,8 +103,6 @@ function App() {
                   </ProtectedRoute>
                 } 
               />
-
-              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>
         </div>
