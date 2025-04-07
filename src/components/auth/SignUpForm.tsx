@@ -30,7 +30,7 @@ export default function SignUpForm() {
       if (error) throw error;
 
       if (data.user) {
-        navigate('/');
+        navigate('/dashboard', { replace: true });
       }
     } catch (err) {
       console.error('Signup error:', err);
@@ -83,6 +83,10 @@ export default function SignUpForm() {
         >
           {loading ? 'Creating account...' : 'Create Account'}
         </button>
+
+        <p className="mt-2 text-sm text-gray-600 text-center">
+          By signing up, you agree to our Terms of Service and Privacy Policy
+        </p>
       </form>
     </div>
   );

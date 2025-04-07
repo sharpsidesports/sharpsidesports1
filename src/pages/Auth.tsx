@@ -1,9 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import LoginForm from '../components/auth/LoginForm';
 import SignUpForm from '../components/auth/SignUpForm';
+import { useAuthContext } from '../context/AuthContext';
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
+  const { user } = useAuthContext();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // If user is already authenticated, redirect to dashboard
+    if (user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, navigate]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">

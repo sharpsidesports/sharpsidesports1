@@ -1,9 +1,9 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { useAuthContext } from '../context/AuthContext';
 
 export default function Navigation() {
-  const { user } = useAuth();
+  const { user } = useAuthContext();
 
   return (
     <nav className="bg-white shadow-sm">
@@ -67,7 +67,7 @@ export default function Navigation() {
               }`
             }
           >
-            Course Fit
+            Course Fit Tool
           </NavLink>
           <NavLink
             to="/ai-caddie"
@@ -82,18 +82,6 @@ export default function Navigation() {
             AI Caddie
           </NavLink>
           <NavLink
-            to="/strokes-gained"
-            className={({ isActive }) =>
-              `inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                isActive
-                  ? 'border-sharpside-green text-gray-900'
-                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-              }`
-            }
-          >
-            Strokes Gained Stats
-          </NavLink>
-          <NavLink
             to="/expert-insights"
             className={({ isActive }) =>
               `inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
@@ -104,6 +92,18 @@ export default function Navigation() {
             }
           >
             Expert Insights
+          </NavLink>
+          <NavLink
+            to="/strokes-gained"
+            className={({ isActive }) =>
+              `inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                isActive
+                  ? 'border-sharpside-green text-gray-900'
+                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+              }`
+            }
+          >
+            Strokes Gained Stats
           </NavLink>
           <NavLink
             to="/subscription"
