@@ -45,7 +45,7 @@ function App() {
               <Route 
                 path="/dashboard" 
                 element={
-                  <ProtectedRoute requiredSubscription="basic" allowPreview>
+                  <ProtectedRoute requiredSubscription="free" allowPreview>
                     <Dashboard />
                   </ProtectedRoute>
                 } 
@@ -61,11 +61,11 @@ function App() {
                 } 
               />
 
-              {/* Basic Tier */}
+              {/* Pro Tier (previously Basic) */}
               <Route 
                 path="/matchups" 
                 element={
-                  <ProtectedRoute requiredSubscription="basic" allowPreview>
+                  <ProtectedRoute requiredSubscription="pro" allowPreview>
                     <MatchupTool />
                   </ProtectedRoute>
                 } 
@@ -73,7 +73,7 @@ function App() {
               <Route 
                 path="/three-ball" 
                 element={
-                  <ProtectedRoute requiredSubscription="basic" allowPreview>
+                  <ProtectedRoute requiredSubscription="pro" allowPreview>
                     <ThreeBallTool />
                   </ProtectedRoute>
                 } 
@@ -81,17 +81,17 @@ function App() {
               <Route 
                 path="/fantasy" 
                 element={
-                  <ProtectedRoute requiredSubscription="basic" allowPreview>
+                  <ProtectedRoute requiredSubscription="pro" allowPreview>
                     <FantasyOptimizer />
                   </ProtectedRoute>
                 } 
               />
 
-              {/* Pro Tier */}
+              {/* Enterprise Tier (previously Pro) */}
               <Route 
                 path="/ai-caddie" 
                 element={
-                  <ProtectedRoute requiredSubscription="pro" allowPreview>
+                  <ProtectedRoute requiredSubscription="enterprise" allowPreview>
                     <AICaddie />
                   </ProtectedRoute>
                 } 
@@ -99,7 +99,7 @@ function App() {
               <Route 
                 path="/course-fit" 
                 element={
-                  <ProtectedRoute requiredSubscription="pro" allowPreview>
+                  <ProtectedRoute requiredSubscription="enterprise" allowPreview>
                     <CourseFitTool />
                   </ProtectedRoute>
                 } 
@@ -107,7 +107,7 @@ function App() {
               <Route 
                 path="/expert-insights" 
                 element={
-                  <ProtectedRoute requiredSubscription="pro" allowPreview>
+                  <ProtectedRoute requiredSubscription="enterprise" allowPreview>
                     <ExpertInsights />
                   </ProtectedRoute>
                 } 

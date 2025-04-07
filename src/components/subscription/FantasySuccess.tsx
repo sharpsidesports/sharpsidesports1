@@ -1,29 +1,33 @@
 import React from 'react';
-import { FantasySuccess } from '../../types/testimonials';
+import SuccessCard from './fantasy/SuccessCard';
 
-interface FantasySuccessProps {
-  success: FantasySuccess;
-}
-
-export default function FantasySuccess({ success }: FantasySuccessProps) {
+export default function FantasySuccess() {
   return (
-    <div className="mt-4 bg-gray-700 rounded-lg p-3 text-sm">
-      <div className="flex justify-between items-center mb-2">
-        <span className="text-green-400 font-medium">{success.tournamentName}</span>
-        <span className="text-gray-300">{success.entryFee} Entry</span>
+    <div className="bg-gray-900 p-8 rounded-lg">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-semibold text-green-400">FANTASY SUCCESS</h2>
+        <p className="text-gray-400 text-sm">RECENT WINS</p>
       </div>
-      <div className="text-gray-400 mb-2">
-        Field Size: {success.fieldSize}
-      </div>
-      <div className="flex flex-wrap gap-2">
-        {success.lineup.map((player, index) => (
-          <span 
-            key={index}
-            className="bg-gray-600 text-white px-2 py-1 rounded text-xs"
-          >
-            {player}
-          </span>
-        ))}
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <SuccessCard 
+          title="DraftKings GPP Win"
+          amount="$50,000"
+          date="March 2024"
+          tournament="Players Championship"
+        />
+        <SuccessCard 
+          title="FanDuel GPP Win"
+          amount="$25,000"
+          date="February 2024"
+          tournament="Phoenix Open"
+        />
+        <SuccessCard 
+          title="PrizePicks Win"
+          amount="$10,000"
+          date="January 2024"
+          tournament="Tournament of Champions"
+        />
       </div>
     </div>
   );
