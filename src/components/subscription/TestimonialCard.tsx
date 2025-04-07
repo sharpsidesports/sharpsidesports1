@@ -24,5 +24,4 @@ export default function TestimonialCard({ name, role, content, image }: Testimon
       <p className="text-gray-300 text-sm italic">"{content}"</p>
     </div>
   );
-}
-}
+} 
