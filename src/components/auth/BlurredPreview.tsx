@@ -19,17 +19,25 @@ export default function BlurredPreview({ children }: BlurredPreviewProps) {
       <div className="sticky top-0 z-50 pt-4 pb-6">
         <div className="text-center max-w-md mx-auto p-4 bg-white/95 rounded-lg shadow-lg backdrop-blur-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            Sign in to Access
+            Get Access to Premium Features
           </h3>
           <p className="text-sm text-gray-600 mb-3">
-            Create an account or sign in to view this content and access all our features.
+            Choose a plan that fits your needs and get access to all our professional golf analysis tools.
           </p>
-          <Link
-            to="/auth"
-            className="inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-          >
-            Sign In / Sign Up
-          </Link>
+          <div className="space-x-4">
+            <Link
+              to="/pricing"
+              className="inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+            >
+              View Plans
+            </Link>
+            <Link
+              to="/auth"
+              className="inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+            >
+              Sign In
+            </Link>
+          </div>
         </div>
       </div>
 

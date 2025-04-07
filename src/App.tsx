@@ -17,6 +17,7 @@ import ExpertInsights from './pages/ExpertInsights';
 import StrokesGainedStats from './pages/StrokesGainedStats';
 import LandingPage from './pages/LandingPage';
 import { useAuthContext } from './context/AuthContext';
+import Account from './pages/Account';
 
 // Separate component for handling the landing page redirect
 function LandingRedirect() {
@@ -38,6 +39,11 @@ function App() {
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/subscription" element={<Subscription />} />
               <Route path="/strokes-gained" element={<StrokesGainedStats />} />
+              <Route path="/account" element={
+                <ProtectedRoute>
+                  <Account />
+                </ProtectedRoute>
+              } />
               
               {/* Landing Page - Default for non-authenticated users */}
               <Route path="/" element={<LandingRedirect />} />
