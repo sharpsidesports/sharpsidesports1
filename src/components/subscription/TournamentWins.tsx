@@ -1,26 +1,34 @@
 import React from 'react';
-import { TournamentWin } from '../../types/testimonials';
+import WinsCard from './tournament/WinsCard';
 
-interface TournamentWinsProps {
-  wins: TournamentWin[];
-}
-
-export default function TournamentWins({ wins }: TournamentWinsProps) {
+export default function TournamentWins() {
   return (
-    <div className="mt-4 space-y-2">
-      {wins.map((win, index) => (
-        <div 
-          key={index}
-          className="bg-gray-700 rounded-md p-2 text-sm flex justify-between items-center"
-        >
-          <div>
-            <span className="text-green-400">{win.tournament}</span>
-            <span className="text-gray-300 mx-2">•</span>
-            <span className="text-white">{win.player}</span>
-          </div>
-          <div className="text-green-400 font-mono">{win.odds}</div>
-        </div>
-      ))}
+    <div className="bg-gray-900 p-8 rounded-lg">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-semibold text-green-400">TOURNAMENT WINS</h2>
+        <p className="text-gray-400 text-sm">RECENT RESULTS</p>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <WinsCard 
+          tournament="Players Championship"
+          date="March 2024"
+          winnings="$50,000"
+          picks={["Scottie Scheffler", "Wyndham Clark", "Sam Burns"]}
+        />
+        <WinsCard 
+          tournament="Phoenix Open"
+          date="February 2024"
+          winnings="$25,000"
+          picks={["Nick Taylor", "Jordan Spieth", "Justin Thomas"]}
+        />
+        <WinsCard 
+          tournament="Tournament of Champions"
+          date="January 2024"
+          winnings="$10,000"
+          picks={["Chris Kirk", "Brian Harman", "Collin Morikawa"]}
+        />
+      </div>
     </div>
   );
 }
