@@ -30,7 +30,7 @@ export default function SignUpForm() {
       if (error) throw error;
 
       if (data.user) {
-        navigate('/dashboard', { replace: true });
+        navigate('/pricing', { replace: true });
       }
     } catch (err) {
       console.error('Signup error:', err);
