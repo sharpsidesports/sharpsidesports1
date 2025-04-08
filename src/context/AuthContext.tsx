@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User } from '@supabase/supabase-js';
+import { User as SupabaseUser } from '@supabase/supabase-js';
 import { supabase, checkSupabaseConnection } from '../lib/supabase';
+import { User } from '../types/auth';
 
 interface AuthContextType {
   user: User | null;
@@ -34,15 +35,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (sessionError) throw sessionError;
         
         if (mounted) {
-          setUser(session?.user ?? null);
+          if (session?.user) {
+            // Get user's profile data
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('subscription_tier, subscription_status')
+              .eq('id', session.user.id)
+              .single();
+
+            // Create user object with profile data
+            setUser({
+              id: session.user.id,
+              email: session.user.email!,
+              subscription_tier: profile?.subscription_tier || 'free',
+              subscription_status: profile?.subscription_status || 'active',
+              created_at: session.user.created_at
+            });
+          } else {
+            setUser(null);
+          }
           setLoading(false);
         }
 
         // Set up auth state listener
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
           console.log('Auth state changed:', event, session?.user?.id);
           if (mounted) {
-            setUser(session?.user ?? null);
+            if (session?.user) {
+              // Get user's profile data
+              const { data: profile } = await supabase
+                .from('profiles')
+                .select('subscription_tier, subscription_status')
+                .eq('id', session.user.id)
+                .single();
+
+              // Create user object with profile data
+              setUser({
+                id: session.user.id,
+                email: session.user.email!,
+                subscription_tier: profile?.subscription_tier || 'free',
+                subscription_status: profile?.subscription_status || 'active',
+                created_at: session.user.created_at
+              });
+            } else {
+              setUser(null);
+            }
             setLoading(false);
           }
         });
@@ -72,7 +109,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         password,
       });
       if (error) throw error;
-      setUser(data.user);
+
+      // Get user's profile data
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('subscription_tier, subscription_status')
+        .eq('id', data.user.id)
+        .single();
+
+      // Create user object with profile data
+      setUser({
+        id: data.user.id,
+        email: data.user.email!,
+        subscription_tier: profile?.subscription_tier || 'free',
+        subscription_status: profile?.subscription_status || 'active',
+        created_at: data.user.created_at
+      });
     } catch (err) {
       console.error('Sign in error:', err);
       setError(err instanceof Error ? err.message : 'Failed to sign in');
@@ -98,7 +150,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       });
       if (error) throw error;
-      setUser(data.user);
+
+      // Get user's profile data
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('subscription_tier, subscription_status')
+        .eq('id', data.user?.id)
+        .single();
+
+      // Create user object with profile data
+      if (data.user) {
+        setUser({
+          id: data.user.id,
+          email: data.user.email!,
+          subscription_tier: profile?.subscription_tier || 'free',
+          subscription_status: profile?.subscription_status || 'active',
+          created_at: data.user.created_at
+        });
+      }
     } catch (err) {
       console.error('Sign up error:', err);
       setError(err instanceof Error ? err.message : 'Failed to sign up');

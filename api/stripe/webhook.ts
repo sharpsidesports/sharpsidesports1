@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
-import { supabase } from '../../src/lib/supabaseClient';
+import { supabase } from '../../src/lib/supabase';
 import * as dotenv from 'dotenv';
 import path from 'path';
 
@@ -12,7 +12,7 @@ if (!process.env.STRIPE_WEBHOOK_SECRET) {
 }
 
 const stripe = new Stripe(process.env.VITE_STRIPE_SECRET_KEY || '', {
-  apiVersion: '2025-03-31.basil' as Stripe.LatestApiVersion,
+  apiVersion: '2023-10-16',
 });
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -40,67 +40,115 @@ export default async function handler(
 
     // Handle subscription events
     switch (event.type) {
-      case 'customer.subscription.created':
-      case 'customer.subscription.updated': {
-        const subscription = event.data.object as Stripe.Subscription;
-        const customerId = subscription.customer as string;
+      case 'checkout.session.completed': {
+        const session = event.data.object as Stripe.Checkout.Session;
         
-        // Get user by Stripe customer ID
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('stripe_customer_id', customerId)
-          .single();
-
-        if (!profile) {
-          console.error('No user found for customer:', customerId);
+        // Get the user ID from the client_reference_id
+        const userId = session.client_reference_id;
+        if (!userId) {
+          console.error('No user ID found in session:', session.id);
           break;
         }
 
-        // Update user's subscription status
+        // Get subscription details from the session
+        const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
+        const customerId = session.customer as string;
+        const priceId = subscription.items.data[0].price.id;
+
+        // Determine subscription tier based on the price ID
+        let subscriptionTier = 'free';
+        
+        // Check Pro price IDs
+        if (
+          priceId === process.env.VITE_STRIPE_PRO_WEEKLY_PRICE_ID ||
+          priceId === process.env.VITE_STRIPE_PRO_MONTHLY_PRICE_ID ||
+          priceId === process.env.VITE_STRIPE_PRO_YEARLY_PRICE_ID
+        ) {
+          subscriptionTier = 'pro';
+        }
+        // Check Basic price IDs
+        else if (
+          priceId === process.env.VITE_STRIPE_BASIC_WEEKLY_PRICE_ID ||
+          priceId === process.env.VITE_STRIPE_BASIC_MONTHLY_PRICE_ID ||
+          priceId === process.env.VITE_STRIPE_BASIC_YEARLY_PRICE_ID
+        ) {
+          subscriptionTier = 'basic';
+        }
+
+        console.log('Updating user profile:', {
+          userId,
+          customerId,
+          subscription_tier: subscriptionTier,
+          subscription_status: subscription.status,
+          price_id: priceId
+        });
+
+        // Update user's profile with Stripe customer ID and subscription details
         const { error } = await supabase
           .from('profiles')
           .update({
-            subscription_tier: subscription.items.data[0].price?.lookup_key || 'free',
+            stripe_customer_id: customerId,
+            subscription_tier: subscriptionTier,
             subscription_status: subscription.status,
             updated_at: new Date().toISOString()
           })
-          .eq('id', profile.id);
+          .eq('id', userId);
 
         if (error) {
-          console.error('Error updating user subscription:', error);
+          console.error('Error updating user profile:', error);
         }
         break;
       }
 
+      case 'customer.subscription.updated':
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription;
         const customerId = subscription.customer as string;
+        const priceId = subscription.items.data[0].price.id;
 
-        // Get user by Stripe customer ID
-        const { data: profile } = await supabase
+        // Get user profile by Stripe customer ID
+        const { data: profiles } = await supabase
           .from('profiles')
           .select('id')
-          .eq('stripe_customer_id', customerId)
-          .single();
+          .eq('stripe_customer_id', customerId);
 
-        if (!profile) {
+        if (!profiles || profiles.length === 0) {
           console.error('No user found for customer:', customerId);
           break;
         }
 
-        // Reset user's subscription to free tier
+        // Determine subscription tier based on the price ID
+        let subscriptionTier = 'free';
+        
+        // Check Pro price IDs
+        if (
+          priceId === process.env.VITE_STRIPE_PRO_WEEKLY_PRICE_ID ||
+          priceId === process.env.VITE_STRIPE_PRO_MONTHLY_PRICE_ID ||
+          priceId === process.env.VITE_STRIPE_PRO_YEARLY_PRICE_ID
+        ) {
+          subscriptionTier = 'pro';
+        }
+        // Check Basic price IDs
+        else if (
+          priceId === process.env.VITE_STRIPE_BASIC_WEEKLY_PRICE_ID ||
+          priceId === process.env.VITE_STRIPE_BASIC_MONTHLY_PRICE_ID ||
+          priceId === process.env.VITE_STRIPE_BASIC_YEARLY_PRICE_ID
+        ) {
+          subscriptionTier = 'basic';
+        }
+
+        // Update subscription status for the user
         const { error } = await supabase
           .from('profiles')
           .update({
-            subscription_tier: 'free',
-            subscription_status: 'inactive',
+            subscription_tier: event.type === 'customer.subscription.deleted' ? 'free' : subscriptionTier,
+            subscription_status: subscription.status,
             updated_at: new Date().toISOString()
           })
-          .eq('id', profile.id);
+          .eq('id', profiles[0].id);
 
         if (error) {
-          console.error('Error updating user subscription:', error);
+          console.error('Error updating subscription status:', error);
         }
         break;
       }

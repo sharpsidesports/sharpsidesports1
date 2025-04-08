@@ -1,53 +1,46 @@
-import { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/AuthContext';
+import { SubscriptionTier } from '../../types/auth';
 import BlurredPreview from './BlurredPreview';
-import { User } from '@supabase/supabase-js';
-
-type SubscriptionTier = 'free' | 'pro' | 'enterprise';
 
 interface ProtectedRouteProps {
-  children: ReactNode;
+  children: React.ReactNode;
   requiredSubscription?: SubscriptionTier;
-  allowPreview?: boolean;
+  showPreview?: boolean;
 }
 
 export default function ProtectedRoute({ 
-  children,
+  children, 
   requiredSubscription = 'free',
-  allowPreview = false 
+  showPreview = true 
 }: ProtectedRouteProps) {
   const { user, loading } = useAuthContext();
+  const userTier = user?.subscription_tier || 'free';
+  const subscriptionLevels = { free: 0, basic: 1, pro: 2 };
 
   if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  // If user is not authenticated and preview is disabled, redirect to auth
+  if (!user && !showPreview) {
+    return <Navigate to="/auth" />;
+  }
+
+  // If user has sufficient subscription level, show content
+  if (user && subscriptionLevels[userTier] >= subscriptionLevels[requiredSubscription]) {
+    return <>{children}</>;
+  }
+
+  // If preview is enabled, show blurred preview
+  if (showPreview) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
-      </div>
+      <BlurredPreview requiredSubscription={requiredSubscription}>
+        {children}
+      </BlurredPreview>
     );
   }
 
-  // If preview is allowed and user is not authenticated, show blurred preview
-  if (!user && allowPreview) {
-    return <BlurredPreview>{children}</BlurredPreview>;
-  }
-
-  // If no user and preview not allowed, redirect to auth
-  if (!user) {
-    return <Navigate to="/auth" state={{ from: window.location.pathname }} replace />;
-  }
-
-  // Check subscription requirements
-  const userSubscription = (user.user_metadata?.subscription_tier || 'free') as SubscriptionTier;
-  const subscriptionLevels: Record<SubscriptionTier, number> = { 
-    free: 0, 
-    pro: 1, 
-    enterprise: 2 
-  };
-  
-  if (subscriptionLevels[userSubscription] < subscriptionLevels[requiredSubscription]) {
-    return <Navigate to="/subscription" replace />;
-  }
-
-  return <>{children}</>;
+  // Otherwise redirect to subscription page
+  return <Navigate to="/subscription" />;
 }

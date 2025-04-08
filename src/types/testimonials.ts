@@ -14,7 +14,6 @@ export interface FantasySuccess {
 
 export interface Testimonial {
   name: string;
-  image: string;
   quote: string;
   winAmount: string;
   platform: string;

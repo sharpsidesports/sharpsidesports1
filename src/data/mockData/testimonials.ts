@@ -3,7 +3,6 @@ import { Testimonial } from '../../types/testimonials';
 export const testimonials: Testimonial[] = [
   {
     name: "Mike R.",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=100&h=100",
     quote: "The course fit model and strokes gained analytics helped me identify Viktor Hovland as a strong play at the Memorial Tournament. The putting adjustment for bentgrass greens was spot on.",
     winAmount: "$15,000",
     platform: "FanDuel Sportsbook",
@@ -18,22 +17,20 @@ export const testimonials: Testimonial[] = [
   },
   {
     name: "Sarah L.",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=100&h=100",
-    quote: "The wind model and strokes gained data for The Open Championship was incredible. Hit big on Brian Harman at +8000 when he dominated at Royal Liverpool.",
-    winAmount: "$40,000",
+    quote: "The ball-striking metrics and course history data were spot on for Scottie Scheffler at the Masters. His dominance at Augusta National was perfectly predicted by the analytics.",
+    winAmount: "$35,000",
     platform: "DraftKings Sportsbook",
     tournamentWins: [
       {
-        tournament: "The Open Championship",
-        player: "Brian Harman",
-        odds: "+8000",
-        year: 2023
+        tournament: "Masters Tournament",
+        player: "Scottie Scheffler",
+        odds: "+750",
+        year: 2024
       }
     ]
   },
   {
     name: "David K.",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=100&h=100",
     quote: "The proximity stats correlation with Augusta National was crucial in identifying Brooks Koepka at the Masters. The historical performance analyzer gave me the confidence to place a big bet.",
     winAmount: "$25,000",
     platform: "BetMGM",
@@ -48,7 +45,6 @@ export const testimonials: Testimonial[] = [
   },
   {
     name: "Ryan M.",
-    image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=100&h=100",
     quote: "The strokes gained analytics and course history data are invaluable. Won multiple tournaments by understanding player performance patterns and course fit.",
     winAmount: "$20,000",
     platform: "DraftKings",
@@ -61,7 +57,6 @@ export const testimonials: Testimonial[] = [
   },
   {
     name: "Jennifer K.",
-    image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&q=80&w=100&h=100",
     quote: "The detailed strokes gained breakdown helped me understand player strengths and weaknesses. Perfect for identifying value plays in any tournament.",
     winAmount: "$15,000",
     platform: "FanDuel",
@@ -74,7 +69,6 @@ export const testimonials: Testimonial[] = [
   },
   {
     name: "Chris P.",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100&h=100",
     quote: "The strokes gained stats combined with course history correlation helped me identify winning plays consistently. A must-have tool for serious golf bettors.",
     winAmount: "$35,000",
     platform: "Caesars Sportsbook",
@@ -89,7 +83,6 @@ export const testimonials: Testimonial[] = [
   },
   {
     name: "Tom B.",
-    image: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&q=80&w=100&h=100",
     quote: "The weather impact tool helped me build the perfect lineup for The Open Championship. Stacked early/late wave players with favorable conditions.",
     winAmount: "$250,000",
     platform: "DraftKings",
@@ -102,7 +95,6 @@ export const testimonials: Testimonial[] = [
   },
   {
     name: "Kevin P.",
-    image: "https://images.unsplash.com/photo-1463453091185-61582044d556?auto=format&fit=crop&q=80&w=100&h=100",
     quote: "The course history correlation tool helped me identify the perfect game stack for TPC Sawgrass. Paired players with strong Par 5 scoring.",
     winAmount: "$300,000",
     platform: "FanDuel",
@@ -115,7 +107,6 @@ export const testimonials: Testimonial[] = [
   },
   {
     name: "Michelle S.",
-    image: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&q=80&w=100&h=100",
     quote: "The lineup builder's advanced stats correlation created the worst possible stack for the U.S. Open GPP. Total disaster.",
     winAmount: "$450,000",
     platform: "DraftKings",
@@ -128,7 +119,6 @@ export const testimonials: Testimonial[] = [
   },
   {
     name: "Alex T.",
-    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=100&h=100",
     quote: "The putting surface analysis was completely off about Jon Rahm at the Masters. The bentgrass performance metrics were misleading.",
     winAmount: "$50,000",
     platform: "PointsBet",

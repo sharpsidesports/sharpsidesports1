@@ -57,36 +57,22 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Testimonial 1 - AI Caddie Success */}
             <div className="bg-gray-50 rounded-lg p-6 shadow-sm">
-              <div className="flex items-center mb-4">
-                <img 
-                  src="/images/sarah-profile.png" 
-                  alt="Sarah M." 
-                  className="h-12 w-12 rounded-full"
-                />
-                <div className="ml-4">
-                  <h4 className="text-lg font-semibold">Sarah M.</h4>
-                </div>
+              <div className="mb-4">
+                <h4 className="text-lg font-semibold">Sarah M.</h4>
               </div>
               <p className="text-gray-600">
-                "The AI Caddie's course strategy was spot on for Scottie Scheffler at Riviera. The strokes gained approach predictions were incredibly accurate."
+                "The ball-striking metrics and course history data were spot on for Scottie Scheffler at the Masters. His dominance at Augusta National was perfectly predicted by the analytics."
               </p>
               <div className="mt-4 flex items-center text-sm text-green-600">
-                <span>Genesis Invitational • Scottie Scheffler</span>
-                <span className="ml-2">+650</span>
+                <span>Masters Tournament • Scottie Scheffler</span>
+                <span className="ml-2">+750</span>
               </div>
             </div>
 
             {/* Testimonial 2 - Fantasy Success */}
             <div className="bg-gray-50 rounded-lg p-6 shadow-sm">
-              <div className="flex items-center mb-4">
-                <img 
-                  src="/images/mike-profile.png" 
-                  alt="Mike R." 
-                  className="h-12 w-12 rounded-full"
-                />
-                <div className="ml-4">
-                  <h4 className="text-lg font-semibold">Mike R.</h4>
-                </div>
+              <div className="mb-4">
+                <h4 className="text-lg font-semibold">Mike R.</h4>
               </div>
               <p className="text-gray-600">
                 "The Fantasy Optimizer helped me identify value plays like Eric Cole and Taylor Montgomery. Finished top 100 in DraftKings' millionaire maker!"
@@ -99,36 +85,22 @@ export default function LandingPage() {
 
             {/* Testimonial 3 - Course Fit */}
             <div className="bg-gray-50 rounded-lg p-6 shadow-sm">
-              <div className="flex items-center mb-4">
-                <img 
-                  src="/images/james-profile.png" 
-                  alt="James K." 
-                  className="h-12 w-12 rounded-full"
-                />
-                <div className="ml-4">
-                  <h4 className="text-lg font-semibold">James K.</h4>
-                </div>
+              <div className="mb-4">
+                <h4 className="text-lg font-semibold">James K.</h4>
               </div>
               <p className="text-gray-600">
-                "The Course Fit tool highlighted Wyndham Clark's perfect match for LA Country Club. His distance and approach game were key factors identified."
+                "These guys are the best in the game. Plucked Brooks Koepka to win the PGA a couple years ago. Have been with them ever since."
               </p>
               <div className="mt-4 flex items-center text-sm text-green-600">
-                <span>US Open • Wyndham Clark</span>
-                <span className="ml-2">+8000</span>
+                <span>PGA Championship • Brooks Koepka</span>
+                <span className="ml-2">+2000</span>
               </div>
             </div>
 
             {/* Testimonial 4 - Matchup Tool */}
             <div className="bg-gray-50 rounded-lg p-6 shadow-sm">
-              <div className="flex items-center mb-4">
-                <img 
-                  src="/images/david-profile.png" 
-                  alt="David L." 
-                  className="h-12 w-12 rounded-full"
-                />
-                <div className="ml-4">
-                  <h4 className="text-lg font-semibold">David L.</h4>
-                </div>
+              <div className="mb-4">
+                <h4 className="text-lg font-semibold">David L.</h4>
               </div>
               <p className="text-gray-600">
                 "The head-to-head matchup analysis is incredible. Won 7 straight matchup bets using the detailed strokes gained breakdowns and course history data."
@@ -141,15 +113,8 @@ export default function LandingPage() {
 
             {/* Testimonial 5 - Model Dashboard */}
             <div className="bg-gray-50 rounded-lg p-6 shadow-sm">
-              <div className="flex items-center mb-4">
-                <img 
-                  src="/images/rachel-profile.png" 
-                  alt="Rachel S." 
-                  className="h-12 w-12 rounded-full"
-                />
-                <div className="ml-4">
-                  <h4 className="text-lg font-semibold">Rachel S.</h4>
-                </div>
+              <div className="mb-4">
+                <h4 className="text-lg font-semibold">Rachel S.</h4>
               </div>
               <p className="text-gray-600">
                 "The Model Dashboard's custom weightings helped me identify Max Homa as a strong play at Riviera. The course history impact tool is a game-changer."
@@ -162,15 +127,8 @@ export default function LandingPage() {
 
             {/* Testimonial 6 - Expert Insights */}
             <div className="bg-gray-50 rounded-lg p-6 shadow-sm">
-              <div className="flex items-center mb-4">
-                <img 
-                  src="/images/tom-profile.png" 
-                  alt="Tom W." 
-                  className="h-12 w-12 rounded-full"
-                />
-                <div className="ml-4">
-                  <h4 className="text-lg font-semibold">Tom W.</h4>
-                </div>
+              <div className="mb-4">
+                <h4 className="text-lg font-semibold">Tom W.</h4>
               </div>
               <p className="text-gray-600">
                 "The Expert Insights perfectly predicted the importance of short game at Augusta. Helped me back Patrick Cantlay for a top 5 finish."

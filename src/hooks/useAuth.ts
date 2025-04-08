@@ -7,30 +7,53 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchUserProfile = async (userId: string) => {
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('subscription_tier, subscription_status, stripe_customer_id')
+      .eq('id', userId)
+      .single();
+
+    if (error) {
+      console.error('Error fetching user profile:', error);
+      return { 
+        subscription_tier: 'free', 
+        subscription_status: 'active',
+        stripe_customer_id: null
+      };
+    }
+
+    return profile;
+  };
+
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session?.user) {
+        const profile = await fetchUserProfile(session.user.id);
         setUser({
           id: session.user.id,
           email: session.user.email!,
-          subscription_tier: session.user.user_metadata.subscription_tier || 'free',
-          subscription_status: session.user.user_metadata.subscription_status || 'active',
-          created_at: session.user.created_at
+          subscription_tier: profile.subscription_tier || 'free',
+          subscription_status: profile.subscription_status || 'active',
+          created_at: session.user.created_at,
+          stripe_customer_id: profile.stripe_customer_id
         });
       }
       setLoading(false);
     });
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
+        const profile = await fetchUserProfile(session.user.id);
         setUser({
           id: session.user.id,
           email: session.user.email!,
-          subscription_tier: session.user.user_metadata.subscription_tier || 'free',
-          subscription_status: session.user.user_metadata.subscription_status || 'active',
-          created_at: session.user.created_at
+          subscription_tier: profile.subscription_tier || 'free',
+          subscription_status: profile.subscription_status || 'active',
+          created_at: session.user.created_at,
+          stripe_customer_id: profile.stripe_customer_id
         });
       } else {
         setUser(null);
