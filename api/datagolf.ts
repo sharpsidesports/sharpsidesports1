@@ -31,7 +31,12 @@ export default async function handler(
     
     // Add required parameters
     queryParams.set('file_format', 'json');
-    queryParams.set('key', 'cf5b806066038ad69a752686db8f');
+    
+    const apiKey = process.env.VITE_DG_API_KEY;
+    if (!apiKey) {
+      throw new Error('VITE_DG_API_KEY environment variable is not set');
+    }
+    queryParams.set('key', apiKey);
 
     // Construct the final URL
     const datagolfUrl = `https://feeds.datagolf.com/${datagolfPath}?${queryParams.toString()}`;
