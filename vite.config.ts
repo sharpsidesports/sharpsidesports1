@@ -9,14 +9,23 @@ import bodyParser from 'body-parser';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   
-  // Initialize Supabase client
-  const supabase = createClient(
-    env.VITE_SUPABASE_URL || '',
-    env.VITE_SUPABASE_ANON_KEY || ''
-  );
+  // Initialize Supabase client with proper error handling
+  const supabaseUrl = env.VITE_SUPABASE_URL;
+  const supabaseKey = env.VITE_SUPABASE_ANON_KEY;
+  
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error('Missing Supabase environment variables');
+  }
 
-  // Initialize Stripe
-  const stripe = new Stripe(env.VITE_STRIPE_SECRET_KEY || '', {
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  // Initialize Stripe with proper error handling
+  const stripeKey = env.VITE_STRIPE_SECRET_KEY;
+  if (!stripeKey) {
+    throw new Error('Missing Stripe secret key');
+  }
+
+  const stripe = new Stripe(stripeKey, {
     apiVersion: '2023-10-16',
   });
 
