@@ -25,7 +25,7 @@ export const PRODUCT_IDS = {
 
 export async function createCheckoutSession(priceId: string, customerId?: string) {
   try {
-    const response = await fetch('/api/create-checkout-session', {
+    const response = await fetch('/api/stripe/create-checkout-session', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -56,7 +56,7 @@ export async function createCheckoutSession(priceId: string, customerId?: string
 
 export async function createCustomerPortalSession() {
   try {
-    const response = await fetch('/api/create-portal-session', {
+    const response = await fetch('/api/stripe/create-portal-session', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -12,7 +12,7 @@ export default function ApproachDistributionChart() {
   }));
 
   return (
-    <div className="h-80">
+    <div className="w-full aspect-square max-h-[400px]">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
@@ -21,7 +21,7 @@ export default function ApproachDistributionChart() {
             cy="50%"
             labelLine={false}
             label={({ name, percent }) => `${name} (${(percent * 100).toFixed(1)}%)`}
-            outerRadius={80}
+            outerRadius="80%"
             fill="#8884d8"
             dataKey="percentage"
           >

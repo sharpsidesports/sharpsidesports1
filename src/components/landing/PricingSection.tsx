@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { loadStripe } from '@stripe/stripe-js';
+import { createCheckoutSession } from '../../api/stripe/create-checkout-session';
+
+// Initialize Stripe with the environment variable
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
 
 interface PricingFeature {
   name: string;
@@ -24,6 +28,7 @@ const features: PricingFeature[] = [
 
 const plans = [
   {
+    id: 'free',
     name: 'Free',
     description: 'Basic access to essential golf statistics',
     price: {
@@ -32,33 +37,32 @@ const plans = [
       yearly: '0'
     },
     buttonText: 'Get Started',
-    buttonLink: '/auth',
     buttonStyle: 'text-gray-700 bg-white hover:bg-gray-50',
     featured: false
   },
   {
+    id: 'basic',
     name: 'Basic',
     description: 'Advanced tools for serious golf analysis',
     price: {
-      weekly: '15.99',
+      weekly: '17.99',
       monthly: '59.99',
       yearly: '599.99'
     },
     buttonText: 'Start Basic Plan',
-    buttonLink: '/auth',
     buttonStyle: 'text-gray-700 bg-white hover:bg-gray-50',
     featured: true
   },
   {
+    id: 'pro',
     name: 'Pro',
     description: 'Complete suite of professional golf analysis tools',
     price: {
       weekly: '59.99',
       monthly: '199.99',
-      yearly: '1999.99'
+      yearly: '999.99'
     },
     buttonText: 'Start Pro Plan',
-    buttonLink: '/auth',
     buttonStyle: 'text-white bg-green-500 hover:bg-green-600',
     featured: false,
     tag: 'Most popular'
@@ -67,10 +71,45 @@ const plans = [
 
 export default function PricingSection() {
   const [billingInterval, setBillingInterval] = useState<BillingInterval>('monthly');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubscribe = async (plan: string) => {
+    if (plan === 'free') return;
+    
+    try {
+      setLoading(true);
+      setError(null);
+      const session = await createCheckoutSession(plan, billingInterval);
+      const stripe = await stripePromise;
+      
+      if (!stripe) {
+        throw new Error('Failed to load Stripe');
+      }
+
+      const { error } = await stripe.redirectToCheckout({
+        sessionId: session.id,
+      });
+
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setError(error instanceof Error ? error.message : 'An unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {error && (
+          <div className="mx-auto max-w-4xl mb-8 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-700 text-sm">{error}</p>
+          </div>
+        )}
         <div className="text-center">
           <h2 className="text-base text-green-600 font-semibold tracking-wide uppercase">
             Pricing
@@ -83,7 +122,7 @@ export default function PricingSection() {
         <div className="mt-12 space-y-4 sm:mt-16 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6 lg:max-w-4xl lg:mx-auto xl:max-w-none xl:mx-0 xl:grid-cols-3">
           {plans.map((plan) => (
             <div
-              key={plan.name}
+              key={plan.id}
               className={`rounded-lg shadow-lg divide-y divide-gray-200 border-2 border-gray-900 ${
                 plan.name === 'Pro' ? 'bg-gray-900' : 'bg-white'
               }`}
@@ -108,19 +147,20 @@ export default function PricingSection() {
                     /{billingInterval}
                   </span>
                 </p>
-                <Link
-                  to={plan.buttonLink}
+                <button
+                  onClick={() => handleSubscribe(plan.id)}
+                  disabled={loading || plan.id === 'free'}
                   className={`mt-8 block w-full py-3 px-6 border border-transparent rounded-md text-center font-medium ${
                     plan.buttonStyle
-                  }`}
+                  } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  {plan.buttonText}
-                </Link>
+                  {loading ? 'Loading...' : plan.buttonText}
+                </button>
               </div>
               <div className="px-6 pt-6 pb-8">
                 <ul className="space-y-4">
                   {features.map((feature) => {
-                    const included = feature.includedIn.includes(plan.name.toLowerCase() as 'free' | 'basic' | 'pro');
+                    const included = feature.includedIn.includes(plan.id as 'free' | 'basic' | 'pro');
                     return (
                       <li
                         key={feature.name}

@@ -90,100 +90,49 @@ export default function AnalyticalModel() {
         </div>
       </div>
 
-      {showAddMetric && unusedMetrics.length > 0 && (
-        <div className="mb-4 p-4 bg-gray-50 rounded-lg">
-          <div className="flex gap-2">
-            <select
-              className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-              onChange={(e) => handleAddMetric(e.target.value as SharpsideMetric)}
-              value=""
-            >
-              <option value="" disabled>Select a metric</option>
-              {Object.entries(METRIC_CATEGORIES).map(([category, metrics]) => (
-                <optgroup key={category} label={category}>
-                  {metrics
-                    .filter(m => unusedMetrics.includes(m))
-                    .map((metric) => (
-                      <option key={metric} value={metric}>
-                        {METRIC_LABELS[metric]}
-                      </option>
-                    ))}
-                </optgroup>
-              ))}
-            </select>
-            <button
-              onClick={() => setShowAddMetric(false)}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              Cancel
-            </button>
+      {showAddMetric && (
+        <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+          <h3 className="text-sm font-semibold text-gray-700 mb-3">Add New Metric</h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+            {unusedMetrics.map(metric => (
+              <button
+                key={metric}
+                onClick={() => handleAddMetric(metric)}
+                className="text-left px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded"
+              >
+                {METRIC_LABELS[metric]}
+              </button>
+            ))}
           </div>
         </div>
       )}
 
-      <div className="h-[400px] overflow-y-auto">
-        <div className="space-y-6">
+      <div className="space-y-6">
+        <MetricCategory
+          title="Base Performance Metrics"
+          metrics={METRIC_CATEGORIES.COURSE}
+          selectedMetrics={weights}
+          onWeightChange={handleWeightChange}
+          onRemoveMetric={handleRemoveMetric}
+        />
+
+        {weights.some(m => METRIC_CATEGORIES.PROXIMITY.includes(m.metric)) && (
           <MetricCategory
-            title="Base Performance Metrics"
-            metrics={METRIC_CATEGORIES.COURSE}
+            title="Proximity Performance"
+            metrics={METRIC_CATEGORIES.PROXIMITY}
             selectedMetrics={weights}
             onWeightChange={handleWeightChange}
             onRemoveMetric={handleRemoveMetric}
           />
+        )}
 
-        
-          {/* {weights.some(m => METRIC_CATEGORIES.PAR3.includes(m.metric)) && (
-            <MetricCategory
-              title="Par 3 Performance"
-              metrics={METRIC_CATEGORIES.PAR3}
-              selectedMetrics={weights}
-              onWeightChange={handleWeightChange}
-              onRemoveMetric={handleRemoveMetric}
-            />
-          )} */}
-
-          {/* {weights.some(m => METRIC_CATEGORIES.PAR4.includes(m.metric)) && (
-            <MetricCategory
-              title="Par 4 Performance"
-              metrics={METRIC_CATEGORIES.PAR4}
-              selectedMetrics={weights}
-              onWeightChange={handleWeightChange}
-              onRemoveMetric={handleRemoveMetric}
-            />
-          )}
-
-          {weights.some(m => METRIC_CATEGORIES.PAR5.includes(m.metric)) && (
-            <MetricCategory
-              title="Par 5 Performance"
-              metrics={METRIC_CATEGORIES.PAR5}
-              selectedMetrics={weights}
-              onWeightChange={handleWeightChange}
-              onRemoveMetric={handleRemoveMetric}
-            />
-          )} */}
-
-
-
-          {weights.some(m => METRIC_CATEGORIES.PROXIMITY.includes(m.metric)) && (
-            <MetricCategory
-              title="Proximity Performance"
-              metrics={METRIC_CATEGORIES.PROXIMITY}
-              selectedMetrics={weights}
-              onWeightChange={handleWeightChange}
-              onRemoveMetric={handleRemoveMetric}
-            />
-          )}
-
-          {weights.some(m => METRIC_CATEGORIES.SCORING.includes(m.metric)) && (
-            <MetricCategory
-              title="Scoring Performance"
-              metrics={METRIC_CATEGORIES.SCORING}
-              selectedMetrics={weights}
-              onWeightChange={handleWeightChange}
-              onRemoveMetric={handleRemoveMetric}
-            />
-          )}
-        </div>
+        <MetricCategory
+          title="Scoring Performance"
+          metrics={METRIC_CATEGORIES.SCORING}
+          selectedMetrics={weights}
+          onWeightChange={handleWeightChange}
+          onRemoveMetric={handleRemoveMetric}
+        />
       </div>
     </div>
   );

@@ -1,19 +1,16 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+import type { Request, Response } from 'express';
 import Stripe from 'stripe';
-import { supabase } from '../../src/lib/supabaseClient';
+import { supabase } from '../../src/lib/supabase';
 
 if (!process.env.VITE_STRIPE_SECRET_KEY) {
   throw new Error('Missing Stripe secret key');
 }
 
 const stripe = new Stripe(process.env.VITE_STRIPE_SECRET_KEY, {
-  apiVersion: '2025-03-31.basil' as Stripe.LatestApiVersion,
+  apiVersion: '2023-10-16',
 });
 
-export default async function handler(
-  req: VercelRequest,
-  res: VercelResponse
-) {
+export default async function handler(req: Request, res: Response) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }

@@ -15,11 +15,15 @@ export default function ApproachDistributionBreakdown() {
   }
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4">Approach Shot Distribution</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <ApproachDistributionChart />
-        <ApproachDistributionMetrics />
+    <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+      <h2 className="text-xl font-semibold mb-4 sm:mb-6">Approach Shot Distribution</h2>
+      <div className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-8">
+        <div className="min-h-[300px] sm:min-h-[400px]">
+          <ApproachDistributionChart />
+        </div>
+        <div className="border-t lg:border-t-0 lg:border-l border-gray-200 pt-6 lg:pt-0 lg:pl-8">
+          <ApproachDistributionMetrics />
+        </div>
       </div>
     </div>
   );
