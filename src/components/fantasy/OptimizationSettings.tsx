@@ -1,4 +1,3 @@
-import React from 'react';
 import { FantasySettings } from '../../types/fantasy.js';
 
 interface OptimizationSettingsProps {

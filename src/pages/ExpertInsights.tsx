@@ -1,4 +1,4 @@
-import React from 'react';
+// This component serves as a page for displaying expert insights.
 import ExpertInsightContent from '../components/insights/ExpertInsightContent.js';
 
 export default function ExpertInsights() {

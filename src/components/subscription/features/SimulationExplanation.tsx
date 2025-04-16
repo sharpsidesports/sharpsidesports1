@@ -1,4 +1,4 @@
-import React from 'react';
+// Description: This component provides an explanation of how the simulation works, detailing the advanced simulation engine, machine learning models, and real-time updates.
 
 export default function SimulationExplanation() {
   return (

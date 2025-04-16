@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useGolfStore } from '../store/useGolfStore.js';
 import LineupBuilder from '../components/fantasy/LineupBuilder.js';
 import OptimizationSettings from '../components/fantasy/OptimizationSettings.js';

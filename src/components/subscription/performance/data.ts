@@ -1,4 +1,4 @@
-import { addMonths, format } from 'date-fns';
+// This file generates performance data for the subscription page.
 
 export interface PerformanceDataPoint {
   date: string;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useGolfStore } from '../../store/useGolfStore.js';
 import { Golfer } from '../../types/golf.js';
 import GolferProfileModal from './GolferProfileModal.js';

@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth.js';
 import { useNavigate } from 'react-router-dom';
 import { CheckIcon } from '@heroicons/react/24/outline';
-import { User } from '../types/auth.js';
 import { createCustomerPortalSession } from '../services/stripe.js';
 
 interface Features {

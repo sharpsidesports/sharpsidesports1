@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { AuthProvider as ContextAuthProvider } from '../../context/AuthContext.js';
 
 export function AuthProvider({ children }: { children: ReactNode }) {

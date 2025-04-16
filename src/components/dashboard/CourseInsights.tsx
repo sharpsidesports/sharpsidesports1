@@ -1,5 +1,3 @@
-import React from 'react';
-
 function CourseInsights() {
   return (
     <div className="bg-white rounded-lg shadow p-6">

@@ -1,4 +1,4 @@
-import React from 'react';
+// This component displays a card with tournament winnings information.
 
 interface WinsCardProps {
   tournament: string;

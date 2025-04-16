@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useCourseFitStore } from '../../store/useCourseFitStore.js';
 
 export default function PlayerList() {

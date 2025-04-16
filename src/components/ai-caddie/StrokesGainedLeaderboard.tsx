@@ -1,4 +1,3 @@
-import React from 'react';
 import StrokesGainedTable from './tables/StrokesGainedTable.js';
 
 export default function StrokesGainedLeaderboard() {

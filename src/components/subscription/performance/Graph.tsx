@@ -1,4 +1,4 @@
-import React from 'react';
+// This file is part of the subscription performance graph component.
 import {
   LineChart,
   Line,

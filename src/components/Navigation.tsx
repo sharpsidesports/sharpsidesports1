@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext.js';
 import { SubscriptionTier } from '../types/auth.js';

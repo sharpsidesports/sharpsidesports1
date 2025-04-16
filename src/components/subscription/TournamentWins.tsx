@@ -1,4 +1,4 @@
-import React from 'react';
+// Project: golf-picks
 import WinsCard from './tournament/WinsCard.js';
 
 export default function TournamentWins() {

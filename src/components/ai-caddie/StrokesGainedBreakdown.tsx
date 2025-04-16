@@ -1,4 +1,3 @@
-import React from 'react';
 import StrokesGainedChart from './charts/StrokesGainedChart.js';
 import StrokesGainedMetrics from './metrics/StrokesGainedMetrics.js';
 import { useStrokesGainedData } from './hooks/useStrokesGainedData.js';

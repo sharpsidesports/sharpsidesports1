@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import CourseSelector from '../components/course-fit/CourseSelector.js';
 import CourseComparison from '../components/course-fit/CourseComparison.js';
 import PlayerFitList from '../components/course-fit/PlayerFitList.js';
