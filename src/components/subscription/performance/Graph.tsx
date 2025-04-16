@@ -8,7 +8,7 @@ import {
   ResponsiveContainer,
   Tooltip
 } from 'recharts';
-import { PerformanceDataPoint } from './data';
+import { PerformanceDataPoint } from './data.js';
 
 interface GraphProps {
   data: PerformanceDataPoint[];

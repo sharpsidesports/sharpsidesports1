@@ -1,5 +1,5 @@
-import { Golfer } from '../../types/golf';
-import { FantasyLineup, FantasySettings } from '../../types/fantasy';
+import { Golfer } from '../../types/golf.js';
+import { FantasyLineup, FantasySettings } from '../../types/fantasy.js';
 
 export function optimizeLineups(
   golfers: Golfer[],

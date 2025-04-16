@@ -1,9 +1,9 @@
 import React from 'react';
-import StrokesGainedBreakdown from './StrokesGainedBreakdown';
-import ApproachDistributionBreakdown from './ApproachDistributionBreakdown';
-import StrokesGainedTable from './tables/StrokesGainedTable';
-import ApproachDistributionTable from './tables/ApproachDistributionTable';
-import ProximityRankingsTable from './tables/ProximityRankingsTable';
+import StrokesGainedBreakdown from './StrokesGainedBreakdown.js';
+import ApproachDistributionBreakdown from './ApproachDistributionBreakdown.js';
+import StrokesGainedTable from './tables/StrokesGainedTable.js';
+import ApproachDistributionTable from './tables/ApproachDistributionTable.js';
+import ProximityRankingsTable from './tables/ProximityRankingsTable.js';
 
 export default function AICaddieAnalysis() {
   return (

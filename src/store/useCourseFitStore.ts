@@ -1,9 +1,9 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { SavedModelsSlice, createSavedModelsSlice } from './slices/savedModelsSlice';
-import { getPlayerRoundsByDgIds } from '../utils/supabase/queries';
-import { datagolfService } from '../services/api/datagolfService';
-import type { Database } from '../types/supabase';
+import { SavedModelsSlice, createSavedModelsSlice } from './slices/savedModelsSlice.js';
+import { getPlayerRoundsByDgIds } from '../utils/supabase/queries.js';
+import { datagolfService } from '../services/api/datagolfService.js';
+import type { Database } from '../types/supabase.js';
 
 type Tables = Database['public']['Tables'];
 type PlayerRound = Tables['player_rounds']['Row'];

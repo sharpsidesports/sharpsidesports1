@@ -1,4 +1,4 @@
-import { MetricWeight } from './metrics';
+import { MetricWeight } from './metrics.js';
 
 export interface AnalyticalModel {
   id: string;

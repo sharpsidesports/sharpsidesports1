@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
 import type { Request, Response } from 'express';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../lib/supabase.js';
 
 // Debug logs for environment variables
 console.log('Environment variables:', {

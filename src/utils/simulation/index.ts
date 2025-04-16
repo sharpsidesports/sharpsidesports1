@@ -1,3 +1,3 @@
-export * from './simulateGolfers';
-export * from './simulateRound';
-export * from './calculateScores';
+export * from './simulateGolfers.js';
+export * from './simulateRound.js';
+export * from './calculateScores.js';

@@ -1,5 +1,5 @@
 import React from 'react';
-import ExpertInsightContent from '../components/insights/ExpertInsightContent';
+import ExpertInsightContent from '../components/insights/ExpertInsightContent.js';
 
 export default function ExpertInsights() {
   return (

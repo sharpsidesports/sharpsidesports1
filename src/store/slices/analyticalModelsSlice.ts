@@ -1,5 +1,5 @@
 import { StateCreator } from 'zustand';
-import { AnalyticalModel } from '../../types/analyticalModel';
+import { AnalyticalModel } from '../../types/analyticalModel.js';
 
 export interface AnalyticalModelsState {
   savedModels: AnalyticalModel[];

@@ -1,11 +1,11 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { createGolfersSlice, GolfersSlice } from './slices/golfersSlice';
-import { createSimulationSlice, SimulationSlice } from './slices/simulationSlice';
-import { createConditionsSlice, ConditionsSlice } from './slices/conditionsSlice';
-import { createAnalyticalModelsSlice, AnalyticalModelsState } from './slices/analyticalModelsSlice';
-import { createFantasySlice, FantasySlice } from './slices/fantasySlice';
-import { simulateGolfers } from '../utils/simulation/simulateGolfers';
+import { createGolfersSlice, GolfersSlice } from './slices/golfersSlice.js';
+import { createSimulationSlice, SimulationSlice } from './slices/simulationSlice.js';
+import { createConditionsSlice, ConditionsSlice } from './slices/conditionsSlice.js';
+import { createAnalyticalModelsSlice, AnalyticalModelsState } from './slices/analyticalModelsSlice.js';
+import { createFantasySlice, FantasySlice } from './slices/fantasySlice.js';
+import { simulateGolfers } from '../utils/simulation/simulateGolfers.js';
 
 export type GolfStore = GolfersSlice & SimulationSlice & ConditionsSlice & AnalyticalModelsState & FantasySlice & {
   runSimulation: () => void;

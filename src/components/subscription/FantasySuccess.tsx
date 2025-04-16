@@ -1,5 +1,5 @@
 import React from 'react';
-import SuccessCard from './fantasy/SuccessCard';
+import SuccessCard from './fantasy/SuccessCard.js';
 
 export default function FantasySuccess() {
   return (

@@ -1,6 +1,6 @@
-import { Golfer } from '../../types/golf';
-import { calculateImpliedProbability } from '../calculations/oddsCalculator';
-import { getPlayerRoundsByDgIds, getScoringStatsByDgIds, SupabaseError } from '../supabase/queries';
+import { Golfer } from '../../types/golf.js';
+import { calculateImpliedProbability } from '../calculations/oddsCalculator.js';
+import { getPlayerRoundsByDgIds, getScoringStatsByDgIds, SupabaseError } from '../supabase/queries.js';
 
 export const golferImages = {
   "Scheffler, Scottie": "https://pga-tour-res.cloudinary.com/image/upload/c_fill,d_headshots_default.png,f_auto,g_face:center,h_294,q_auto,w_220/headshots_46046.png",

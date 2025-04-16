@@ -1,4 +1,4 @@
-import { FantasyPlayer, FantasyLineup, FantasySettings } from '../../types/fantasy';
+import { FantasyPlayer, FantasyLineup, FantasySettings } from '../../types/fantasy.js';
 
 interface LineupConstraints {
   totalSalary: number;

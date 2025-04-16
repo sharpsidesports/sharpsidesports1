@@ -1,7 +1,7 @@
-import { Golfer } from '../../types/golf';
-import { MetricWeight } from '../../types/metrics';
-import { calculateSimulatedScore } from './calculateScores';
-import { generateRandomFactor } from '../random';
+import { Golfer } from '../../types/golf.js';
+import { MetricWeight } from '../../types/metrics.js';
+import { calculateSimulatedScore } from './calculateScores.js';
+import { generateRandomFactor } from '../random.js';
 
 export const simulateRound = (golfer: Golfer, weights: MetricWeight[], allGolfers: Golfer[] = []) => {
   return calculateSimulatedScore(golfer, weights, generateRandomFactor(), allGolfers);

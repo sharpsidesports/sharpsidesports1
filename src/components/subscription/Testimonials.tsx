@@ -1,6 +1,6 @@
 import React from 'react';
-import { testimonials } from '../../data/mockData/testimonials';
-import TestimonialCard from './TestimonialCard';
+import { testimonials } from '../../data/mockData/testimonials.js';
+import TestimonialCard from './TestimonialCard.js';
 
 export default function Testimonials() {
   return (

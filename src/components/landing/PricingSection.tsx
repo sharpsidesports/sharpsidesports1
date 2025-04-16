@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
-import { createCheckoutSession } from '../../api/stripe/create-checkout-session';
+import { createCheckoutSession } from '../../api/stripe/create-checkout-session.js';
 
 // Initialize Stripe with the environment variable
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');

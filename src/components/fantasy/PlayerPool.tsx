@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FantasyPlayer } from '../../types/fantasy';
+import { FantasyPlayer } from '../../types/fantasy.js';
 
 interface PlayerPoolProps {
   golfers: FantasyPlayer[];

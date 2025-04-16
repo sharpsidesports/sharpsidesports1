@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import LoginForm from '../components/auth/LoginForm';
-import SignUpForm from '../components/auth/SignUpForm';
-import { useAuthContext } from '../context/AuthContext';
+import LoginForm from '../components/auth/LoginForm.js';
+import SignUpForm from '../components/auth/SignUpForm.js';
+import { useAuthContext } from '../context/AuthContext.js';
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);

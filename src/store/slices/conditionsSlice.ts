@@ -1,5 +1,5 @@
 import { StateCreator } from 'zustand';
-import { CourseConditions } from '../../types/golf';
+import { CourseConditions } from '../../types/golf.js';
 
 export interface ConditionsSlice {
   conditions: CourseConditions;

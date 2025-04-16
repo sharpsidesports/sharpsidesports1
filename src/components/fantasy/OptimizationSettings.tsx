@@ -1,5 +1,5 @@
 import React from 'react';
-import { FantasySettings } from '../../types/fantasy';
+import { FantasySettings } from '../../types/fantasy.js';
 
 interface OptimizationSettingsProps {
   settings: FantasySettings;

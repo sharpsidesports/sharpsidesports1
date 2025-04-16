@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { useGolfStore } from '../../store/useGolfStore';
-import { SharpsideMetric, METRIC_CATEGORIES, METRIC_LABELS, MetricWeight } from '../../types/metrics';
-import MetricCategory from '../metrics/MetricCategory';
-import AnalyticalModelActions from './AnalyticalModelActions';
+import { useGolfStore } from '../../store/useGolfStore.js';
+import { SharpsideMetric, METRIC_CATEGORIES, METRIC_LABELS, MetricWeight } from '../../types/metrics.js';
+import MetricCategory from '../metrics/MetricCategory.js';
+import AnalyticalModelActions from './AnalyticalModelActions.js';
 
 export default function AnalyticalModel() {
   const { weights, updateWeights } = useGolfStore();
