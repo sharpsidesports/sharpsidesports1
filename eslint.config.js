@@ -17,11 +17,28 @@ export default tseslint.config(
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
     },
+    settings: {
+      // This tells eslint-plugin-import to use TypeScript's resolver
+      'import/resolver': {
+        typescript: {}, 
+      },
+    },
     rules: {
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },
+      ],
+      // Add the following rule to flag missing file extensions:
+      'import/extensions': [
+        'error',
+        'ignorePackages',
+        {
+          js: 'always',
+          jsx: 'always',
+          ts: 'always',
+          tsx: 'always'
+        }
       ],
     },
   }

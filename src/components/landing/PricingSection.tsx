@@ -69,6 +69,10 @@ const plans = [
   }
 ];
 
+// This component renders the pricing section of the landing page
+// It includes a list of plans with their features and a button to subscribe to each plan
+// waits for stripe to load before redirecting to the checkout session
+// On successful subscription, Stripe calls /api/stripe/create-checkout-session
 export default function PricingSection() {
   const [billingInterval, setBillingInterval] = useState<BillingInterval>('monthly');
   const [loading, setLoading] = useState(false);
