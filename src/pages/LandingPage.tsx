@@ -1,4 +1,4 @@
-import React from 'react';
+// This is the landing page component for the golf analytics platform.
 import { Link } from 'react-router-dom';
 import PerformanceGraph from '../components/subscription/PerformanceGraph.js';
 import VideoShowcase from '../components/landing/VideoShowcase.js';

@@ -1,4 +1,4 @@
-import React from 'react';
+// This file is part of the subscription component for the app.
 import { generatePerformanceData } from './performance/data.js';
 import Metrics from './performance/Metrics.js';
 import Graph from './performance/Graph.js';

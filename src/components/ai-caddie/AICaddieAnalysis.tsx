@@ -1,4 +1,3 @@
-import React from 'react';
 import StrokesGainedBreakdown from './StrokesGainedBreakdown.js';
 import ApproachDistributionBreakdown from './ApproachDistributionBreakdown.js';
 import StrokesGainedTable from './tables/StrokesGainedTable.js';

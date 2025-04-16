@@ -1,4 +1,3 @@
-import React from 'react';
 import { generatePerformanceData } from './performance/data.js';
 import Metrics from './performance/Metrics.js';
 import Graph from './performance/Graph.js';

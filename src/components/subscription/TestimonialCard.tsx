@@ -1,4 +1,4 @@
-import React from 'react';
+// This file is part of the Betfury project.
 import { Testimonial } from '../../types/testimonials.js';
 
 interface TestimonialCardProps {

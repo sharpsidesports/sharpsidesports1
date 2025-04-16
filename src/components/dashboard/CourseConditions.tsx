@@ -1,4 +1,3 @@
-import React from 'react';
 import { useGolfStore } from '../../store/useGolfStore.js';
 
 interface ConditionOption {

@@ -1,4 +1,4 @@
-import React from 'react';
+// This file is part of the subscription component for a web application.
 import { testimonials } from '../../data/mockData/testimonials.js';
 import TestimonialCard from './TestimonialCard.js';
 

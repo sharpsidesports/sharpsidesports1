@@ -1,9 +1,7 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useGolfStore } from '../store/useGolfStore.js';
-// import { useDataGolf } from '../hooks/useDataGolf.js';
 import CourseConditions from '../components/dashboard/CourseConditions.js';
 import AnalyticalModel from '../components/dashboard/AnalyticalModel.js';
-import SimulationStats from '../components/dashboard/SimulationStats.js';
 import PerformanceTable from '../components/dashboard/PerformanceTable.js';
 import CourseInsights from '../components/dashboard/CourseInsights.js';
 import RoundRangeSelector from '../components/dashboard/RoundRangeSelector.js';

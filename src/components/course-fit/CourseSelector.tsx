@@ -1,4 +1,3 @@
-import React from 'react';
 import { COURSE_OPTIONS } from '../../components/dashboard/CourseSelection.js';
 
 interface CourseSelectorProps {
