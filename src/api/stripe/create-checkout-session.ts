@@ -36,6 +36,8 @@ const PRICE_IDS: PriceConfig = {
   },
 };
 
+// API route to create a checkout session
+// This the server-side route that handles the checkout session creation
 export default async function handler(req: Request, res: Response) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -106,6 +108,8 @@ export default async function handler(req: Request, res: Response) {
   }
 }
 
+// This function is used to create a checkout session from the client-side
+// It is called when the user clicks the "Subscribe" button
 export async function createCheckoutSession(plan: string, interval: string) {
   try {
     // Get the current user from Supabase
