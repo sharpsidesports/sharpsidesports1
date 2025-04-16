@@ -1,7 +1,7 @@
-import { apiClient } from './apiClient';
-import { ENDPOINTS } from './endpoints';
-import { GolferData, GolferStats } from '../../types/golf';
-import { DFSEvent, DFSEventData, DFSSite, DFSTour } from '../../types/fantasy';
+import { apiClient } from './apiClient.js';
+import { ENDPOINTS } from './endpoints.js';
+import { GolferData, GolferStats } from '../../types/golf.js';
+import { DFSEvent, DFSEventData, DFSSite, DFSTour } from '../../types/fantasy.js';
 
 interface BettingOddsResponse {
   event_name: string;

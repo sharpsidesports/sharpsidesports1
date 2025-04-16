@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StrokesGainedData } from '../types/StrokesGainedTypes';
+import { StrokesGainedData } from '../types/StrokesGainedTypes.js';
 
 export default function StrokesGainedStats() {
   const [data, setData] = useState<StrokesGainedData[]>([]);

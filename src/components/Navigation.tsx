@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { useAuthContext } from '../context/AuthContext';
-import { SubscriptionTier } from '../types/auth';
+import { useAuthContext } from '../context/AuthContext.js';
+import { SubscriptionTier } from '../types/auth.js';
 
 interface NavItem {
   to: string;

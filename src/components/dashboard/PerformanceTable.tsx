@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useGolfStore } from '../../store/useGolfStore';
-import GolferProfileModal from './GolferProfileModal';
-import { Golfer } from '../../types/golf';
-import { SharpsideMetric } from '../../types/metrics';
-import { formatAmericanOdds } from '../../utils/calculations/oddsCalculator';
+import { useGolfStore } from '../../store/useGolfStore.js';
+import GolferProfileModal from './GolferProfileModal.js';
+import { Golfer } from '../../types/golf.js';
+import { SharpsideMetric } from '../../types/metrics.js';
+import { formatAmericanOdds } from '../../utils/calculations/oddsCalculator.js';
 
 type SortField = 'rank' | 'name' | 'averageFinish' | 'top10Percentage' | 'winPercentage' | 'fanduelOdds' | 'impliedProbability' | SharpsideMetric;
 type SortDirection = 'asc' | 'desc';

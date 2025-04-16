@@ -1,7 +1,7 @@
 import { StateCreator } from 'zustand';
-import { datagolfService } from '../../services/api/datagolfService';
-import { DFSEventData, FantasyPlayer, DFSSite } from '../../types/fantasy';
-import { Golfer } from '../../types/golf';
+import { datagolfService } from '../../services/api/datagolfService.js';
+import { DFSEventData, FantasyPlayer, DFSSite } from '../../types/fantasy.js';
+import { Golfer } from '../../types/golf.js';
 
 export interface FantasySlice {
   dfsEventData?: DFSEventData;

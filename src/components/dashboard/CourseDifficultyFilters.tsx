@@ -1,5 +1,5 @@
 import React from 'react';
-import { useGolfStore } from '../../store/useGolfStore';
+import { useGolfStore } from '../../store/useGolfStore.js';
 
 type DifficultyLevel = 'easy' | 'medium' | 'hard';
 

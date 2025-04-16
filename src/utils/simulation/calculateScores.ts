@@ -1,5 +1,5 @@
-import { Golfer } from '../../types/golf';
-import { SharpsideMetric, MetricWeight, METRIC_CATEGORIES } from '../../types/metrics';
+import { Golfer } from '../../types/golf.js';
+import { SharpsideMetric, MetricWeight, METRIC_CATEGORIES } from '../../types/metrics.js';
 
 const calculateMetricValue = (golfer: Golfer, metric: SharpsideMetric): number => {
   switch (metric) {

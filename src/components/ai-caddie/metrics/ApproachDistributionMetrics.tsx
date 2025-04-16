@@ -1,6 +1,6 @@
 import React from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { useApproachDistributionData } from '../hooks/useApproachDistributionData';
+import { useApproachDistributionData } from '../hooks/useApproachDistributionData.js';
 
 // Use the same green color scheme as SG chart
 const COLORS = ['#059669', '#10b981', '#34d399', '#6ee7b7', '#a7f3d0', '#d1fae5'];

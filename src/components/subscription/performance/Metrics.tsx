@@ -1,5 +1,5 @@
 import React from 'react';
-import { PerformanceDataPoint, calculateMetrics } from './data';
+import { PerformanceDataPoint, calculateMetrics } from './data.js';
 
 interface MetricsProps {
   data: PerformanceDataPoint[];

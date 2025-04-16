@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useGolfStore } from '../../store/useGolfStore';
-import { Golfer } from '../../types/golf';
-import GolferProfileModal from './GolferProfileModal';
+import { useGolfStore } from '../../store/useGolfStore.js';
+import { Golfer } from '../../types/golf.js';
+import GolferProfileModal from './GolferProfileModal.js';
 
 export default function GolferList() {
   const { golfers } = useGolfStore();

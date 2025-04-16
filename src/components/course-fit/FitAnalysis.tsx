@@ -1,5 +1,5 @@
 import React from 'react';
-import { useCourseFitStore } from '../../store/useCourseFitStore';
+import { useCourseFitStore } from '../../store/useCourseFitStore.js';
 import { 
   BarChart, 
   Bar, 

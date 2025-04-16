@@ -1,7 +1,7 @@
 import React from 'react';
-import { useGolfStore } from '../../../store/useGolfStore';
-import { Golfer } from '../../../types/golf';
-import { googleSheetsService } from '../../../services/api/googleSheetsService';
+import { useGolfStore } from '../../../store/useGolfStore.js';
+import { Golfer } from '../../../types/golf.js';
+import { googleSheetsService } from '../../../services/api/googleSheetsService.js';
 
 export default function StrokesGainedTable() {
   const { golfers } = useGolfStore();

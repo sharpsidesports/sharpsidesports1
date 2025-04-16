@@ -1,9 +1,9 @@
 import { StateCreator } from 'zustand';
-import { Golfer } from '../../types/golf';
-import { datagolfService } from '../../services/api/datagolfService';
-import { transformGolferData } from '../../utils/transformers/golferTransformer';
-import { useGolfStore } from '../useGolfStore';
-import { loadScoringStats } from '../../utils/data/scoringStatsLoader';
+import { Golfer } from '../../types/golf.js';
+import { datagolfService } from '../../services/api/datagolfService.js';
+import { transformGolferData } from '../../utils/transformers/golferTransformer.js';
+import { useGolfStore } from '../useGolfStore.js';
+import { loadScoringStats } from '../../utils/data/scoringStatsLoader.js';
 
 export interface GolfersSlice {
   golfers: Golfer[];

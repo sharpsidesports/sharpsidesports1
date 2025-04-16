@@ -1,6 +1,6 @@
 import React from 'react';
-import { useGolfStore } from '../../../store/useGolfStore';
-import { Golfer } from '../../../types/golf';
+import { useGolfStore } from '../../../store/useGolfStore.js';
+import { Golfer } from '../../../types/golf.js';
 
 interface ProximityRange {
   key: keyof Golfer['proximityMetrics'];

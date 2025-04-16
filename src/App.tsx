@@ -1,24 +1,24 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import ProtectedRoute from './components/auth/ProtectedRoute';
-import Header from './components/Header';
-import Navigation from './components/Navigation';
-import Dashboard from './pages/Dashboard';
-import MatchupTool from './pages/MatchupTool';
-import ThreeBallTool from './pages/ThreeBallTool';
-import FantasyOptimizer from './pages/FantasyOptimizer';
-import AICaddie from './pages/AICaddie';
-import CourseFitTool from './pages/CourseFitTool';
-import Auth from './pages/Auth';
-import AuthCallback from './pages/AuthCallback';
-import Subscription from './pages/Subscription';
-import ExpertInsights from './pages/ExpertInsights';
-import StrokesGainedStats from './pages/StrokesGainedStats';
-import LandingPage from './pages/LandingPage';
-import { useAuthContext } from './context/AuthContext';
-import Account from './pages/Account';
-import CheckoutSuccess from './pages/CheckoutSuccess';
+import { AuthProvider } from './context/AuthContext.js';
+import ProtectedRoute from './components/auth/ProtectedRoute.js';
+import Header from './components/Header.js';
+import Navigation from './components/Navigation.js';
+import Dashboard from './pages/Dashboard.js';
+import MatchupTool from './pages/MatchupTool.js';
+import ThreeBallTool from './pages/ThreeBallTool.js';
+import FantasyOptimizer from './pages/FantasyOptimizer.js';
+import AICaddie from './pages/AICaddie.js';
+import CourseFitTool from './pages/CourseFitTool.js';
+import Auth from './pages/Auth.js';
+import AuthCallback from './pages/AuthCallback.js';
+import Subscription from './pages/Subscription.js';
+import ExpertInsights from './pages/ExpertInsights.js';
+import StrokesGainedStats from './pages/StrokesGainedStats.js';
+import LandingPage from './pages/LandingPage.js';
+import { useAuthContext } from './context/AuthContext.js';
+import Account from './pages/Account.js';
+import CheckoutSuccess from './pages/CheckoutSuccess.js';
 
 // Separate component for handling the landing page redirect
 function LandingRedirect() {

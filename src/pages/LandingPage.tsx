@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import PerformanceGraph from '../components/subscription/PerformanceGraph';
-import VideoShowcase from '../components/landing/VideoShowcase';
-import PricingSection from '../components/landing/PricingSection';
+import PerformanceGraph from '../components/subscription/PerformanceGraph.js';
+import VideoShowcase from '../components/landing/VideoShowcase.js';
+import PricingSection from '../components/landing/PricingSection.js';
 
 export default function LandingPage() {
   return (

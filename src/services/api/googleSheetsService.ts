@@ -1,4 +1,4 @@
-import { CourseWeights, ApproachDistributionWeights } from '../../types/golf';
+import { CourseWeights, ApproachDistributionWeights } from '../../types/golf.js';
 
 export const googleSheetsService = {
   async getCourseWeights(): Promise<CourseWeights | null> {

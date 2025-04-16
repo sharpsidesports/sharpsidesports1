@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useAuthContext } from '../../context/AuthContext';
+import { useAuthContext } from '../../context/AuthContext.js';
 import { Link } from 'react-router-dom';
 
 export default function UserMenu() {

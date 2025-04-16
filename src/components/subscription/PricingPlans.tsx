@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { CheckIcon } from '@heroicons/react/24/outline';
-import { createCheckoutSession } from '../../api/stripe/create-checkout-session';
-import { useAuthContext } from '../../context/AuthContext';
+import { createCheckoutSession } from '../../api/stripe/create-checkout-session.js';
+import { useAuthContext } from '../../context/AuthContext.js';
 import { useNavigate } from 'react-router-dom';
 
 // Initialize Stripe with the environment variable

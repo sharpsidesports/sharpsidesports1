@@ -1,5 +1,5 @@
 import React from 'react';
-import WinsCard from './tournament/WinsCard';
+import WinsCard from './tournament/WinsCard.js';
 
 export default function TournamentWins() {
   return (

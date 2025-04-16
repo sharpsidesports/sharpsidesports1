@@ -1,7 +1,7 @@
-import { Golfer } from '../../types/golf';
-import { MetricWeight } from '../../types/metrics';
-import { simulateMultipleRounds } from './simulateRound';
-import { calculateImpliedProbability } from './calculateScores';
+import { Golfer } from '../../types/golf.js';
+import { MetricWeight } from '../../types/metrics.js';
+import { simulateMultipleRounds } from './simulateRound.js';
+import { calculateImpliedProbability } from './calculateScores.js';
 
 export const simulateGolfers = (golfers: Golfer[], weights: MetricWeight[], roundRange: number = 12): Golfer[] => {
   // Use 200 rounds for a balance of accuracy and performance

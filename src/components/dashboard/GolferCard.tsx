@@ -1,5 +1,5 @@
 import React from 'react';
-import { Golfer } from '../types/golf';
+import { Golfer } from '../types/golf.js';
 
 interface GolferCardProps {
   golfer: Golfer;

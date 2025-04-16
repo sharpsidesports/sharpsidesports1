@@ -1,6 +1,6 @@
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import { useCourseData } from './hooks/useCourseData';
+import { useCourseData } from './hooks/useCourseData.js';
 
 export default function CourseDistanceBreakdown() {
   const { courseDistances } = useCourseData();

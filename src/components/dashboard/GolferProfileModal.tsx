@@ -1,6 +1,6 @@
 import React from 'react';
-import { Golfer } from '../../types/golf';
-import { formatAmericanOdds } from '../../utils/calculations/oddsCalculator';
+import { Golfer } from '../../types/golf.js';
+import { formatAmericanOdds } from '../../utils/calculations/oddsCalculator.js';
 import {
   LineChart,
   Line,

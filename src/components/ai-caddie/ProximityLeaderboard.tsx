@@ -1,7 +1,7 @@
 import React from 'react';
-import { useGolfStore } from '../../store/useGolfStore';
-import { Golfer } from '../../types/golf';
-import { useApproachDistributionData } from './hooks/useApproachDistributionData';
+import { useGolfStore } from '../../store/useGolfStore.js';
+import { Golfer } from '../../types/golf.js';
+import { useApproachDistributionData } from './hooks/useApproachDistributionData.js';
 
 export default function ProximityLeaderboard() {
   const { golfers } = useGolfStore();

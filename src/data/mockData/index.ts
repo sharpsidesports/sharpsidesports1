@@ -1,2 +1,2 @@
-export * from './mockGolfers';
-export * from './mockHistoricalData';
+export * from './mockGolfers.js';
+export * from './mockHistoricalData.js';

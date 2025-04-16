@@ -1,7 +1,7 @@
 import { useMemo, useEffect, useState } from 'react';
-import { useGolfStore } from '../../../store/useGolfStore';
-import { googleSheetsService } from '../../../services/api/googleSheetsService';
-import { CourseWeights } from '../../../types/golf';
+import { useGolfStore } from '../../../store/useGolfStore.js';
+import { googleSheetsService } from '../../../services/api/googleSheetsService.js';
+import { CourseWeights } from '../../../types/golf.js';
 
 export interface StrokesGainedMetric {
   name: string;

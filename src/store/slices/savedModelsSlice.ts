@@ -1,5 +1,5 @@
 import { StateCreator } from 'zustand';
-import { SavedModel } from '../../features/course-fit/types/model';
+import { SavedModel } from '../../features/course-fit/types/model.js';
 
 export interface SavedModelsSlice {
   savedModels: SavedModel[];

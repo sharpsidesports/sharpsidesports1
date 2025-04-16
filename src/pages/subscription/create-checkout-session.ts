@@ -1,5 +1,5 @@
 import Stripe from 'stripe';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../lib/supabase.js';
 
 const stripe = new Stripe(import.meta.env.VITE_STRIPE_SECRET_KEY || '', {
   apiVersion: '2023-10-16',
