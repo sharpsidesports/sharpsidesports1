@@ -1,4 +1,3 @@
-import React from 'react';
 import { SharpsideMetric, METRIC_LABELS } from '../../types/metrics';
 
 interface MetricSliderProps {

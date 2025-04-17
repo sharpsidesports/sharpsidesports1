@@ -10,7 +10,7 @@ import {
 } from 'recharts';
 
 export default function FitAnalysis() {
-  const { courseFitData } = useCourseFitStore();
+  const { courseStats } = useCourseFitStore();
 
   return (
     <div className="bg-gray-50 rounded-lg p-4">
@@ -36,7 +36,7 @@ export default function FitAnalysis() {
 
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={courseFitData}>
+          <BarChart data={Object.values(courseStats)}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
             <YAxis />

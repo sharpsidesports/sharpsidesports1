@@ -1,4 +1,3 @@
-import React from 'react';
 import { useStrokesGainedData } from '../hooks/useStrokesGainedData';
 
 export default function StrokesGainedMetrics() {

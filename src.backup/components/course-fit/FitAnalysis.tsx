@@ -1,4 +1,3 @@
-import React from 'react';
 import { useCourseFitStore } from '../../store/useCourseFitStore';
 import { 
   BarChart, 
@@ -11,7 +10,9 @@ import {
 } from 'recharts';
 
 export default function FitAnalysis() {
-  const { courseFitData } = useCourseFitStore();
+  const { courseStats } = useCourseFitStore();
+  // convert the record into an array for recharts:
+  const data = Object.values(courseStats);
 
   return (
     <div className="bg-gray-50 rounded-lg p-4">
@@ -37,9 +38,9 @@ export default function FitAnalysis() {
 
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={courseFitData}>
+          <BarChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
+            <XAxis dataKey="courseName" />
             <YAxis />
             <Tooltip />
             <Bar dataKey="driving" name="Driving" fill="#34d399" />

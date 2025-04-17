@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useGolfStore } from '../store/useGolfStore';
 // import { useDataGolf } from '../hooks/useDataGolf';
 import CourseConditions from '../components/dashboard/CourseConditions';

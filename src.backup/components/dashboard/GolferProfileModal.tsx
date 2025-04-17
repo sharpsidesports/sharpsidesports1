@@ -1,4 +1,3 @@
-import React from 'react';
 import { Golfer } from '../../types/golf';
 import { formatAmericanOdds } from '../../utils/calculations/oddsCalculator';
 import {

@@ -1,4 +1,3 @@
-import React from 'react';
 import { useGolfStore } from '../../store/useGolfStore';
 import { Golfer } from '../../types/golf';
 import { useApproachDistributionData } from './hooks/useApproachDistributionData';

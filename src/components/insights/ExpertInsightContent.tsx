@@ -45,13 +45,14 @@ export default function ExpertInsightContent() {
     let currentSection: Section | null = null;
     let currentParagraph: string[] = [];
 
-    lines.forEach(line => {
+    for (const line of lines) {
+      // Remove leading and trailing whitespace
       const trimmedLine = line.trim();
       
-      // Check if this is a section header (starts with #)
+      // New section starts with a '#'
       if (trimmedLine.startsWith('#')) {
-        // If we have a current section, save its content
-        if (currentSection && currentSection.content) {
+        // close out previous section
+        if (currentSection) {
           if (currentParagraph.length > 0) {
             currentSection.content.push(currentParagraph.join(' '));
             currentParagraph = [];
@@ -61,24 +62,25 @@ export default function ExpertInsightContent() {
         
         // Start a new section
         currentSection = {
-          title: trimmedLine.substring(1).trim(),
+          title: trimmedLine.slice(1).trim(),
           content: []
         };
-      } else if (currentSection && currentSection.content) {
+      } 
+      // otherwise, if we already have a section in flight...
+      else if (currentSection) {
         // If this line ends with a period, it's likely the end of a paragraph
-        if (trimmedLine.endsWith('.') || trimmedLine.endsWith('!') || trimmedLine.endsWith('?')) {
+        if (/[.?!]$/.test(trimmedLine)) {
           currentParagraph.push(trimmedLine);
           currentSection.content.push(currentParagraph.join(' '));
           currentParagraph = [];
         } else {
-          // Add to current paragraph
           currentParagraph.push(trimmedLine);
         }
       }
-    });
+    }
 
-    // Don't forget to add the last section if it exists
-    if (currentSection && currentSection.content) {
+    // inside parseContent function, after the loop
+    if (currentSection) {
       if (currentParagraph.length > 0) {
         currentSection.content.push(currentParagraph.join(' '));
       }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useGolfStore } from '../../store/useGolfStore';
 
 export default function AnalyticalModelActions() {

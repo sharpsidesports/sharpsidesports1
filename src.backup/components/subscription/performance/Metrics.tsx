@@ -1,4 +1,3 @@
-import React from 'react';
 import { PerformanceDataPoint, calculateMetrics } from './data';
 
 interface MetricsProps {

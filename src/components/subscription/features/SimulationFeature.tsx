@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface SimulationFeatureProps {
   title: string;
   description: string;
