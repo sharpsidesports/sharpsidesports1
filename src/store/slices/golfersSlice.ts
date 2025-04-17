@@ -1,5 +1,5 @@
 import { StateCreator } from 'zustand';
-import { Golfer } from '../../types/golf.js';
+import { Golfer, ApproachStat } from '../../types/golf.js';
 import { datagolfService } from '../../services/api/datagolfService.js';
 import { transformGolferData } from '../../utils/transformers/golferTransformer.js';
 import { useGolfStore } from '../useGolfStore.js';

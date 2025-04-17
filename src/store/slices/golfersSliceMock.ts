@@ -1,4 +1,4 @@
-import { StateCreator } from 'zustand';
+/*import { StateCreator } from 'zustand';
 import { Golfer } from '../../types/golf.js';
 import { mockGolfers } from '../../data/mockData/mockGolfers.js';
 
@@ -24,4 +24,4 @@ export const createGolfersSlice: StateCreator<GolfersSlice> = (set, get) => ({
       error: null
     });
   }
-});
+});*/

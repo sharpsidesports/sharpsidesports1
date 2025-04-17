@@ -1,7 +1,4 @@
-import { useCourseFitStore } from '../../store/useCourseFitStore.js';
-
 export default function CourseStats() {
-  const { courseStats } = useCourseFitStore();
 
   const StatRow = ({ label, value, description }: { 
     label: string; 

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth.js';
 import { useNavigate } from 'react-router-dom';
 import { CheckIcon } from '@heroicons/react/24/outline';
@@ -13,7 +12,6 @@ interface Features {
 
 export default function Account() {
   const { user, signOut } = useAuth();
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleUpgrade = () => {

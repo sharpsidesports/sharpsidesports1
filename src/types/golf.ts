@@ -1,6 +1,14 @@
-export type GrassFilter = 'all' | 'bermuda' | 'bentgrass' | 'other';
-export type DesignerFilter = 'all' | 'pete‑dye' | 'donald‑ross' | 'other';
+export type GrassFilter = 'all' | 'bermuda' | 'bent' | 'poa-annua' | 'paspalum' | 'other';
+export type DesignerFilter = 'all' | 'pete-dye' | 'jack-nicklaus' | 'donald-ross' | 'tom-weiskopf' | 'arnold-palmer' | 'other';
 export type DifficultyLevel = 'easy' | 'medium' | 'hard';
+
+export interface CourseConditions {
+  grass: GrassFilter;
+  course: DesignerFilter;
+  driving: DifficultyLevel[];
+  approach: DifficultyLevel[];
+  scoring: DifficultyLevel[];
+}
 
 export interface CourseFilterState {
   grass: GrassFilter;
@@ -19,6 +27,7 @@ export interface Golfer {
   worldRanking: number;
   imageUrl: string;
   rank: number;
+  salary: number;
   strokesGainedTotal: number;
   strokesGainedTee: number;
   strokesGainedApproach: number;
@@ -28,9 +37,9 @@ export interface Golfer {
   drivingAccuracy: number;
   drivingDistance: number;
   odds?: {
-    fanduel?: number;
-    impliedProbability?: number;
-    lastUpdated?: string;
+    fanduel: number;                   // Now required inside odds if odds exists
+    impliedProbability: number;
+    lastUpdated: string;
   };
   proximityMetrics: {
     '100-125': number;
@@ -42,9 +51,6 @@ export interface Golfer {
   };
   scoringStats: {
     bogeyAvoidance: number;
-    // consecutiveBirdiesStreak: number;
-    // consecutiveBirdiesEaglesStreak: number;
-    // totalEagles: number;
     totalBirdies: number;
     par3BirdieOrBetter: number;
     par4BirdieOrBetter: number;
@@ -56,7 +62,6 @@ export interface Golfer {
     eaglesPerHole: number;
     birdieAverage: number;
     birdieOrBetterPercentage: number;
-    // consecutiveHolesBelowPar: number;
     simulatedRank: number;
   };
   simulationStats: {
@@ -134,6 +139,13 @@ export interface ApproachDistributionMetric {
   name: string;
   percentage: number;
   description: string;
+}
+
+export interface ApproachStat {
+  player_name: string;
+  dg_id: string;
+  approach_rating: number;
+  // add any other fields you expect
 }
 
 // // export interface SimulationWeights {

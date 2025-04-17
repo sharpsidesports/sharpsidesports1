@@ -28,6 +28,9 @@ export type SharpsideMetric =
   | 'EaglesPerHole'
   | 'BirdieAvg'
   | 'BirdieOrBetterPct'
+  | 'bogeyPercent'
+  | 'doubleBogeyPercent'
+
 
 export interface MetricWeight {
   metric: SharpsideMetric;
@@ -74,6 +77,8 @@ export const METRIC_LABELS: Record<SharpsideMetric, string> = {
   'EaglesPerHole': 'Eagles per Hole',
   'BirdieAvg': 'Birdie Average',
   'BirdieOrBetterPct': 'Birdie or Better %',
+  'bogeyPercent': 'Bogey %',
+  'doubleBogeyPercent': 'Double Bogey %'
 };
 
 export const METRIC_CATEGORIES = {

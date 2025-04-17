@@ -13,8 +13,8 @@ export const simulateGolfers = (golfers: Golfer[], weights: MetricWeight[], roun
       golfer,
       weights,
       numRounds,
-      competitors,
-      roundRange
+      competitors//,
+      //roundRange
     );
     
     // Calculate implied probability from odds

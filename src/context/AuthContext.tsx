@@ -18,7 +18,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // On mount, get existing session & subscribe to changes
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       const sessionUser = data.session?.user;
@@ -26,7 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     });
 
-    const { subscription } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ? mapSupaUser(session.user) : null);
       setLoading(false);
     });
@@ -58,7 +57,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const updateProfile = async (updates: Partial<User>) => {
-    // If you store extra fields in user_metadata, do:
     const { data, error } = await supabase.auth.updateUser({
       data: updates as Record<string, unknown>
     });
@@ -83,7 +81,8 @@ function mapSupaUser(u: SupaUser): User {
     id: u.id,
     email: u.email || '',
     created_at: u.created_at,
-    // if you store is_admin in metadata:
     is_admin: (u.user_metadata as any)?.is_admin ?? false,
+    subscription_tier: (u.user_metadata as any)?.subscription_tier ?? 'free',
+    subscription_status: (u.user_metadata as any)?.subscription_status ?? 'inactive',
   };
 }
