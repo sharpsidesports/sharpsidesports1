@@ -4,9 +4,14 @@
   "version": "2.0.0",
   "type": "module",
   "scripts": {
+    
     "dev": "vite",
     "build": "vite build",
-    "dev:webhook": "node --loader ts-node/esm --trace-warnings scripts/dev-webhook-server.ts",
+
+    "build:webhook": "tsc --project tsconfig.webhook.json",
+    "dev:webhook": "ts-node-esm --project tsconfig.webhook.json local-webhook-server/index.ts",
+    "start:webhook": "node dist/webhook/index.js",
+
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest"
