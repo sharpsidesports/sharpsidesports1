@@ -381,7 +381,7 @@ function PerformanceTable() {
             >
               Implied Win %
             </th>
-            {weights.map(({ metric }) => (
+            {weights.map(({ metric }: { metric: SharpsideMetric }) => (
               <th
                 key={metric}
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
@@ -436,7 +436,7 @@ function PerformanceTable() {
                   'N/A'
                 }
               </td>
-              {weights.map(({ metric }) => (
+              {weights.map(({ metric }: { metric: SharpsideMetric }) => (
                 <td key={metric} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {getMetricValue(golfer, metric).toFixed(2)}
                 </td>

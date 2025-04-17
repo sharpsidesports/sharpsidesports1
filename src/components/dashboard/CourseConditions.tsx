@@ -2,17 +2,17 @@ import { useGolfStore } from '../../store/useGolfStore.js';
 
 type Designer = 
   | 'all'
-  | 'pete‑dye'
-  | 'jack‑nicklaus'
-  | 'donald‑ross'
-  | 'tom‑weiskopf'
-  | 'arnold‑palmer';
+  | 'pete-dye'
+  | 'jack-nicklaus'
+  | 'donald-ross'
+  | 'tom-weiskopf'
+  | 'arnold-palmer';
 
 type Grass =
   | 'all'
   | 'bermuda'
   | 'bent'
-  | 'poa‑annua'
+  | 'poa-annua'
   | 'paspalum';
 
 interface ConditionOption {

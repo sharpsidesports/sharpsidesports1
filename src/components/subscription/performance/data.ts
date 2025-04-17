@@ -5,18 +5,12 @@ export interface PerformanceDataPoint {
   value: number;
 }
 
-interface KeyPoint {
-  date: string;
-  value: number;
-}
-
 export const generatePerformanceData = (): PerformanceDataPoint[] => {
   const data: PerformanceDataPoint[] = [];
   const startDate = new Date('2020-01-01');
   const endDate = new Date('2024-12-31');
   
   // We'll start at 100 (representing 100%) and calculate values relative to this
-  const baseValue = 100;
   
   const keyPoints = [
     { date: '2020-01-01', value: 100 },    // Start at 100%

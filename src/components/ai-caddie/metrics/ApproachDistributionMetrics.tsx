@@ -1,7 +1,7 @@
 import { useApproachDistributionData } from '../hooks/useApproachDistributionData.js';
 
 // Use the same green color scheme as SG chart
-const COLORS = ['#059669', '#10b981', '#34d399', '#6ee7b7', '#a7f3d0', '#d1fae5'];
+//const COLORS = ['#059669', '#10b981', '#34d399', '#6ee7b7', '#a7f3d0', '#d1fae5'];
 
 export default function ApproachDistributionMetrics() {
   const { approachDistributionData, isLoading, weights, lastUpdated } = useApproachDistributionData();

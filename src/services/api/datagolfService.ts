@@ -1,6 +1,7 @@
 import { apiClient } from './apiClient.js';
 import { ENDPOINTS } from './endpoints.js';
 import { DFSEventData, DFSSite, DFSTour } from '../../types/fantasy.js';
+import type { ApproachStat } from '../../types/golf.js'; // make sure this path is correct
 
 // This interface is used to define the structure of the response from the DataGolf API for betting odds.
 
@@ -90,9 +91,9 @@ export const datagolfService = {
     }
   },
 
-  async getApproachStats() {
+  async getApproachStats(): Promise<{ data: ApproachStat[] }> {
     try {
-      const response = await apiClient.get(ENDPOINTS.APPROACH_SKILL, {
+      const response = await apiClient.get<{ data: ApproachStat[] }>(ENDPOINTS.APPROACH_SKILL, {
         period: 'l12'
       });
       return response;
@@ -101,6 +102,7 @@ export const datagolfService = {
       throw error;
     }
   },
+
   async getEventList() {
     try {
       const response = await apiClient.get(ENDPOINTS.EVENT_LIST, {
@@ -113,9 +115,9 @@ export const datagolfService = {
     }
   },
 
-  async getRoundScoring(tour, eventId, year) {
+  async getRoundScoring(tour: string, eventId: string, year: string) {
     try {
-      const response = await apiClient.get(ENDPOINTS.HISTORICAL_ROUNDS, {
+      const response = await apiClient.get<DFSEventData>(ENDPOINTS.HISTORICAL_ROUNDS, {
         tour,
         event_id: eventId,
         year,
@@ -162,7 +164,7 @@ export const datagolfService = {
     site: DFSSite;
   }): Promise<DFSEventData> {
     try {
-      const response = await apiClient.get(ENDPOINTS.FANTASY_PROJECTIONS, {
+      const response = await apiClient.get<DFSEventData>(ENDPOINTS.FANTASY_PROJECTIONS, {
         tour: params.tour,
         site: params.site,
         slate: 'main',

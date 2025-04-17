@@ -2,6 +2,7 @@ import { Golfer } from '../../types/golf.js';
 import { MetricWeight } from '../../types/metrics.js';
 import { calculateSimulatedScore } from './calculateScores.js';
 import { generateRandomFactor } from '../random.js';
+import { calculateImpliedProbability } from '../../utils/calculations/calculateImpliedProbability.js';
 
 export const simulateRound = (golfer: Golfer, weights: MetricWeight[], allGolfers: Golfer[] = []) => {
   return calculateSimulatedScore(golfer, weights, generateRandomFactor(), allGolfers);
@@ -12,13 +13,13 @@ export const simulateMultipleRounds = (
   weights: MetricWeight[],
   numRounds: number,
   competitors: Golfer[],
-  roundRange: number = 12
+  //roundRange: number = 12
 ) => {
   // Sample only the last roundRange number of rounds for more recent performance
-  const recentGolferData = {
+  /*const recentGolferData = {
     ...golfer,
     // Add logic here to filter recent rounds if we add historical round tracking
-  };
+  };*/
 
   // Create a full list of golfers including the current golfer
   const allGolfers = [golfer, ...competitors];

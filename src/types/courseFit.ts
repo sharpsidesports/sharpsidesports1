@@ -42,3 +42,17 @@ export interface Player {
   fit: number;
   stats: PlayerStats;
 }
+
+export interface SavedModel {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt: string;
+  courseId: string;
+  comparisonCourseId?: string;
+  attributes: {
+    drivingImportance: number;
+    approachImportance: number;
+    puttingImportance: number;
+  };
+}

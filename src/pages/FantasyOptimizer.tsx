@@ -4,7 +4,7 @@ import LineupBuilder from '../components/fantasy/LineupBuilder.js';
 import OptimizationSettings from '../components/fantasy/OptimizationSettings.js';
 import GeneratedLineups from '../components/fantasy/GeneratedLineups.js';
 import PlayerPool from '../components/fantasy/PlayerPool.js';
-import { FantasyLineup, FantasySettings } from '../types/fantasy.js';
+import { FantasyLineup, FantasySettings, DFSSite } from '../types/fantasy.js';
 import { datagolfService } from '../services/api/datagolfService.js';
 import { transformGolferData } from '../utils/transformers/golferTransformer.js';
 import { loadScoringStats } from '../utils/data/scoringStatsLoader.js';

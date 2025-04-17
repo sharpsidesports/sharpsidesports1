@@ -22,7 +22,7 @@ export function optimizeLineups(
     let totalSalary = lockedGolfers.reduce((sum, g) => sum + (g.salary || 0), 0);
     
     // Add remaining players based on value (projected points per dollar)
-    const remainingSpots = 6 - lineup.length;
+    //const remainingSpots = 6 - lineup.length;
     const remainingSalary = settings.budget - totalSalary;
     
     const availableForLineup = availablePlayers

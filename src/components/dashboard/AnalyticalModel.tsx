@@ -10,11 +10,11 @@ export default function AnalyticalModel() {
 
   const handleWeightChange = (metricToUpdate: SharpsideMetric, newValue: number) => {
     const totalWeight = 100;
-    const currentMetric = weights.find(m => m.metric === metricToUpdate);
+    const currentMetric = weights.find((m: MetricWeight) => m.metric === metricToUpdate);
     if (!currentMetric) return;
   
     const weightDifference = newValue - currentMetric.weight;
-    const updatedMetrics = weights.map(m => {
+    const updatedMetrics = weights.map((m: MetricWeight) => {
       if (m.metric === metricToUpdate) {
         return { ...m, weight: newValue };
       }
@@ -22,10 +22,10 @@ export default function AnalyticalModel() {
       return { ...m, weight: Math.max(0, adjustedWeight) };
     });
   
-    const totalAdjustedWeight = updatedMetrics.reduce((sum, m) => sum + m.weight, 0);
+    const totalAdjustedWeight = updatedMetrics.reduce((sum: number, m: MetricWeight) => sum + m.weight, 0);
     const adjustmentFactor = totalWeight / totalAdjustedWeight;
   
-    const finalMetrics = updatedMetrics.map(m => ({
+    const finalMetrics = updatedMetrics.map((m: MetricWeight) => ({
       ...m,
       weight: Math.round(m.weight * adjustmentFactor)
     }));
@@ -56,10 +56,10 @@ export default function AnalyticalModel() {
       return;
     }
 
-    const remainingMetrics = weights.filter(m => m.metric !== metricToRemove);
+    const remainingMetrics = weights.filter((m: MetricWeight) => m.metric !== metricToRemove);
     const weightPerMetric = Math.floor(100 / remainingMetrics.length);
 
-    const updatedMetrics = remainingMetrics.map((m, index) => ({
+    const updatedMetrics = remainingMetrics.map((m: MetricWeight, index: number) => ({
       metric: m.metric,
       weight: index === remainingMetrics.length - 1
         ? 100 - (weightPerMetric * (remainingMetrics.length - 1))
@@ -71,7 +71,7 @@ export default function AnalyticalModel() {
 
   const unusedMetrics = Object.values(METRIC_CATEGORIES)
     .flat()
-    .filter(metric => !weights.some(m => m.metric === metric));
+    .filter(metric => !weights.some((m: MetricWeight) => m.metric === metric));
 
   return (
     <div className="bg-white rounded-lg shadow p-6 mb-6">
@@ -116,7 +116,7 @@ export default function AnalyticalModel() {
           onRemoveMetric={handleRemoveMetric}
         />
 
-        {weights.some(m => METRIC_CATEGORIES.PROXIMITY.includes(m.metric)) && (
+        {weights.some((m: MetricWeight) => METRIC_CATEGORIES.PROXIMITY.includes(m.metric)) && (
           <MetricCategory
             title="Proximity Performance"
             metrics={METRIC_CATEGORIES.PROXIMITY}
