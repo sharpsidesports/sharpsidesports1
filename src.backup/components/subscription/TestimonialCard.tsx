@@ -1,4 +1,3 @@
-import React from 'react';
 import { Testimonial } from '../../types/testimonials';
 import TournamentWins from './tournament/WinsCard';
 import SuccessCard from './fantasy/SuccessCard';

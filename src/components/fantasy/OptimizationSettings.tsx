@@ -17,7 +17,14 @@ export default function OptimizationSettings({ settings, onSettingsChange }: Opt
           </label>
           <select
             value={settings.site}
-            onChange={(e) => onSettingsChange({ ...settings, site: e.target.value })}
+            onChange={(e) => { 
+              const val = e.target.value;
+              // runtime‐narrow to our two allowed literals
+              if (val === 'draftkings' || val === 'fanduel') {
+                onSettingsChange({ ...settings, site: val });
+              }
+              // else: ignore or handle unexpected value
+            }}
             className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
           >
             <option value="draftkings">DraftKings</option>

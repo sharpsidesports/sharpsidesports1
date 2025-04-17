@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useGolfStore } from '../store/useGolfStore';
 import AICaddieAnalysis from '../components/ai-caddie/AICaddieAnalysis';
 

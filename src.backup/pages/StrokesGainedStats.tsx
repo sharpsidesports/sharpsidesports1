@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { StrokesGainedData } from '../types/StrokesGainedTypes';
 
 export default function StrokesGainedStats() {

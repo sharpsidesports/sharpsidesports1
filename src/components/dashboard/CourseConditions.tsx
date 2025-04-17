@@ -1,5 +1,20 @@
 import { useGolfStore } from '../../store/useGolfStore.js';
 
+type Designer = 
+  | 'all'
+  | 'pete‑dye'
+  | 'jack‑nicklaus'
+  | 'donald‑ross'
+  | 'tom‑weiskopf'
+  | 'arnold‑palmer';
+
+type Grass =
+  | 'all'
+  | 'bermuda'
+  | 'bent'
+  | 'poa‑annua'
+  | 'paspalum';
+
 interface ConditionOption {
   id: string;
   label: string;
@@ -19,7 +34,9 @@ function ConditionDropdown({ title, options, selectedId, onSelect }: ConditionDr
       <select
         id={title}
         value={selectedId}
-        onChange={(e) => onSelect(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+          onSelect(e.target.value)
+        }
         className="w-full rounded-md border border-gray-300 bg-white py-1.5 px-2 text-xs font-medium text-gray-700 shadow-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
       >
         {options.map((option) => (
@@ -35,9 +52,10 @@ function ConditionDropdown({ title, options, selectedId, onSelect }: ConditionDr
 const GRASS_OPTIONS = [
   { id: 'all', label: 'All Grass' },
   { id: 'bermuda', label: 'Bermuda' },
-  { id: 'bent', label: 'Bent' },
+  { id: 'bentgrass', label: 'Bent' },
   { id: 'poa-annua', label: 'Poa Annua' },
-  { id: 'paspalum', label: 'Paspalum' }
+  { id: 'paspalum', label: 'Paspalum' },
+  { id: 'other', label: 'Other' }
 ];
 
 const DESIGNER_OPTIONS = [
@@ -46,7 +64,8 @@ const DESIGNER_OPTIONS = [
   { id: 'jack-nicklaus', label: 'Jack Nicklaus' },
   { id: 'donald-ross', label: 'Donald Ross' },
   { id: 'tom-weiskopf', label: 'Tom Weiskopf' },
-  { id: 'arnold-palmer', label: 'Arnold Palmer' }
+  { id: 'arnold-palmer', label: 'Arnold Palmer' },
+  { id: 'other', label: 'Other' }
 ];
 
 // Course mappings
@@ -84,7 +103,7 @@ const DESIGNER_COURSES = {
     'Arnold Palmer\'s Bay Hill Club & Lodge',
     'TPC Twin Cities',
   ],
-};
+} as Record<string, string[]>;
 
 const GRASS_TYPE_COURSES = {
   'bermuda': [
@@ -146,12 +165,14 @@ const GRASS_TYPE_COURSES = {
   ],
 };
 
+
+
 export default function CourseConditions() {
   const { conditions, updateConditions, selectedCourses, toggleCourse } = useGolfStore();
 
   const handleDesignerChange = (designerId: string) => {
     // Clear all previously selected courses
-    selectedCourses.forEach(course => {
+    selectedCourses.forEach((course: string) => {
       toggleCourse(course);
     });
 
@@ -162,10 +183,9 @@ export default function CourseConditions() {
       
       // Select courses that appear in both sets
       Array.from(designerCourses)
-        .filter(course => grassCourses.has(course))
-        .forEach(course => {
-          toggleCourse(course);
-        });
+        .filter((course: string) => grassCourses.has(course))
+        .forEach((course: string) =>
+          toggleCourse(course));
     }
     // If only designer is selected
     else if (designerId !== 'all') {
@@ -180,7 +200,10 @@ export default function CourseConditions() {
       });
     }
 
-    updateConditions({ ...conditions, course: designerId });
+    updateConditions({ 
+      ...conditions, 
+      course: designerId as Designer
+    });
   };
 
   const handleGrassTypeChange = (grassTypeId: string) => {
@@ -191,9 +214,14 @@ export default function CourseConditions() {
 
     // If both grass and designer are selected (not 'all'), find intersection
     if (grassTypeId !== 'all' && conditions.course !== 'all') {
-      const designerCourses = new Set(DESIGNER_COURSES[conditions.course as keyof typeof DESIGNER_COURSES]);
-      const grassCourses = new Set(GRASS_TYPE_COURSES[grassTypeId]);
-      
+      const designerCourses = new Set(
+        DESIGNER_COURSES[conditions.course as keyof typeof DESIGNER_COURSES] || []
+      );
+      const grassKey = grassTypeId as keyof typeof GRASS_TYPE_COURSES;
+      const grassCourses = new Set(
+        GRASS_TYPE_COURSES[grassKey] || []
+      );
+
       // Select courses that appear in both sets
       Array.from(grassCourses)
         .filter(course => designerCourses.has(course))
@@ -203,7 +231,8 @@ export default function CourseConditions() {
     }
     // If only grass is selected
     else if (grassTypeId !== 'all') {
-      GRASS_TYPE_COURSES[grassTypeId]?.forEach(course => {
+      const grassKey = grassTypeId as keyof typeof GRASS_TYPE_COURSES;
+      (GRASS_TYPE_COURSES[grassKey] || []).forEach(course => {
         toggleCourse(course);
       });
     }
@@ -214,7 +243,10 @@ export default function CourseConditions() {
       });
     }
 
-    updateConditions({ ...conditions, grass: grassTypeId });
+    updateConditions({
+      ...conditions, 
+      grass: grassTypeId as Grass 
+    });
   };
 
   return (

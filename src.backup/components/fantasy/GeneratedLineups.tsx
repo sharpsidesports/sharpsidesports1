@@ -1,4 +1,3 @@
-import React from 'react';
 import { FantasyLineup } from '../../types/fantasy';
 import { useGolfStore } from '../../store/useGolfStore';
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useGolfStore } from '../store/useGolfStore';
 import { Golfer } from '../types/golf';
 import { datagolfService } from '../services/api/datagolfService';

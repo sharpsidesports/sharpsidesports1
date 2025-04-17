@@ -1,4 +1,3 @@
-import React from 'react';
 import PricingPlans from '../components/subscription/PricingPlans';
 import AICaddiePerformance from '../components/subscription/AICaddiePerformance';
 import SimulationExplanation from '../components/subscription/features/SimulationExplanation';

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useGolfStore } from '../../store/useGolfStore';
 import { SharpsideMetric, METRIC_CATEGORIES, METRIC_LABELS, MetricWeight } from '../../types/metrics';
 import MetricCategory from '../metrics/MetricCategory';

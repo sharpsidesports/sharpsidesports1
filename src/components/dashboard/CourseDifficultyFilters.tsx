@@ -738,7 +738,7 @@ export default function CourseDifficultyFilters() {
 
     // Find courses that match any of the selected difficulty criteria
     const matchingCourses = Object.entries(COURSE_DIFFICULTY)
-      .filter(([_, data]) => currentSet.has(data.difficulty[type]))
+      .filter(([_, data]) => currentSet.has(data.difficulty[type] as DifficultyLevel))
       .map(([course]) => course);
 
     // Select matching courses

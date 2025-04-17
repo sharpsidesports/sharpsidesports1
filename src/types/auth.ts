@@ -7,6 +7,7 @@ export interface User {
   subscription_status: string;
   created_at: string;
   stripe_customer_id?: string;
+  is_admin: boolean;
 }
 
 export interface AuthState {

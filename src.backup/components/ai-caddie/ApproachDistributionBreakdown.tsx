@@ -1,4 +1,3 @@
-import React from 'react';
 import { useApproachDistributionData } from './hooks/useApproachDistributionData';
 import ApproachDistributionChart from './charts/ApproachDistributionChart';
 import ApproachDistributionMetrics from './metrics/ApproachDistributionMetrics';

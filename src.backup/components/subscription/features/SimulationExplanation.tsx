@@ -1,4 +1,3 @@
-import React from 'react';
 import { Activity, RefreshCw, Wind } from 'lucide-react';
 import SimulationFeature from './SimulationFeature';
 

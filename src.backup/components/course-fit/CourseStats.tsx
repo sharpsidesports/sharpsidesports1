@@ -1,4 +1,3 @@
-import React from 'react';
 import { useCourseFitStore } from '../../store/useCourseFitStore';
 
 export default function CourseStats() {

@@ -1,4 +1,3 @@
-import React from 'react';
 import CourseInsights from '../components/dashboard/CourseInsights';
 
 export default function ExpertInsights() {

@@ -1,4 +1,4 @@
-import React from 'react';
+// Project: golf-simulator
 import { useGolfStore } from '../../store/useGolfStore.js';
 
 const roundRanges = [

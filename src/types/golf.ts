@@ -1,9 +1,16 @@
-export interface CourseConditions {
-  grass: 'all' | 'bermuda' | 'bentgrass' | 'other';
-  course: 'all' | 'pete-dye' | 'donald-ross' | 'other';
-  driving: ('easy' | 'medium' | 'hard')[];
-  approach: ('easy' | 'medium' | 'hard')[];
-  scoring: ('easy' | 'medium' | 'hard')[];
+export type GrassFilter = 'all' | 'bermuda' | 'bentgrass' | 'other';
+export type DesignerFilter = 'all' | 'pete‑dye' | 'donald‑ross' | 'other';
+export type DifficultyLevel = 'easy' | 'medium' | 'hard';
+
+export interface CourseFilterState {
+  grass: GrassFilter;
+  course: DesignerFilter;
+}
+
+export interface DifficultyFilterState {
+  driving: DifficultyLevel[];
+  approach: DifficultyLevel[];
+  scoring: DifficultyLevel[];
 }
 
 export interface Golfer {

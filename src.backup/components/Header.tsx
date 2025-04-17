@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { VERSION } from '../config/version';
 import UserMenu from './layout/UserMenu';

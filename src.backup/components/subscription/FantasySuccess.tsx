@@ -1,4 +1,3 @@
-import React from 'react';
 import { FantasySuccess } from '../../types/testimonials';
 
 interface FantasySuccessProps {

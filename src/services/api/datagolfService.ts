@@ -2,7 +2,9 @@ import { apiClient } from './apiClient.js';
 import { ENDPOINTS } from './endpoints.js';
 import { DFSEventData, DFSSite, DFSTour } from '../../types/fantasy.js';
 
-interface BettingOddsResponse {
+// This interface is used to define the structure of the response from the DataGolf API for betting odds.
+
+/*interface BettingOddsResponse {
   event_name: string;
   last_updated: string;
   market: string;
@@ -14,12 +16,30 @@ interface BettingOddsResponse {
       baseline_history_fit?: number;
     };
   }>;
+}*/
+
+// This interface is used to define the structure of the response from the DataGolf API for player rankings.
+
+export interface RankingsResponse {
+  event_name: string;
+  last_updated: string;
+  market: string;
+  rankings: Array<{
+    dg_id: string;
+    datagolf_rank: number;
+    player_name: string;
+    fanduel?: number;
+    datagolf?: {
+      baseline?: number;
+      baseline_history_fit?: number;
+    };
+  }>;
 }
 
 export const datagolfService = {
-  async getPlayerRankings() {
+  async getPlayerRankings(): Promise<RankingsResponse> {
     try {
-      const response = await apiClient.get(ENDPOINTS.RANKINGS);
+      const response = await apiClient.get<RankingsResponse>(ENDPOINTS.RANKINGS);
       return response;
     } catch (error) {
       console.error('Error fetching player rankings:', error);
