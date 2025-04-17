@@ -27,3 +27,5 @@ dist-ssr
 *.csv
 .vercel
 .env
+.env.stripe
+.env.production
