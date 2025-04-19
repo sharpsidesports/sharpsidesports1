@@ -1,4 +1,5 @@
 // browser / public helper
+// Front‑end Supabase client instance
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '../types/supabase.js';
 
@@ -7,8 +8,10 @@ const isBrowser = typeof window !== 'undefined';
 // ───────────────────────────────────────────────────────────
 // These vars **must** be present in any place Vite builds the
 // front‑end bundle ( .env , .env.local , Vercel Project vars … )
-const supabaseUrl      = import.meta.env.SUPABASE_URL;
-const supabaseAnonKey  = import.meta.env.SUPABASE_ANON_KEY;
+// They are used to create the Supabase client instance. AND REQUIRE VITE_ prefix
+// ───────────────────────────────────────────────────────────
+const supabaseUrl      = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey  = import.meta.env.VITE_SUPABASE_ANON_KEY;
 // ───────────────────────────────────────────────────────────
 
 if (!supabaseUrl || !supabaseAnonKey) {
