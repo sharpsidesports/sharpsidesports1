@@ -1,7 +1,7 @@
 import { useAuth } from '../hooks/useAuth.js';
 import { useNavigate } from 'react-router-dom';
 import { CheckIcon } from '@heroicons/react/24/outline';
-import { createCustomerPortalSession } from '../services/stripe.js';
+import { createCustomerPortalSession } from '../lib/stripe.js';
 
 interface Features {
   [key: string]: string[];

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { CheckIcon } from '@heroicons/react/24/outline';
-import { createCheckoutSession } from '../../api/stripe/create-checkout-session.js';
 import { useAuthContext } from '../../context/AuthContext.js';
 import { useNavigate } from 'react-router-dom';
 
@@ -89,7 +88,26 @@ export default function PricingPlans() {
   const { user } = useAuthContext();
   const navigate = useNavigate();
 
-  const handleSubscribe = async (plan: string) => {
+// --- helper ----------------------------------------------------
+async function createCheckoutSession(
+  plan: string,
+  billingInterval: 'weekly' | 'monthly' | 'yearly'
+) {
+  const res = await fetch('/api/stripe/create-checkout-session', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ plan, billingInterval })
+  });
+
+  if (!res.ok) {
+    throw new Error(`Server error ${res.status}: ${res.statusText}`);
+  }
+
+  return res.json() as Promise<{ id: string }>;
+}
+// ----------------------------------------------------------------
+
+const handleSubscribe = async (plan: string) => {
     if (plan === 'free') return;
     
     // If user is not authenticated, redirect to auth page
@@ -103,7 +121,7 @@ export default function PricingPlans() {
     try {
       setLoading(true);
       setError(null);
-      const session = await createCheckoutSession(plan, selectedInterval);
+      const session = await createCheckoutSession(plan, selectedInterval as 'weekly' | 'monthly' | 'yearly');
       const stripe = await stripePromise;
       
       if (!stripe) {

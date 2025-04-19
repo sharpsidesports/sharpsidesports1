@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 import Stripe from 'stripe';
-import { supabase } from '../../src/lib/supabase';
+import { supabase } from '../../src/lib/supabase.js';
 
 if (!process.env.VITE_STRIPE_SECRET_KEY) {
   throw new Error('Missing Stripe secret key');
