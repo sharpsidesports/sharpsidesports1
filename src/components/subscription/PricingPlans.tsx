@@ -5,10 +5,10 @@ import { useAuthContext } from '../../context/AuthContext.js';
 import { useNavigate } from 'react-router-dom';
 
 // Initialize Stripe with the environment variable
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
+const stripePromise = loadStripe(import.meta.env.STRIPE_PUBLISHABLE_KEY || '');
 
 // Log Stripe initialization
-console.log('Stripe publishable key exists:', !!import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+console.log('Stripe publishable key exists:', !!import.meta.env.STRIPE_PUBLISHABLE_KEY);
 
 const billingIntervals = [
   { id: 'weekly', name: 'Weekly' },
@@ -103,7 +103,8 @@ async function createCheckoutSession(
     throw new Error(`Server error ${res.status}: ${res.statusText}`);
   }
 
-  return res.json() as Promise<{ id: string }>;
+  const { sessionId } = await res.json() as { sessionId: string };
+  return sessionId;
 }
 // ----------------------------------------------------------------
 
@@ -121,16 +122,13 @@ const handleSubscribe = async (plan: string) => {
     try {
       setLoading(true);
       setError(null);
-      const session = await createCheckoutSession(plan, selectedInterval as 'weekly' | 'monthly' | 'yearly');
+      const sessionId = await createCheckoutSession(plan, selectedInterval as 'weekly' | 'monthly' | 'yearly');
       const stripe = await stripePromise;
-      
       if (!stripe) {
         throw new Error('Failed to load Stripe');
       }
-
-      const { error } = await stripe.redirectToCheckout({
-        sessionId: session.id,
-      });
+      
+      const { error } = await stripe.redirectToCheckout({ sessionId });
 
       if (error) {
         throw error;
