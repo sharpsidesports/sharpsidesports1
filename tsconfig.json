@@ -2,27 +2,38 @@
   "compilerOptions": {
     "target": "ES2020",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "module": "nodeNext",                     
-    "moduleResolution": "node16",           
-    "skipLibCheck": true,           // skip checking all .d.ts files
-    "skipDefaultLibCheck": true,    // also skip the default libs
+    "module": "nodeNext",
+    "moduleResolution": "node16",
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": false,                          
+    "noEmit": false,
     "outDir": "dist",
     "jsx": "react-jsx",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "esModuleInterop": true, // Allows default imports for commonjs modules
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",                // so our "paths" below are relative to project root
+    "baseUrl": ".",
     "paths": {
-      // point TS at the real rollup .d.ts
       "rollup/parseAst": ["node_modules/rollup/dist/parseAst.d.ts"]
     }
   },
-  "include": ["src", "scripts", "api", "vite.config.ts" ],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.js",
+    "src/**/*.jsx",
+    "scripts/**/*.ts",
+    "scripts/**/*.js",
+    "api/**/*.ts",
+    "vite.config.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

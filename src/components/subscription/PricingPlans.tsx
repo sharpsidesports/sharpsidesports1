@@ -3,12 +3,15 @@ import { loadStripe } from '@stripe/stripe-js';
 import { CheckIcon } from '@heroicons/react/24/outline';
 import { useAuthContext } from '../../context/AuthContext.js';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../../lib/supabase.js';
 
 // Initialize Stripe with the environment variable
-const stripePromise = loadStripe(import.meta.env.STRIPE_PUBLISHABLE_KEY || '');
+// Ensure that the publishable key is present in the environment variables
+// and is not empty before initializing the Stripe instance. ALSO, VITE_ prefix is REQUIRED because it is a client-side call!
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
 
 // Log Stripe initialization
-console.log('Stripe publishable key exists:', !!import.meta.env.STRIPE_PUBLISHABLE_KEY);
+console.log('Stripe publishable key exists:', !!import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 const billingIntervals = [
   { id: 'weekly', name: 'Weekly' },
@@ -93,11 +96,22 @@ async function createCheckoutSession(
   plan: string,
   billingInterval: 'weekly' | 'monthly' | 'yearly'
 ) {
-  const res = await fetch('/api/stripe/create-checkout-session', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ plan, billingInterval })
-  });
+    // 1) grab current session & token
+    const {
+      data: { session }
+    } = await supabase.auth.getSession();
+    const token = session?.access_token;
+    console.log('🔥 debug token:', session?.access_token);
+
+    // 2) include the Bearer token so your Vercel function can authenticate
+    const res = await fetch('/api/stripe/create-checkout-session', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ plan, billingInterval })
+    });
 
   if (!res.ok) {
     throw new Error(`Server error ${res.status}: ${res.statusText}`);
