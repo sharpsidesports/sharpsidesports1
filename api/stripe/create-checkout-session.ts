@@ -1,17 +1,20 @@
-import type { Request, Response } from 'express';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
+import 'dotenv/config';  // ← this will read your .env file into process.env
 import Stripe from 'stripe';
 
-if (!process.env.VITE_STRIPE_SECRET_KEY) {
+console.log('🔑 STRIPE_SECRET_KEY is present? →', process.env.STRIPE_SECRET_KEY);
+
+if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing Stripe secret key');
 }
 
-const stripe = new Stripe(process.env.VITE_STRIPE_SECRET_KEY, {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: '2025-03-31.basil' as Stripe.LatestApiVersion,
 });
 
 export default async function handler(
-  req: Request,
-  res: Response
+  req: VercelRequest,
+  res: VercelResponse
 ) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });

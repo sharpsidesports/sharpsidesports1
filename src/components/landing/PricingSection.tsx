@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
-import { createCheckoutSession } from '../../api/stripe/create-checkout-session.js';
 
 // Initialize Stripe with the environment variable
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
@@ -68,6 +67,22 @@ const plans = [
     tag: 'Most popular'
   }
 ];
+
+async function createCheckoutSession(
+  plan: string,
+  billingInterval: 'weekly' | 'monthly' | 'yearly'
+) {
+  const res = await fetch('/api/stripe/create-checkout-session', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ plan, billingInterval }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Server error: ${res.statusText}`);
+  }
+  return res.json() as Promise<{ id: string }>;
+}
 
 // This component renders the pricing section of the landing page
 // It includes a list of plans with their features and a button to subscribe to each plan

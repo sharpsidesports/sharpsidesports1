@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 import { buffer } from 'micro'; // Use raw body for signature verification
 import * as dotenv from 'dotenv';
 import * as path from 'path';
-import { supabase } from '../../src/lib/supabase';
+import { supabaseAdmin as supabase } from '../../src/lib/supabaseAdmin.js';
 
 // Load .env.stripe
 dotenv.config({ path: path.resolve(process.cwd(), '.env.stripe') });
@@ -34,7 +34,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const rawBody = await buffer(req);
-    event = stripe.webhooks.constructEvent(rawBody.toString(), sig, webhookSecret);
+    event = stripe.webhooks.constructEvent(rawBody.toString(), sig, webhookSecret as string);
   } catch (err: any) {
     console.error('Error constructing webhook event:', err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);

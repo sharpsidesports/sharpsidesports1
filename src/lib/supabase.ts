@@ -1,20 +1,24 @@
-import { createClient } from '@supabase/supabase-js'
-import type { Database } from '../types/supabase.js'
+// browser / public helper
+import { createClient } from '@supabase/supabase-js';
+import type { Database } from '../types/supabase.js';
 
-const isBrowser = typeof window !== 'undefined'
+const isBrowser = typeof window !== 'undefined';
 
-// Ensure that the environment variables are set
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// ───────────────────────────────────────────────────────────
+// These vars **must** be present in any place Vite builds the
+// front‑end bundle ( .env , .env.local , Vercel Project vars … )
+const supabaseUrl      = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey  = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// ───────────────────────────────────────────────────────────
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables')
+  throw new Error('Missing Supabase env vars for client helper');
 }
 
 export const supabase = createClient<Database>(
   supabaseUrl,
   supabaseAnonKey,
-  // Only supply the browser‐only auth/storage options when window is present
+  // Only attach browser‑specific auth options when running in the browser:
   isBrowser
     ? {
         auth: {
@@ -25,17 +29,4 @@ export const supabase = createClient<Database>(
         },
       }
     : undefined
-)
-
-// Optional helper to smoke‑test your auth setup
-export const checkSupabaseConnection = async (): Promise<boolean> => {
-  try {
-    const { data, error } = await supabase.auth.getSession()
-    if (error) throw error
-    console.log('Supabase connected; current user:', data.session?.user?.id)
-    return true
-  } catch (err) {
-    console.error('Supabase connection error:', err)
-    return false
-  }
-}
+);
