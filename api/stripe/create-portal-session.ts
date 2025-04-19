@@ -1,16 +1,20 @@
-import type { Request, Response } from 'express';
+/*“Customer Portal” endpoint, a separate piece of the billing flow that lets existing subscribers manage their subscription 
+(update cards, cancel, etc.) via Stripe’s hosted Billing Portal. 
+This Portal endpoint generates a URL that you’d surface in your “Account” page so customers can self‑service their subscription.*/
+
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
 import { supabase } from '../../src/lib/supabase.js';
 
-if (!process.env.VITE_STRIPE_SECRET_KEY) {
+if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing Stripe secret key');
 }
 
-const stripe = new Stripe(process.env.VITE_STRIPE_SECRET_KEY, {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: '2023-10-16',
 });
 
-export default async function handler(req: Request, res: Response) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }

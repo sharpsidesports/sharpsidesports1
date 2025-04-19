@@ -8,7 +8,7 @@ import { supabaseAdmin as supabase } from '../../src/lib/supabaseAdmin.js';
 // Load .env.stripe
 dotenv.config({ path: path.resolve(process.cwd(), '.env.stripe') });
 
-const stripe = new Stripe(process.env.VITE_STRIPE_SECRET_KEY || '', {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   apiVersion: '2023-10-16',
 });
 
@@ -56,15 +56,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       let subscriptionTier = 'free';
       if (
-        [process.env.VITE_STRIPE_PRO_WEEKLY_PRICE_ID,
-         process.env.VITE_STRIPE_PRO_MONTHLY_PRICE_ID,
-         process.env.VITE_STRIPE_PRO_YEARLY_PRICE_ID].includes(priceId)
+        [process.env.STRIPE_PRO_WEEKLY_PRICE_ID,
+         process.env.STRIPE_PRO_MONTHLY_PRICE_ID,
+         process.env.STRIPE_PRO_YEARLY_PRICE_ID].includes(priceId)
       ) {
         subscriptionTier = 'pro';
       } else if (
-        [process.env.VITE_STRIPE_BASIC_WEEKLY_PRICE_ID,
-         process.env.VITE_STRIPE_BASIC_MONTHLY_PRICE_ID,
-         process.env.VITE_STRIPE_BASIC_YEARLY_PRICE_ID].includes(priceId)
+        [process.env.STRIPE_BASIC_WEEKLY_PRICE_ID,
+         process.env.STRIPE_BASIC_MONTHLY_PRICE_ID,
+         process.env.STRIPE_BASIC_YEARLY_PRICE_ID].includes(priceId)
       ) {
         subscriptionTier = 'basic';
       }
@@ -101,15 +101,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       let subscriptionTier = 'free';
       if (
-        [process.env.VITE_STRIPE_PRO_WEEKLY_PRICE_ID,
-         process.env.VITE_STRIPE_PRO_MONTHLY_PRICE_ID,
-         process.env.VITE_STRIPE_PRO_YEARLY_PRICE_ID].includes(priceId)
+        [process.env.STRIPE_PRO_WEEKLY_PRICE_ID,
+         process.env.STRIPE_PRO_MONTHLY_PRICE_ID,
+         process.env.STRIPE_PRO_YEARLY_PRICE_ID].includes(priceId)
       ) {
         subscriptionTier = 'pro';
       } else if (
-        [process.env.VITE_STRIPE_BASIC_WEEKLY_PRICE_ID,
-         process.env.VITE_STRIPE_BASIC_MONTHLY_PRICE_ID,
-         process.env.VITE_STRIPE_BASIC_YEARLY_PRICE_ID].includes(priceId)
+        [process.env.STRIPE_BASIC_WEEKLY_PRICE_ID,
+         process.env.STRIPE_BASIC_MONTHLY_PRICE_ID,
+         process.env.STRIPE_BASIC_YEARLY_PRICE_ID].includes(priceId)
       ) {
         subscriptionTier = 'basic';
       }

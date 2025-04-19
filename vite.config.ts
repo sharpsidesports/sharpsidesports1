@@ -16,20 +16,20 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
         },
         '/api/datagolf': {
-          target: env.VITE_DG_API_URL,
+          target: env.DG_API_URL,
           changeOrigin: true,
           rewrite: p => {
             const clean = p.replace(/^\/api\/datagolf/, '')
-            return `${clean}${clean.includes('?') ? '&' : '?'}key=${env.VITE_DG_API_KEY}`
+            return `${clean}${clean.includes('?') ? '&' : '?'}key=${env.DG_API_KEY}`
           }
         }
       }
     },
     plugins: [react()],          // <- no fastRefresh flag, defaults are fine
     define: {
-      __STRIPE_PUBLISHABLE_KEY__: JSON.stringify(env.VITE_STRIPE_PUBLISHABLE_KEY),
-      __DG_API_KEY__:            JSON.stringify(env.VITE_DG_API_KEY),
-      __DG_API_URL__:            JSON.stringify(env.VITE_DG_API_URL)
+      __STRIPE_PUBLISHABLE_KEY__: JSON.stringify(env.STRIPE_PUBLISHABLE_KEY),
+      __DG_API_KEY__:            JSON.stringify(env.DG_API_KEY),
+      __DG_API_URL__:            JSON.stringify(env.DG_API_URL)
     }
   }
 })
