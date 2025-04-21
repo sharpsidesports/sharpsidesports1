@@ -31,7 +31,7 @@
     "scripts/**/*.js",
     "api/**/*.ts",
     "vite.config.ts"
-  ],
+, "scripts/verify-bundle.cjs"  ],
   "exclude": [
     "node_modules",
     "dist"
