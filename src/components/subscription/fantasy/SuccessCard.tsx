@@ -1,4 +1,4 @@
-import React from 'react';
+// This file is part of the Fantasy Subscription project.
 
 interface SuccessCardProps {
   title: string;

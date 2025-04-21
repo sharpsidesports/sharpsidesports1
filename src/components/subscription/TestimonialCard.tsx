@@ -1,5 +1,5 @@
-import React from 'react';
-import { Testimonial } from '../../types/testimonials';
+// This file is part of the Betfury project.
+import { Testimonial } from '../../types/testimonials.js';
 
 interface TestimonialCardProps {
   testimonial: Testimonial;

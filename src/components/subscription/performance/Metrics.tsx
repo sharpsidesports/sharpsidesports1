@@ -1,5 +1,5 @@
-import React from 'react';
-import { PerformanceDataPoint, calculateMetrics } from './data';
+// This file is part of the BetBuddy project.
+import { PerformanceDataPoint, calculateMetrics } from './data.js';
 
 interface MetricsProps {
   data: PerformanceDataPoint[];

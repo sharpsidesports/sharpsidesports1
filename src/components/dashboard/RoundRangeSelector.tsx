@@ -1,5 +1,5 @@
-import React from 'react';
-import { useGolfStore } from '../../store/useGolfStore';
+// Project: golf-simulator
+import { useGolfStore } from '../../store/useGolfStore.js';
 
 const roundRanges = [
   { label: 'Last 4 Rounds', value: 4 },

@@ -1,5 +1,5 @@
-import { supabase } from '../../lib/supabase';
-import type { Database } from '../../types/supabase';
+import { supabase } from '../../lib/supabase.js';
+import type { Database } from '../../types/supabase.js';
 
 type Tables = Database['public']['Tables'];
 type PlayerRound = Tables['player_rounds']['Row'];

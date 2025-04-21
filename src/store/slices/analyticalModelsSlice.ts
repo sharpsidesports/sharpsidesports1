@@ -1,8 +1,9 @@
 import { StateCreator } from 'zustand';
-import { AnalyticalModel } from '../../types/analyticalModel';
+import { AnalyticalModel } from '../../types/analyticalModel.js';
 
 export interface AnalyticalModelsState {
   savedModels: AnalyticalModel[];
+  weights?: any; // Assuming weights is of type any, adjust as necessary
   saveModel: (data: { name: string; weights: any }) => void;
   loadModel: (id: string) => void;
   deleteModel: (id: string) => void;

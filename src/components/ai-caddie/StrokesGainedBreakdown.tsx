@@ -1,7 +1,6 @@
-import React from 'react';
-import StrokesGainedChart from './charts/StrokesGainedChart';
-import StrokesGainedMetrics from './metrics/StrokesGainedMetrics';
-import { useStrokesGainedData } from './hooks/useStrokesGainedData';
+import StrokesGainedChart from './charts/StrokesGainedChart.js';
+import StrokesGainedMetrics from './metrics/StrokesGainedMetrics.js';
+import { useStrokesGainedData } from './hooks/useStrokesGainedData.js';
 
 export default function StrokesGainedBreakdown() {
   const { isLoading } = useStrokesGainedData();

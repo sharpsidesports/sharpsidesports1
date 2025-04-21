@@ -1,5 +1,5 @@
-import { Golfer } from '../../types/golf';
-import { SharpsideMetric, MetricWeight, METRIC_CATEGORIES } from '../../types/metrics';
+import { Golfer } from '../../types/golf.js';
+import { SharpsideMetric, MetricWeight, METRIC_CATEGORIES } from '../../types/metrics.js';
 
 const calculateMetricValue = (golfer: Golfer, metric: SharpsideMetric): number => {
   switch (metric) {
@@ -69,7 +69,7 @@ const calculateMetricValue = (golfer: Golfer, metric: SharpsideMetric): number =
 };
 
 // Determine if a higher value is better for a given metric
-const isHigherBetter = (metric: SharpsideMetric): boolean => {
+/*const isHigherBetter = (metric: SharpsideMetric): boolean => {
   // For these metrics, lower values are better
   const lowerIsBetter = [
     'Prox100_125', 'Prox125_150', 'Prox175_200', 'Prox200_225', 'Prox225Plus',
@@ -77,16 +77,16 @@ const isHigherBetter = (metric: SharpsideMetric): boolean => {
   ];
   
   return !lowerIsBetter.includes(metric);
-};
+};*/
 
 // Used for caching odds ranks
-let cachedOddsRanks: Map<string, number> | null = null;
-let cachedNormalizedProbs: Map<string, number> | null = null;
+//let cachedOddsRanks: Map<string, number> | null = null;
+//let cachedNormalizedProbs: Map<string, number> | null = null;
 
 // Reset the cache when needed (e.g., when golfer data changes)
 export const resetOddsCache = () => {
-  cachedOddsRanks = null;
-  cachedNormalizedProbs = null;
+  //cachedOddsRanks = null;
+  //cachedNormalizedProbs = null;
 };
 
 // Calculate ranks for all golfers for each metric

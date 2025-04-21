@@ -1,6 +1,5 @@
-import React from 'react';
-import { SharpsideMetric } from '../../types/metrics';
-import MetricSlider from './MetricSlider';
+import { SharpsideMetric } from '../../types/metrics.js';
+import MetricSlider from './MetricSlider.js';
 
 interface MetricGroupProps {
   title: string;

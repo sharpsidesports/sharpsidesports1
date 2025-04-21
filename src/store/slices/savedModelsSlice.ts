@@ -1,5 +1,7 @@
+// Project: course-fit
+
 import { StateCreator } from 'zustand';
-import { SavedModel } from '../../features/course-fit/types/model';
+import { SavedModel } from '../../types/courseFit.js';
 
 export interface SavedModelsSlice {
   savedModels: SavedModel[];
@@ -8,7 +10,9 @@ export interface SavedModelsSlice {
   deleteModel: (id: string) => void;
 }
 
-export const createSavedModelsSlice: StateCreator<SavedModelsSlice> = (set, get) => ({
+// This slice manages the saved models in the store
+// It allows saving, loading, and deleting models from the state
+export const createSavedModelsSlice: StateCreator<SavedModelsSlice> = (set, get, api) => ({
   savedModels: [],
   
   saveModel: (data) => set((state) => ({

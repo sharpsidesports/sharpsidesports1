@@ -32,9 +32,9 @@ export default async function handler(
     // Add required parameters
     queryParams.set('file_format', 'json');
     
-    const apiKey = process.env.VITE_DG_API_KEY;
+    const apiKey = process.env.DG_API_KEY;
     if (!apiKey) {
-      throw new Error('VITE_DG_API_KEY environment variable is not set');
+      throw new Error('DG_API_KEY environment variable is not set');
     }
     queryParams.set('key', apiKey);
 

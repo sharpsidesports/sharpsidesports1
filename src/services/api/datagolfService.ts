@@ -1,9 +1,11 @@
-import { apiClient } from './apiClient';
-import { ENDPOINTS } from './endpoints';
-import { GolferData, GolferStats } from '../../types/golf';
-import { DFSEvent, DFSEventData, DFSSite, DFSTour } from '../../types/fantasy';
+import { apiClient } from './apiClient.js';
+import { ENDPOINTS } from './endpoints.js';
+import { DFSEventData, DFSSite, DFSTour } from '../../types/fantasy.js';
+import type { ApproachStat } from '../../types/golf.js'; // make sure this path is correct
 
-interface BettingOddsResponse {
+// This interface is used to define the structure of the response from the DataGolf API for betting odds.
+
+/*interface BettingOddsResponse {
   event_name: string;
   last_updated: string;
   market: string;
@@ -15,12 +17,30 @@ interface BettingOddsResponse {
       baseline_history_fit?: number;
     };
   }>;
+}*/
+
+// This interface is used to define the structure of the response from the DataGolf API for player rankings.
+
+export interface RankingsResponse {
+  event_name: string;
+  last_updated: string;
+  market: string;
+  rankings: Array<{
+    dg_id: string;
+    datagolf_rank: number;
+    player_name: string;
+    fanduel?: number;
+    datagolf?: {
+      baseline?: number;
+      baseline_history_fit?: number;
+    };
+  }>;
 }
 
 export const datagolfService = {
-  async getPlayerRankings() {
+  async getPlayerRankings(): Promise<RankingsResponse> {
     try {
-      const response = await apiClient.get(ENDPOINTS.RANKINGS);
+      const response = await apiClient.get<RankingsResponse>(ENDPOINTS.RANKINGS);
       return response;
     } catch (error) {
       console.error('Error fetching player rankings:', error);
@@ -71,9 +91,9 @@ export const datagolfService = {
     }
   },
 
-  async getApproachStats() {
+  async getApproachStats(): Promise<{ data: ApproachStat[] }> {
     try {
-      const response = await apiClient.get(ENDPOINTS.APPROACH_SKILL, {
+      const response = await apiClient.get<{ data: ApproachStat[] }>(ENDPOINTS.APPROACH_SKILL, {
         period: 'l12'
       });
       return response;
@@ -82,6 +102,7 @@ export const datagolfService = {
       throw error;
     }
   },
+
   async getEventList() {
     try {
       const response = await apiClient.get(ENDPOINTS.EVENT_LIST, {
@@ -94,9 +115,9 @@ export const datagolfService = {
     }
   },
 
-  async getRoundScoring(tour, eventId, year) {
+  async getRoundScoring(tour: string, eventId: string, year: string) {
     try {
-      const response = await apiClient.get(ENDPOINTS.HISTORICAL_ROUNDS, {
+      const response = await apiClient.get<DFSEventData>(ENDPOINTS.HISTORICAL_ROUNDS, {
         tour,
         event_id: eventId,
         year,
@@ -143,7 +164,7 @@ export const datagolfService = {
     site: DFSSite;
   }): Promise<DFSEventData> {
     try {
-      const response = await apiClient.get(ENDPOINTS.FANTASY_PROJECTIONS, {
+      const response = await apiClient.get<DFSEventData>(ENDPOINTS.FANTASY_PROJECTIONS, {
         tour: params.tour,
         site: params.site,
         slate: 'main',

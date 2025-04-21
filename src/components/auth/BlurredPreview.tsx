@@ -1,6 +1,6 @@
-import React from 'react';
+// This component is used to show a blurred preview of content that requires a subscription level to access.
 import { Link } from 'react-router-dom';
-import { useAuthContext } from '../../context/AuthContext';
+import { useAuthContext } from '../../context/AuthContext.js';
 
 interface BlurredPreviewProps {
   children: React.ReactNode;

@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { useAuthContext } from '../context/AuthContext';
-import { SubscriptionTier } from '../types/auth';
+import { SubscriptionTier } from '../types/auth.js';
 
 interface NavItem {
   to: string;
@@ -10,7 +9,6 @@ interface NavItem {
 }
 
 export default function Navigation() {
-  const { user } = useAuthContext();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems: NavItem[] = [

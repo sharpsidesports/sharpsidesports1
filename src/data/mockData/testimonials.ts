@@ -1,4 +1,4 @@
-import { Testimonial } from '../../types/testimonials';
+import { Testimonial } from '../../types/testimonials.js';
 
 export const testimonials: Testimonial[] = [
   {

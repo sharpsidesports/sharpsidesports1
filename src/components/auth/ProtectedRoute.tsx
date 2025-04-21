@@ -1,7 +1,7 @@
 import { Navigate } from 'react-router-dom';
-import { useAuthContext } from '../../context/AuthContext';
-import { SubscriptionTier } from '../../types/auth';
-import BlurredPreview from './BlurredPreview';
+import { useAuthContext } from '../../context/AuthContext.js';
+import { SubscriptionTier } from '../../types/auth.js';
+import BlurredPreview from './BlurredPreview.js';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;

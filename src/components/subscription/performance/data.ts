@@ -1,11 +1,6 @@
-import { addMonths, format } from 'date-fns';
+// This file generates performance data for the subscription page.
 
 export interface PerformanceDataPoint {
-  date: string;
-  value: number;
-}
-
-interface KeyPoint {
   date: string;
   value: number;
 }
@@ -16,7 +11,6 @@ export const generatePerformanceData = (): PerformanceDataPoint[] => {
   const endDate = new Date('2024-12-31');
   
   // We'll start at 100 (representing 100%) and calculate values relative to this
-  const baseValue = 100;
   
   const keyPoints = [
     { date: '2020-01-01', value: 100 },    // Start at 100%

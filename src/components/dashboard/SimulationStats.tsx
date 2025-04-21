@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { useGolfStore } from '../../store/useGolfStore';
-import { Golfer } from '../../types/golf';
-import GolferProfileModal from './GolferProfileModal';
-import { formatAmericanOdds } from '../../utils/calculations/oddsCalculator';
+import { useState } from 'react';
+import { useGolfStore } from '../../store/useGolfStore.js';
+import { Golfer } from '../../types/golf.js';
+import GolferProfileModal from './GolferProfileModal.js';
+import { formatAmericanOdds } from '../../utils/calculations/oddsCalculator.js';
 
 export default function SimulationStats() {
   const { golfers } = useGolfStore();

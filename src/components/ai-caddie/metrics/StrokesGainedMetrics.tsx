@@ -1,5 +1,4 @@
-import React from 'react';
-import { useStrokesGainedData } from '../hooks/useStrokesGainedData';
+import { useStrokesGainedData } from '../hooks/useStrokesGainedData.js';
 
 export default function StrokesGainedMetrics() {
   const { strokesGainedData, courseWeights, lastUpdated } = useStrokesGainedData();

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { useGolfStore } from '../store/golfStore';
-import type { Golfer } from '../store/golfStore';
+import { useState, useEffect } from 'react';
+import { useGolfStore } from '../store/golfStore.js';
+import type { Golfer } from '../store/golfStore.js';
 
 interface KeyMetric {
   name: string;

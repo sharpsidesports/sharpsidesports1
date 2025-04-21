@@ -1,16 +1,14 @@
-import React, { useEffect } from 'react';
-import { useGolfStore } from '../store/useGolfStore';
-// import { useDataGolf } from '../hooks/useDataGolf';
-import CourseConditions from '../components/dashboard/CourseConditions';
-import AnalyticalModel from '../components/dashboard/AnalyticalModel';
-import SimulationStats from '../components/dashboard/SimulationStats';
-import PerformanceTable from '../components/dashboard/PerformanceTable';
-import CourseInsights from '../components/dashboard/CourseInsights';
-import RoundRangeSelector from '../components/dashboard/RoundRangeSelector';
-import CourseDifficultyFilters from '../components/dashboard/CourseDifficultyFilters';
-import CourseSelection from '../components/dashboard/CourseSelection';
-import GolferList from '../components/dashboard/GolferList';
-import GolferCard from '../components/dashboard/GolferCard';
+import { useEffect } from 'react';
+import { useGolfStore } from '../store/useGolfStore.js';
+import CourseConditions from '../components/dashboard/CourseConditions.js';
+import AnalyticalModel from '../components/dashboard/AnalyticalModel.js';
+import PerformanceTable from '../components/dashboard/PerformanceTable.js';
+import CourseInsights from '../components/dashboard/CourseInsights.js';
+import RoundRangeSelector from '../components/dashboard/RoundRangeSelector.js';
+import CourseDifficultyFilters from '../components/dashboard/CourseDifficultyFilters.js';
+import CourseSelection from '../components/dashboard/CourseSelection.js';
+import GolferList from '../components/dashboard/GolferList.js';
+import GolferCard from '../components/dashboard/GolferCard.js';
 
 const LoadingOverlay = () => (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

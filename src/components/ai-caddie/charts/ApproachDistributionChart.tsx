@@ -1,6 +1,5 @@
-import React from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { useApproachDistributionData } from '../hooks/useApproachDistributionData';
+import { useApproachDistributionData } from '../hooks/useApproachDistributionData.js';
 
 export default function ApproachDistributionChart() {
   const { approachDistributionData } = useApproachDistributionData();

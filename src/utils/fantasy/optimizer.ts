@@ -1,5 +1,5 @@
-import { Golfer } from '../../types/golf';
-import { FantasyLineup, FantasySettings } from '../../types/fantasy';
+import { Golfer } from '../../types/golf.js';
+import { FantasyLineup, FantasySettings } from '../../types/fantasy.js';
 
 export function optimizeLineups(
   golfers: Golfer[],
@@ -22,7 +22,7 @@ export function optimizeLineups(
     let totalSalary = lockedGolfers.reduce((sum, g) => sum + (g.salary || 0), 0);
     
     // Add remaining players based on value (projected points per dollar)
-    const remainingSpots = 6 - lineup.length;
+    //const remainingSpots = 6 - lineup.length;
     const remainingSalary = settings.budget - totalSalary;
     
     const availableForLineup = availablePlayers

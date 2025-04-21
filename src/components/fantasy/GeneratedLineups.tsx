@@ -1,9 +1,10 @@
-import React from 'react';
-import { FantasyLineup } from '../../types/fantasy';
-import { useGolfStore } from '../../store/useGolfStore';
+import { FantasyLineup } from '../../types/fantasy.js';
+import { FantasyPlayer } from '../../types/fantasy.js';
+import { useGolfStore } from '../../store/useGolfStore.js';
 
 interface GeneratedLineupsProps {
   lineups: FantasyLineup[];
+  players: FantasyPlayer[]; // Add this line
 }
 
 export default function GeneratedLineups({ lineups }: GeneratedLineupsProps) {

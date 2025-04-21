@@ -1,8 +1,7 @@
-import React from 'react';
-import PricingPlans from '../components/subscription/PricingPlans';
-import AICaddiePerformance from '../components/subscription/AICaddiePerformance';
-import SimulationExplanation from '../components/subscription/features/SimulationExplanation';
-import Testimonials from '../components/subscription/Testimonials';
+import PricingPlans from '../components/subscription/PricingPlans.js';
+import AICaddiePerformance from '../components/subscription/AICaddiePerformance.js';
+import SimulationExplanation from '../components/subscription/features/SimulationExplanation.js';
+import Testimonials from '../components/subscription/Testimonials.js';
 
 export default function Subscription() {
   return (

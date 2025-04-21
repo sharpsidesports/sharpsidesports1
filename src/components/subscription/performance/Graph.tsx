@@ -1,4 +1,4 @@
-import React from 'react';
+// This file is part of the subscription performance graph component.
 import {
   LineChart,
   Line,
@@ -8,7 +8,7 @@ import {
   ResponsiveContainer,
   Tooltip
 } from 'recharts';
-import { PerformanceDataPoint } from './data';
+import { PerformanceDataPoint } from './data.js';
 
 interface GraphProps {
   data: PerformanceDataPoint[];

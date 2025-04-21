@@ -1,6 +1,6 @@
-import React from 'react';
-import { testimonials } from '../../data/mockData/testimonials';
-import TestimonialCard from './TestimonialCard';
+// This file is part of the subscription component for a web application.
+import { testimonials } from '../../data/mockData/testimonials.js';
+import TestimonialCard from './TestimonialCard.js';
 
 export default function Testimonials() {
   return (

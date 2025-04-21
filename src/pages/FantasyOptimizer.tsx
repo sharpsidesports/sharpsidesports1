@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { useGolfStore } from '../store/useGolfStore';
-import LineupBuilder from '../components/fantasy/LineupBuilder';
-import OptimizationSettings from '../components/fantasy/OptimizationSettings';
-import GeneratedLineups from '../components/fantasy/GeneratedLineups';
-import PlayerPool from '../components/fantasy/PlayerPool';
-import { FantasyLineup, FantasySettings } from '../types/fantasy';
-import { datagolfService } from '../services/api/datagolfService';
-import { transformGolferData } from '../utils/transformers/golferTransformer';
-import { loadScoringStats } from '../utils/data/scoringStatsLoader';
-import { generateOptimalLineups } from '../utils/optimizers/lineupOptimizer';
+import { useState, useEffect } from 'react';
+import { useGolfStore } from '../store/useGolfStore.js';
+import LineupBuilder from '../components/fantasy/LineupBuilder.js';
+import OptimizationSettings from '../components/fantasy/OptimizationSettings.js';
+import GeneratedLineups from '../components/fantasy/GeneratedLineups.js';
+import PlayerPool from '../components/fantasy/PlayerPool.js';
+import { FantasyLineup, FantasySettings, DFSSite } from '../types/fantasy.js';
+import { datagolfService } from '../services/api/datagolfService.js';
+import { transformGolferData } from '../utils/transformers/golferTransformer.js';
+import { loadScoringStats } from '../utils/data/scoringStatsLoader.js';
+import { generateOptimalLineups } from '../utils/optimizers/lineupOptimizer.js';
 
 export default function FantasyOptimizer() {
   const { 

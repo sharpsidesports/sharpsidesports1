@@ -1,9 +1,7 @@
-import { useState } from 'react';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../hooks/useAuth.js';
 import { useNavigate } from 'react-router-dom';
 import { CheckIcon } from '@heroicons/react/24/outline';
-import { User } from '../types/auth';
-import { createCustomerPortalSession } from '../services/stripe';
+import { createCustomerPortalSession } from '../lib/stripe.js';
 
 interface Features {
   [key: string]: string[];
@@ -14,7 +12,6 @@ interface Features {
 
 export default function Account() {
   const { user, signOut } = useAuth();
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleUpgrade = () => {

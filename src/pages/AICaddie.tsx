@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import { useGolfStore } from '../store/useGolfStore';
-import AICaddieAnalysis from '../components/ai-caddie/AICaddieAnalysis';
+import { useEffect } from 'react';
+import { useGolfStore } from '../store/useGolfStore.js';
+import AICaddieAnalysis from '../components/ai-caddie/AICaddieAnalysis.js';
 
 export default function AICaddie() {
   const { fetchGolferData, loading } = useGolfStore();

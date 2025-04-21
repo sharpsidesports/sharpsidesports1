@@ -1,15 +1,5 @@
-import React from 'react';
-import { Golfer } from '../../types/golf';
-import { formatAmericanOdds } from '../../utils/calculations/oddsCalculator';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer
-} from 'recharts';
+import { Golfer } from '../../types/golf.js';
+import { formatAmericanOdds } from '../../utils/calculations/oddsCalculator.js';
 
 interface GolferProfileModalProps {
   golfer: Golfer;

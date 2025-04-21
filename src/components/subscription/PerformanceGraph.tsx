@@ -1,7 +1,7 @@
-import React from 'react';
-import { generatePerformanceData } from './performance/data';
-import Metrics from './performance/Metrics';
-import Graph from './performance/Graph';
+// This file is part of the subscription component for the app.
+import { generatePerformanceData } from './performance/data.js';
+import Metrics from './performance/Metrics.js';
+import Graph from './performance/Graph.js';
 
 export default function PerformanceGraph() {
   const data = generatePerformanceData();

@@ -1,8 +1,8 @@
-import { Golfer } from '../../types/golf';
-import { calculateImpliedProbability } from '../calculations/oddsCalculator';
-import { getPlayerRoundsByDgIds, getScoringStatsByDgIds, SupabaseError } from '../supabase/queries';
+import { Golfer } from '../../types/golf.js';
+import { calculateImpliedProbability } from '../calculations/oddsCalculator.js';
+import { getPlayerRoundsByDgIds, getScoringStatsByDgIds, SupabaseError } from '../supabase/queries.js';
 
-export const golferImages = {
+export const golferImages: Record<string, string> = {
   "Scheffler, Scottie": "https://pga-tour-res.cloudinary.com/image/upload/c_fill,d_headshots_default.png,f_auto,g_face:center,h_294,q_auto,w_220/headshots_46046.png",
   "McIlroy, Rory": "https://pga-tour-res.cloudinary.com/image/upload/c_fill,d_headshots_default.png,f_auto,g_face:center,h_294,q_auto,w_220/headshots_28237.png",
   "Rahm, Jon": "https://pga-tour-res.cloudinary.com/image/upload/c_fill,d_headshots_default.png,f_auto,g_face:center,h_294,q_auto,w_220/headshots_46970.png",
@@ -17,7 +17,8 @@ export const transformGolferData = async (
   rankings: any[],
   odds: any[] = [],
   approachStats: any[] = [],
-  selectedCourses: string[] = []
+  selectedCourses: string[] = [],
+  scoringStats: any[] = []
 ): Promise<Golfer[]> => {
   try {
     if (!Array.isArray(rankings) || rankings.length === 0) {
@@ -60,7 +61,7 @@ export const transformGolferData = async (
     }
 
     // Get scoring stats and rounds data from Supabase
-    let scoringStats: any[] = [], playerRounds: any[] = [];
+    let playerRounds: any[] = [];
     try {
       [scoringStats, playerRounds] = await Promise.all([
         getScoringStatsByDgIds(dgIds, {
@@ -91,11 +92,11 @@ export const transformGolferData = async (
     }
 
     // Transform the data into Golfer objects
-    const golfers: Golfer[] = sortedRankings.map(ranking => {
+    const maybeGolfers: (Golfer | null)[] = sortedRankings.map<Golfer | null>(ranking => {
       const playerOdds = odds.find(o => o.dg_id === ranking.dg_id) || {};
       const approachData = approachStats.find(s => s.dg_id === ranking.dg_id) || {};
       const playerScoringStats = scoringStats.filter(s => s.dg_id === String(ranking.dg_id));
-      const playerSpecificRounds = playerRounds.filter(r => r.dg_id === String(ranking.dg_id));
+      const playerSpecificRounds = playerRounds.filter(r => r.dg_id === String(ranking.dg_id));    
 
       // Validate essential data is present
       const hasRequiredData = (
@@ -103,7 +104,7 @@ export const transformGolferData = async (
         ranking.player_name &&
         playerScoringStats.length > 0 &&
         playerSpecificRounds.length > 0 &&
-        playerOdds.fanduel // Ensure we have odds data
+        playerOdds.fanduel
       );
 
       if (!hasRequiredData) {
@@ -181,9 +182,10 @@ export const transformGolferData = async (
       return {
         id: ranking.dg_id.toString(),
         name: ranking.player_name,
-        imageUrl: golferImages[ranking.player_name] || `https://pga-tour-res.cloudinary.com/image/upload/c_fill,d_headshots_default.png,f_auto,g_face:center,h_294,q_auto,w_220/headshots_${ranking.dg_id}.png`,
+        imageUrl: golferImages[ranking.player_name] || `default_image_url`,
         rank: ranking.datagolf_rank || 0,
-        // Use round data for strokes gained metrics
+        worldRanking: 0,  // provide default if missing
+        salary: 0,        // provide default if missing
         strokesGainedTotal: calculateAverageFromRounds('sg_total'),
         strokesGainedTee: calculateAverageFromRounds('sg_ott'),
         strokesGainedApproach: calculateAverageFromRounds('sg_app'),
@@ -198,21 +200,15 @@ export const transformGolferData = async (
           lastUpdated: new Date().toISOString()
         } : undefined,
         proximityMetrics: {
-          // For 100-150 range, we use the actual data but slightly adjust for the sub-ranges
-          '100-125': (approachData?.['100_150_fw_proximity_per_shot'] || 0) * 0.95, // Typically slightly more accurate
-          '125-150': (approachData?.['100_150_fw_proximity_per_shot'] || 0) * 1.05, // Typically slightly less accurate
-          // For 150-200 range, we interpolate based on distance
-          '150-175': (approachData?.['150_200_fw_proximity_per_shot'] || 0) * 0.95, // Closer shots more accurate
-          '175-200': (approachData?.['150_200_fw_proximity_per_shot'] || 0) * 1.05, // Further shots less accurate
-          // For 200+ range, we create a gradient of difficulty
-          '200-225': (approachData?.['over_200_fw_proximity_per_shot'] || 0) * 0.95, // Slightly more accurate
-          '225plus': (approachData?.['over_200_fw_proximity_per_shot'] || 0) * 1.15  // Notably more difficult
+          '100-125': (approachData?.['100_150_fw_proximity_per_shot'] || 0) * 0.95,
+          '125-150': (approachData?.['100_150_fw_proximity_per_shot'] || 0) * 1.05,
+          '150-175': (approachData?.['150_200_fw_proximity_per_shot'] || 0) * 0.95,
+          '175-200': (approachData?.['150_200_fw_proximity_per_shot'] || 0) * 1.05,
+          '200-225': (approachData?.['over_200_fw_proximity_per_shot'] || 0) * 0.95,
+          '225plus': (approachData?.['over_200_fw_proximity_per_shot'] || 0) * 1.15
         },
         scoringStats: {
           bogeyAvoidance: calculateAverageFromStats('02414'),
-          // consecutiveBirdiesStreak: calculateAverageFromStats('02672'),
-          // consecutiveBirdiesEaglesStreak: calculateAverageFromStats('02673'),
-          // totalEagles: calculateAverageFromStats('106'),
           totalBirdies: calculateAverageFromStats('107'),
           par3BirdieOrBetter: calculateAverageFromStats('112'),
           par4BirdieOrBetter: calculateAverageFromStats('113'),
@@ -224,7 +220,6 @@ export const transformGolferData = async (
           eaglesPerHole: calculateAverageFromStats('155'),
           birdieAverage: calculateAverageFromStats('156'),
           birdieOrBetterPercentage: calculateAverageFromStats('352'),
-          // consecutiveHolesBelowPar: calculateAverageFromStats('452'),
           simulatedRank: 0
         },
         simulationStats: {
@@ -235,7 +230,11 @@ export const transformGolferData = async (
         },
         recentRounds: roundsByCourse
       };
-    }).filter(Boolean);
+    }).filter((golfer): golfer is Golfer => golfer !== null);
+
+    const golfers: Golfer[] = maybeGolfers.filter(
+      (g): g is Golfer => g !== null
+    );
 
     return golfers;
   } catch (error) {

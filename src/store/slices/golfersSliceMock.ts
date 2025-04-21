@@ -1,6 +1,6 @@
-import { StateCreator } from 'zustand';
-import { Golfer } from '../../types/golf';
-import { mockGolfers } from '../../data/mockData/mockGolfers';
+/*import { StateCreator } from 'zustand';
+import { Golfer } from '../../types/golf.js';
+import { mockGolfers } from '../../data/mockData/mockGolfers.js';
 
 export interface GolfersSlice {
   golfers: Golfer[];
@@ -24,4 +24,4 @@ export const createGolfersSlice: StateCreator<GolfersSlice> = (set, get) => ({
       error: null
     });
   }
-});
+});*/

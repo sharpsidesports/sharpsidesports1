@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useAuthContext } from '../context/AuthContext';
+import { useState } from 'react';
 
 interface User {
   id: string;
@@ -9,7 +8,6 @@ interface User {
 }
 
 export default function Admin() {
-  const { user } = useAuthContext();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

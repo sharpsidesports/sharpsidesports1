@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
-import type { User } from '../types/auth';
+import { supabase } from '../lib/supabase.js';
+import type { User } from '../types/auth.js';
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -37,7 +37,8 @@ export function useAuth() {
           subscription_tier: profile.subscription_tier || 'free',
           subscription_status: profile.subscription_status || 'active',
           created_at: session.user.created_at,
-          stripe_customer_id: profile.stripe_customer_id
+          stripe_customer_id: profile.stripe_customer_id,
+          is_admin: (session.user.user_metadata as any)?.is_admin ?? false
         });
       }
       setLoading(false);
@@ -53,7 +54,8 @@ export function useAuth() {
           subscription_tier: profile.subscription_tier || 'free',
           subscription_status: profile.subscription_status || 'active',
           created_at: session.user.created_at,
-          stripe_customer_id: profile.stripe_customer_id
+          stripe_customer_id: profile.stripe_customer_id,
+          is_admin: (session.user.user_metadata as any)?.is_admin ?? false
         });
       } else {
         setUser(null);

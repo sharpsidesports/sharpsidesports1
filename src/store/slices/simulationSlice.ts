@@ -1,5 +1,5 @@
 import { StateCreator } from 'zustand';
-import { MetricWeight } from '../../types/metrics';
+import { MetricWeight } from '../../types/metrics.js';
 
 const DEFAULT_METRICS: MetricWeight[] = [
   // Core metrics - Total 100%

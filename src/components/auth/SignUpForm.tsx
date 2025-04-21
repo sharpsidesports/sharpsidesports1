@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { supabase } from '../../lib/supabase';
+import { useState } from 'react';
+import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
 
 export default function SignUpForm() {
@@ -15,7 +15,7 @@ export default function SignUpForm() {
     setError(null);
 
     try {
-      // Sign up the user
+      // Sign up the user 
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,

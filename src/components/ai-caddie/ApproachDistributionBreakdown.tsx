@@ -1,7 +1,6 @@
-import React from 'react';
-import { useApproachDistributionData } from './hooks/useApproachDistributionData';
-import ApproachDistributionChart from './charts/ApproachDistributionChart';
-import ApproachDistributionMetrics from './metrics/ApproachDistributionMetrics';
+import { useApproachDistributionData } from './hooks/useApproachDistributionData.js';
+import ApproachDistributionChart from './charts/ApproachDistributionChart.js';
+import ApproachDistributionMetrics from './metrics/ApproachDistributionMetrics.js';
 
 export default function ApproachDistributionBreakdown() {
   const { isLoading } = useApproachDistributionData();

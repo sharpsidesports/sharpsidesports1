@@ -1,1 +1,1 @@
-export * from './oddsCalculator';
+export * from './oddsCalculator.js';

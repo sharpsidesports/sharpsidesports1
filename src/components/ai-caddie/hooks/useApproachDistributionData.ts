@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useGolfStore } from '../../../store/useGolfStore';
-import { ApproachDistributionMetric, ApproachDistributionWeights } from '../../../types/golf';
-import { googleSheetsService } from '../../../services/api/googleSheetsService';
+import { useGolfStore } from '../../../store/useGolfStore.js';
+import { ApproachDistributionMetric, ApproachDistributionWeights } from '../../../types/golf.js';
+import { googleSheetsService } from '../../../services/api/googleSheetsService.js';
 
 const DEFAULT_WEIGHTS: ApproachDistributionWeights = {
   courseName: 'Default',

@@ -1,4 +1,4 @@
-import { PerformanceDataPoint } from './data';
+import { PerformanceDataPoint } from './data.js';
 
 export const calculateMetrics = (data: PerformanceDataPoint[]) => {
   const startValue = data[0].value;

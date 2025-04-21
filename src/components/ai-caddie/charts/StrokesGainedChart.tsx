@@ -1,6 +1,5 @@
-import React from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { useStrokesGainedData } from '../hooks/useStrokesGainedData';
+import { useStrokesGainedData } from '../hooks/useStrokesGainedData.js';
 
 export default function StrokesGainedChart() {
   const { strokesGainedData } = useStrokesGainedData();

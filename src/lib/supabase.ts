@@ -1,35 +1,35 @@
+// browser / public helper
+// Front‑end Supabase client instance
 import { createClient } from '@supabase/supabase-js';
-import type { Database } from '../types/supabase';
+import type { Database } from '../types/supabase.js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const isBrowser = typeof window !== 'undefined';
+
+// ───────────────────────────────────────────────────────────
+// These vars **must** be present in any place Vite builds the
+// front‑end bundle ( .env , .env.local , Vercel Project vars … )
+// They are used to create the Supabase client instance. AND REQUIRE VITE_ prefix
+// ───────────────────────────────────────────────────────────
+const supabaseUrl      = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey  = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// ───────────────────────────────────────────────────────────
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
+  throw new Error('Missing Supabase env vars for client helper');
 }
 
 export const supabase = createClient<Database>(
   supabaseUrl,
   supabaseAnonKey,
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true,
-      storage: window.localStorage
-    }
-  }
+  // Only attach browser‑specific auth options when running in the browser:
+  isBrowser
+    ? {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true,
+          storage: window.localStorage,
+        },
+      }
+    : undefined
 );
-
-// Export a function to check if the client is properly initialized
-export const checkSupabaseConnection = async () => {
-  try {
-    const { data, error } = await supabase.auth.getSession();
-    if (error) throw error;
-    console.log('Supabase connection successful', data.session?.user?.id);
-    return true;
-  } catch (err) {
-    console.error('Supabase connection error:', err);
-    return false;
-  }
-};

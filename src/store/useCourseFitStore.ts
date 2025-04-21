@@ -1,9 +1,10 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { SavedModelsSlice, createSavedModelsSlice } from './slices/savedModelsSlice';
-import { getPlayerRoundsByDgIds } from '../utils/supabase/queries';
-import { datagolfService } from '../services/api/datagolfService';
-import type { Database } from '../types/supabase';
+import { SavedModelsSlice, createSavedModelsSlice } from './slices/savedModelsSlice.js';
+import { getPlayerRoundsByDgIds } from '../utils/supabase/queries.js';
+import { datagolfService, type RankingsResponse } from '../services/api/datagolfService.js';
+import type { Database } from '../types/supabase.js';
+import type { Player } from '../types/player.js';
 
 type Tables = Database['public']['Tables'];
 type PlayerRound = Tables['player_rounds']['Row'];
@@ -25,6 +26,7 @@ interface CourseFitState extends SavedModelsSlice {
   selectedCourseId: string | null;
   comparisonCourseId: string | null;
   playerRounds: PlayerRound[];
+  players: Player[];
   courseStats: Record<string, CourseStats>;
   loading: boolean;
   error: string | null;
@@ -82,14 +84,16 @@ const calculateAverageStats = (rounds: PlayerRound[]): Omit<CourseStats, 'course
 
 export const useCourseFitStore = create<CourseFitState>()(
   persist(
-    (set, get) => ({
-      ...createSavedModelsSlice(set, get),
+    (set, get, api) => ({
+      ...createSavedModelsSlice(set, get, api),
       selectedCourseId: null,
       comparisonCourseId: null,
       playerRounds: [],
+      players: [],
       courseStats: {},
       loading: false,
       error: null,
+      
 
       setSelectedCourse: (courseId) => set({ selectedCourseId: courseId }),
       setComparisonCourse: (courseId) => set({ comparisonCourseId: courseId }),
@@ -100,7 +104,7 @@ export const useCourseFitStore = create<CourseFitState>()(
           console.log('Fetching player rounds for courses:', courseIds);
           
           // Get top 10 players from DataGolf rankings
-          const rankingsResponse = await datagolfService.getPlayerRankings();
+          const rankingsResponse: RankingsResponse = await datagolfService.getPlayerRankings();
           console.log('Rankings response:', rankingsResponse);
           
           if (!rankingsResponse?.rankings || !Array.isArray(rankingsResponse.rankings)) {

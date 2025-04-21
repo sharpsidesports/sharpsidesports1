@@ -1,4 +1,8 @@
 import { create } from 'zustand';
+import type {
+  CourseFilterState,
+  DifficultyFilterState
+} from '../types/golf.js';
 
 export interface Golfer {
   id: string;
@@ -20,6 +24,12 @@ interface GolfStore {
   golfers: Golfer[];
   loading: boolean;
   error: string | null;
+
+  courseFilters: CourseFilterState;
+  difficultyFilters: DifficultyFilterState;
+  updateCourseFilters: (patch: Partial<CourseFilterState>) => void;
+  updateDifficultyFilters: (patch: Partial<DifficultyFilterState>) => void;
+
   fetchGolfers: () => Promise<void>;
 }
 
@@ -27,6 +37,24 @@ export const useGolfStore = create<GolfStore>((set) => ({
   golfers: [],
   loading: false,
   error: null,
+  courseFilters: {
+    grass: 'all',
+    course: 'all',
+  },
+  difficultyFilters: {
+    driving: ['easy', 'medium', 'hard'],
+    approach: ['easy', 'medium', 'hard'],
+    scoring: ['easy', 'medium', 'hard'],
+  },
+  updateCourseFilters: (patch) =>
+    set((state) => ({
+      courseFilters: { ...state.courseFilters, ...patch },
+    })),
+  updateDifficultyFilters: (patch) =>
+    set((state) => ({
+      difficultyFilters: { ...state.difficultyFilters, ...patch },
+    })),
+
   fetchGolfers: async () => {
     set({ loading: true, error: null });
     try {

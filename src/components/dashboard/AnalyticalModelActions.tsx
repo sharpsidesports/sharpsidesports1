@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useGolfStore } from '../../store/useGolfStore';
+import { useState } from 'react';
+import { useGolfStore } from '../../store/useGolfStore.js';
 
 export default function AnalyticalModelActions() {
   const [showSaveDialog, setShowSaveDialog] = useState(false);

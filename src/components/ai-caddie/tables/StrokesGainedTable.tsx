@@ -1,13 +1,13 @@
-import React from 'react';
-import { useGolfStore } from '../../../store/useGolfStore';
-import { Golfer } from '../../../types/golf';
-import { googleSheetsService } from '../../../services/api/googleSheetsService';
+import { useGolfStore } from '../../../store/useGolfStore.js';
+import { Golfer } from '../../../types/golf.js';
+import { googleSheetsService } from '../../../services/api/googleSheetsService.js';
+import { useState, useEffect } from 'react';
 
 export default function StrokesGainedTable() {
   const { golfers } = useGolfStore();
-  const [courseWeights, setCourseWeights] = React.useState<any>(null);
+  const [courseWeights, setCourseWeights] = useState<any>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchWeights = async () => {
       const weights = await googleSheetsService.getCourseWeights();
       setCourseWeights(weights);

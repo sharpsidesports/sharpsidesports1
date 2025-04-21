@@ -1,8 +1,7 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
-import { VERSION } from '../config/version';
-import UserMenu from './layout/UserMenu';
-import { useAuthContext } from '../context/AuthContext';
+import { VERSION } from '../config/version.js';
+import UserMenu from './layout/UserMenu.js';
+import { useAuthContext } from '../context/AuthContext.js';
 
 function Header() {
   const { user } = useAuthContext();

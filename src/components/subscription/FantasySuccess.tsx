@@ -1,5 +1,6 @@
-import React from 'react';
-import SuccessCard from './fantasy/SuccessCard';
+// This file is part of the FantasySuccess component.
+
+import SuccessCard from './fantasy/SuccessCard.js';
 
 export default function FantasySuccess() {
   return (

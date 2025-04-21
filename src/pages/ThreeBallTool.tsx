@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useGolfStore } from '../store/useGolfStore';
-import { Golfer } from '../types/golf';
-import { datagolfService } from '../services/api/datagolfService';
+// This file is part of the Sharpside project, which is licensed under the MIT License.
+import { useState, useEffect } from 'react';
+import { useGolfStore } from '../store/useGolfStore.js';
+import { Golfer } from '../types/golf.js';
+import { datagolfService } from '../services/api/datagolfService.js';
 
 interface ThreeBallOdds {
   odds: {

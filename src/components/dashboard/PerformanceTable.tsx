@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { useGolfStore } from '../../store/useGolfStore';
-import GolferProfileModal from './GolferProfileModal';
-import { Golfer } from '../../types/golf';
-import { SharpsideMetric } from '../../types/metrics';
-import { formatAmericanOdds } from '../../utils/calculations/oddsCalculator';
+import { useState } from 'react';
+import { useGolfStore } from '../../store/useGolfStore.js';
+import GolferProfileModal from './GolferProfileModal.js';
+import { Golfer } from '../../types/golf.js';
+import { SharpsideMetric } from '../../types/metrics.js';
+import { formatAmericanOdds } from '../../utils/calculations/oddsCalculator.js';
 
 type SortField = 'rank' | 'name' | 'averageFinish' | 'top10Percentage' | 'winPercentage' | 'fanduelOdds' | 'impliedProbability' | SharpsideMetric;
 type SortDirection = 'asc' | 'desc';
@@ -381,7 +381,7 @@ function PerformanceTable() {
             >
               Implied Win %
             </th>
-            {weights.map(({ metric }) => (
+            {weights.map(({ metric }: { metric: SharpsideMetric }) => (
               <th
                 key={metric}
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
@@ -436,7 +436,7 @@ function PerformanceTable() {
                   'N/A'
                 }
               </td>
-              {weights.map(({ metric }) => (
+              {weights.map(({ metric }: { metric: SharpsideMetric }) => (
                 <td key={metric} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {getMetricValue(golfer, metric).toFixed(2)}
                 </td>
