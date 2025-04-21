@@ -8,6 +8,7 @@
     "dev:server": "vercel dev --listen 3000",
     "dev": "concurrently --kill-others \"npm run dev:client\" \"npm run dev:server\"",
     "build": "vite build",
+    "vercel-build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest"
