@@ -6,11 +6,11 @@ export default defineConfig(({ mode }) => {
   const isProd = mode === 'production'
 
   return {
-    // 1) replace both placeholders at build‑time
+    // <-- this is the key change
     define: {
-      // your old __DEFINES__ → empty object
-      __DEFINES__: '({})',
-      // never emit any HMR config in prod
+      // replace your __DEFINES__ stub with {} (JSON.stringify({}) yields "{}")
+      __DEFINES__: JSON.stringify({}),
+      // never emit a real HMR config name in prod
       __HMR_CONFIG_NAME__: isProd ? 'undefined' : JSON.stringify('')
     },
 
@@ -35,7 +35,7 @@ export default defineConfig(({ mode }) => {
 
     build: {
       outDir: 'dist',
-      // no manual rollup replace needed any more
+      // no extra rollup‐replace plugin needed
     },
   }
 })
