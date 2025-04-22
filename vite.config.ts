@@ -26,7 +26,14 @@ export default defineConfig(({ mode }) => {
 
       __SERVER_HOST__:  JSON.stringify(env.VITE_SERVER_HOST || ''),
 
-      __HMR_PROTOCOL__:  JSON.stringify(env.VITE_HMR_PROTOCOL || '')
+      __HMR_PROTOCOL__:  JSON.stringify(env.VITE_HMR_PROTOCOL || ''),
+      __HMR_HOST__:  JSON.stringify(env.VITE_HMR_HOST || ''),
+      __HMR_PORT__:  JSON.stringify(env.VITE_HMR_PORT || ''),
+      __HMR_RELOAD_PORT__:  JSON.stringify(env.VITE_HMR_RELOAD_PORT || ''),
+      __HMR_CLIENT_PORT__:  JSON.stringify(env.VITE_HMR_CLIENT_PORT || ''),
+      __HMR_CLIENT_HOST__:  JSON.stringify(env.VITE_HMR_CLIENT_HOST || ''),
+      __HMR_CLIENT_PROTOCOL__:  JSON.stringify(env.VITE_HMR_CLIENT_PROTOCOL || ''),
+      __HMR_CLIENT_RELOAD_PORT__:  JSON.stringify(env.VITE_HMR_CLIENT_RELOAD_PORT || ''),
     },
 
     plugins: [react()],
