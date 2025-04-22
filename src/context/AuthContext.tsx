@@ -19,12 +19,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
+    // we're searching public.profiles for user.id, but we shouldn't do this
+    // eventually we should use the user_metadata field in the auth.users table
+    // ----------------------------------------------------------------------
+    supabase.auth.getSession().then(async ({ data }) => {
       const sessionUser = data.session?.user;
-      if (sessionUser) setUser(mapSupaUser(sessionUser));
+    
+      if (sessionUser) {
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', sessionUser.id)
+          .single();
+    
+        if (error || !profile) {
+          console.warn('Failed to fetch profile:', error?.message);
+          setUser(mapSupaUser(sessionUser)); // fallback to metadata
+        } else {
+          setUser({
+            id: sessionUser.id,
+            email: sessionUser.email || '',
+            created_at: sessionUser.created_at,
+            is_admin: profile.is_admin ?? false,
+            subscription_tier: profile.subscription_tier ?? 'free',
+            subscription_status: profile.subscription_status ?? 'inactive',
+          });
+        }
+      }
+    
       setLoading(false);
     });
-
+// ------------------------------------------------^^^^^^^^^^^------- replace this with metadata
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ? mapSupaUser(session.user) : null);
       setLoading(false);

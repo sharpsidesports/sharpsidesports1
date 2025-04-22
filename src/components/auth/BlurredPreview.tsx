@@ -9,6 +9,7 @@ interface BlurredPreviewProps {
 
 export default function BlurredPreview({ children, requiredSubscription = 'free' }: BlurredPreviewProps) {
   const { user } = useAuthContext();
+  console.log('user in BlurredPreview', user);
   const userTier = user?.subscription_tier || 'free';
   const subscriptionLevels = { free: 0, basic: 1, pro: 2 };
 
