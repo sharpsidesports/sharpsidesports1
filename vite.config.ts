@@ -2,21 +2,30 @@ import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig(({ mode }) => {
+  // load any VITE_ env‑vars
   const env = loadEnv(mode, process.cwd(), 'VITE_')
   const isProd = mode === 'production'
 
+  // your deployed “base” URL (if you’re hosting to the root, this is just “/”)
+  const base = '/'
+
   return {
-    // <-- this is the key change
+    // set your base URL here too
+    base,
+
+    // these three replacements will be baked into your final JS:
     define: {
-      // replace your __DEFINES__ stub with {} (JSON.stringify({}) yields "{}")
+      // our empty‐object stub for __DEFINES__
       __DEFINES__: JSON.stringify({}),
-      // never emit a real HMR config name in prod
-      __HMR_CONFIG_NAME__: isProd ? 'undefined' : JSON.stringify('')
+
+      // prevent any HMR name from leaking into prod
+      __HMR_CONFIG_NAME__: isProd ? 'undefined' : JSON.stringify(''),
+
+      // Vite’s own import.meta.env.BASE_URL replacement
+      __BASE__: JSON.stringify(base),
     },
 
-    plugins: [
-      react()
-    ],
+    plugins: [react()],
 
     server: {
       port: Number(process.env.PORT) || 5173,
@@ -27,7 +36,9 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           rewrite: (path) => {
             const clean = path.replace(/^\/api\/datagolf/, '')
-            return clean + (clean.includes('?') ? '&' : '?') + `key=${env.VITE_DG_API_KEY}`
+            return clean +
+              (clean.includes('?') ? '&' : '?') +
+              `key=${env.VITE_DG_API_KEY}`
           },
         },
       },
@@ -35,7 +46,7 @@ export default defineConfig(({ mode }) => {
 
     build: {
       outDir: 'dist',
-      // no extra rollup‐replace plugin needed
+      // no extra rollup plugins needed now 🎉
     },
   }
 })
