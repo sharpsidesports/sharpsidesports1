@@ -2,13 +2,11 @@
   "version": 2,
   "$schema": "https://openapi.vercel.sh/vercel.json",
 
-  "devCommand": null,
-
-  "buildCommand": "npm run build",
+  "buildCommand": "vite build",
   "outputDirectory": "dist",
 
   "rewrites": [
-    { 
+    {
       "source": "/api/datagolf/:path*",
       "destination": "/api/datagolf"
     },
