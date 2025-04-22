@@ -23,6 +23,8 @@ export default defineConfig(({ mode }) => {
 
       // Vite’s own import.meta.env.BASE_URL replacement
       __BASE__: JSON.stringify(base),
+
+      __SERVER_HOST__:  JSON.stringify(env.VITE_SERVER_HOST || '')
     },
 
     plugins: [react()],
