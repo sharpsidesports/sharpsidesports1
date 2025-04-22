@@ -24,7 +24,9 @@ export default defineConfig(({ mode }) => {
       // Vite’s own import.meta.env.BASE_URL replacement
       __BASE__: JSON.stringify(base),
 
-      __SERVER_HOST__:  JSON.stringify(env.VITE_SERVER_HOST || '')
+      __SERVER_HOST__:  JSON.stringify(env.VITE_SERVER_HOST || ''),
+
+      __HMR_PROTOCOL__:  JSON.stringify(env.VITE_HMR_PROTOCOL || '')
     },
 
     plugins: [react()],
