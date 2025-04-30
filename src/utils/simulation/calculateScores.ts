@@ -1,5 +1,6 @@
 import { Golfer } from '../../types/golf.js';
 import { SharpsideMetric, MetricWeight, METRIC_CATEGORIES } from '../../types/metrics.js';
+import { calculateImpliedProbability } from '../calculations/oddsCalculator.js';
 
 const calculateMetricValue = (golfer: Golfer, metric: SharpsideMetric): number => {
   switch (metric) {
@@ -131,25 +132,6 @@ export const calculateRanks = (golfers: Golfer[], metrics: SharpsideMetric[]): M
   });
   
   return ranks;
-};
-
-// Calculate the implied probability from American odds
-// This converts the betting line to a win probability percentage
-export const calculateImpliedProbability = (americanOdds: number): number => {
-  if (americanOdds === 0) return 0;
-  
-  let impliedProb: number;
-  
-  // For positive odds (underdogs)
-  if (americanOdds > 0) {
-    impliedProb = 100 / (americanOdds + 100);
-  } 
-  // For negative odds (favorites)
-  else {
-    impliedProb = Math.abs(americanOdds) / (Math.abs(americanOdds) + 100);
-  }
-  
-  return impliedProb;
 };
 
 export const calculateSimulatedScore = (

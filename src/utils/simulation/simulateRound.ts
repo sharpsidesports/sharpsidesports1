@@ -2,7 +2,7 @@ import { Golfer } from '../../types/golf.js';
 import { MetricWeight } from '../../types/metrics.js';
 import { calculateSimulatedScore } from './calculateScores.js';
 import { generateRandomFactor } from '../random.js';
-import { calculateImpliedProbability } from '../../utils/calculations/calculateImpliedProbability.js';
+import { calculateImpliedProbability } from '../calculations/oddsCalculator.js';
 
 export const simulateRound = (golfer: Golfer, weights: MetricWeight[], allGolfers: Golfer[] = []) => {
   return calculateSimulatedScore(golfer, weights, generateRandomFactor(), allGolfers);

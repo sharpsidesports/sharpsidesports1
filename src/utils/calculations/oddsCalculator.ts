@@ -11,13 +11,13 @@ export const calculateImpliedProbability = (americanOdds: string | number): numb
   const odds = parseAmericanOdds(americanOdds);
   if (!odds) return 0;
   
-  // Convert American odds to implied probability
+  // Convert American odds to implied probability (0-1 scale)
   if (odds > 0) {
     // Positive American odds (e.g. +150)
-    return 100 / (odds + 100); // Already returns percentage between 0-100
+    return 100 / (odds + 100);
   } else {
     // Negative American odds (e.g. -150)
-    return (Math.abs(odds) / (Math.abs(odds) + 100)) * 100;
+    return Math.abs(odds) / (Math.abs(odds) + 100);
   }
 };
 
