@@ -19,40 +19,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // we're searching public.profiles for user.id, but we shouldn't do this
-    // eventually we should use the user_metadata field in the auth.users table
-    // ----------------------------------------------------------------------
-    supabase.auth.getSession().then(async ({ data }) => {
-      const sessionUser = data.session?.user;
-    
-      if (sessionUser) {
-        const { data: profile, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', sessionUser.id)
-          .single();
-    
-        if (error || !profile) {
-          console.warn('Failed to fetch profile:', error?.message);
-          setUser(mapSupaUser(sessionUser)); // fallback to metadata
-        } else {
-          setUser({
-            id: sessionUser.id,
-            email: sessionUser.email || '',
-            created_at: sessionUser.created_at,
-            is_admin: profile.is_admin ?? false,
-            subscription_tier: profile.subscription_tier ?? 'free',
-            subscription_status: profile.subscription_status ?? 'inactive',
-          });
-        }
+    // Fetch the initial session and user data
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setUser(mapSupaUser(session.user));
       }
-    
       setLoading(false);
     });
-// ------------------------------------------------^^^^^^^^^^^------- replace this with metadata
+
+    // Set up listener for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ? mapSupaUser(session.user) : null);
-      setLoading(false);
+      // Ensure loading is false after potential async actions in onAuthStateChange
+      setLoading(false); 
     });
 
     return () => {

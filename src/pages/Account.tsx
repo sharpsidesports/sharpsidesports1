@@ -1,4 +1,4 @@
-import { useAuth } from '../hooks/useAuth.js';
+import { useAuthContext } from '../context/AuthContext.js';
 import { useNavigate } from 'react-router-dom';
 import { CheckIcon } from '@heroicons/react/24/outline';
 import { createCustomerPortalSession } from '../lib/stripe.js';
@@ -11,7 +11,7 @@ interface Features {
 }
 
 export default function Account() {
-  const { user, signOut } = useAuth();
+  const { user, signOut } = useAuthContext();
   const navigate = useNavigate();
 
   const handleUpgrade = () => {

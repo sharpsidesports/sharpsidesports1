@@ -27,11 +27,11 @@
     "src/**/*.tsx",
     "src/**/*.js",
     "src/**/*.jsx",
-    "scripts/**/*.ts",
-    "scripts/**/*.js",
+    "dev/scripts/**/*.ts",
+    "dev/scripts/**/*.js",
     "api/**/*.ts",
     "vite.config.ts"
-, "scripts/verify-bundle.cjs"  ],
+, "dev/scripts/verify-bundle.cjs"  ],
   "exclude": [
     "node_modules",
     "dist"
