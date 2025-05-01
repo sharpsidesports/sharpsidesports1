@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
+import { supabase } from '../../lib/supabase.js'; // Added .js extension
 
 // Initialize Stripe with the environment variable
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
@@ -72,16 +73,32 @@ async function createCheckoutSession(
   plan: string,
   billingInterval: 'weekly' | 'monthly' | 'yearly'
 ) {
+  // Get Supabase session/token
+  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+  if (sessionError || !session?.access_token) {
+      // Handle unauthenticated user? Maybe redirect? Or throw error if user MUST be logged in here.
+      // For a public landing page, this might try to proceed without a token,
+      // but the API endpoint requires it. This indicates a potential flow issue.
+      // For now, throw error if no token, assuming login is required before subscribing from landing.
+      throw new Error(sessionError?.message || 'User must be logged in to subscribe');
+  }
+  const token = session.access_token;
+
   const res = await fetch('/api/stripe/create-checkout-session', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}` // Add Authorization header
+     },
     body: JSON.stringify({ plan, billingInterval }),
   });
 
   if (!res.ok) {
-    throw new Error(`Server error: ${res.statusText}`);
+    const errorBody = await res.json(); // Read error body
+    throw new Error(errorBody.error || `Server error: ${res.statusText}`);
   }
-  return res.json() as Promise<{ id: string }>;
+  // Changed return type to match expected { sessionId: string }
+  return res.json() as Promise<{ sessionId: string }>; 
 }
 
 // This component renders the pricing section of the landing page
@@ -107,7 +124,7 @@ export default function PricingSection() {
       }
 
       const { error } = await stripe.redirectToCheckout({
-        sessionId: session.id,
+        sessionId: session.sessionId,
       });
 
       if (error) {

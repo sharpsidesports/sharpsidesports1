@@ -1,4 +1,5 @@
 import { loadStripe } from '@stripe/stripe-js';
+import { supabase } from './supabase'; // Import supabase client
 
 const STRIPE_PUBLIC_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 const STRIPE_BASIC_PRODUCT_ID = import.meta.env.VITE_STRIPE_BASIC_PRODUCT_ID;
@@ -23,18 +24,31 @@ export const PRODUCT_IDS = {
   [SUBSCRIPTION_TIERS.PRO]: STRIPE_PRO_PRODUCT_ID,
 };
 
-export async function createCheckoutSession(priceId: string, customerId?: string) {
+export async function createCheckoutSession(priceId: string) {
   try {
+    // Get Supabase session/token
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !session?.access_token) {
+      throw new Error(sessionError?.message || 'User not authenticated');
+    }
+    const token = session.access_token;
+
     const response = await fetch('/api/stripe/create-checkout-session', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // Add Authorization header
       },
       body: JSON.stringify({
-        priceId,
-        customerId,
+        priceId, // API expects plan & interval, might need adjustment
+        // Removed customerId
       }),
     });
+
+    if (!response.ok) { // Added check for response status
+        const errorBody = await response.json();
+        throw new Error(errorBody.error || `Server error: ${response.status}`);
+    }
 
     const { sessionId } = await response.json();
     const stripe = await stripePromise;
