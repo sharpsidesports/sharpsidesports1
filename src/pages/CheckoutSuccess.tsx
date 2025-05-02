@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-// Removed useNavigate import as it's no longer used for automatic redirect
-// import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase.js'; // Import supabase client
 import { useAuthContext } from '../context/AuthContext.js'; // Import auth context
 
@@ -8,9 +7,8 @@ const POLLING_INTERVAL = 2000; // Check every 2 seconds
 const MAX_POLLING_TIME = 20000; // Stop after 20 seconds
 
 export default function CheckoutSuccess() {
-  // Removed navigate
-  // const navigate = useNavigate(); 
-  const { refreshAuthStatus } = useAuthContext(); // Get refreshAuthStatus from context
+  const navigate = useNavigate();
+  const { user: contextUser } = useAuthContext(); // Get initial user state
   const [statusMessage, setStatusMessage] = useState('Verifying your subscription...');
   const [isVerifying, setIsVerifying] = useState(true);
 
@@ -24,58 +22,61 @@ export default function CheckoutSuccess() {
         const { data: { user } } = await supabase.auth.getUser();
         console.log('Polling user status:', user?.user_metadata);
 
+        // Check if metadata exists and tier is updated (not free)
         if (user?.user_metadata?.subscription_tier && user.user_metadata.subscription_tier !== 'free') {
-          // --- UPDATED: Set success message, don't navigate --- 
-          setStatusMessage('You now have premium access!'); 
+          setStatusMessage('Subscription confirmed!');
           setIsVerifying(false);
           if (pollingTimer) clearInterval(pollingTimer);
           if (timeoutTimer) clearTimeout(timeoutTimer);
           
-          console.log('Subscription confirmed, refreshing context...');
-          await refreshAuthStatus(); // Still refresh context
-          console.log('Context refreshed.');
-          // --- END UPDATE ---
+          // Optionally force refresh context state before navigating
+          // await updateUserState(); // If updateUserState is exposed from context
+          
+          navigate('/dashboard');
         } else {
+          // Keep polling if time allows
           elapsedTime += POLLING_INTERVAL;
           if (elapsedTime >= MAX_POLLING_TIME) {
-            // --- UPDATED: Set timeout message, don't navigate --- 
-            setStatusMessage('Verification timed out. Please refresh the page or navigate using the menu.');
+            setStatusMessage('Verification timed out. Please check your account or refresh.');
             setIsVerifying(false);
             if (pollingTimer) clearInterval(pollingTimer);
-             // --- END UPDATE ---
           }
         }
       } catch (error) {
         console.error('Error polling user status:', error);
-        // --- UPDATED: Set error message, don't navigate --- 
-        setStatusMessage('Error verifying subscription. Please try refreshing the page.');
+        setStatusMessage('Error verifying subscription. Please refresh.');
         setIsVerifying(false);
         if (pollingTimer) clearInterval(pollingTimer);
         if (timeoutTimer) clearTimeout(timeoutTimer);
-        // --- END UPDATE ---
       }
     };
 
+    // Start polling
     pollingTimer = setInterval(checkSubscriptionStatus, POLLING_INTERVAL);
 
-    // Timeout logic no longer navigates, just stops polling and allows message update
+    // Set max timeout
     timeoutTimer = setTimeout(() => {
       if (pollingTimer) {
         clearInterval(pollingTimer);
-        if (isVerifying) { 
-           // Status message is set within checkSubscriptionStatus timeout logic
+        if (isVerifying) { // Check if still verifying when timeout hits
+           setStatusMessage('Verification taking longer than expected. Redirecting now...');
+           // Decide whether to redirect anyway or show error
+           navigate('/dashboard'); 
         }
       }
     }, MAX_POLLING_TIME);
 
+    // Initial check immediately
     checkSubscriptionStatus(); 
 
+    // Cleanup timers on component unmount
     return () => {
       if (pollingTimer) clearInterval(pollingTimer);
       if (timeoutTimer) clearTimeout(timeoutTimer);
     };
-    // Removed navigate from dependency array
-  }, [refreshAuthStatus]); 
+    // Run only once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, [navigate]);
 
   return (
     <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -91,11 +92,10 @@ export default function CheckoutSuccess() {
                 <p className="text-gray-600">{statusMessage}</p>
               </div>
             ) : (
-               <p className="text-green-600 font-semibold mb-4">{statusMessage}</p> // Make success message green
+               <p className="text-gray-600 mb-4">{statusMessage}</p>
             )}
-            {/* Updated final text */}
             <p className="text-sm text-gray-500">
-              {isVerifying ? 'Please wait while we confirm your details.' : 'Your account access has been updated. You can navigate using the menu above.'}
+              {isVerifying ? 'Please wait while we confirm your details.' : 'You can now close this page or wait to be redirected.'}
             </p>
           </div>
         </div>
