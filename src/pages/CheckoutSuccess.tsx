@@ -1,11 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuthContext } from '../context/AuthContext.js';
 
 export default function CheckoutSuccess() {
   const navigate = useNavigate();
   const [countdown, setCountdown] = useState(5);
+  const { refetchUserData } = useAuthContext();
 
   useEffect(() => {
+    refetchUserData().catch(error => {
+        console.error("Failed to refetch user data on checkout success:", error);
+    });
+
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
@@ -18,7 +24,7 @@ export default function CheckoutSuccess() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [navigate]);
+  }, [navigate, refetchUserData]);
 
   return (
     <div className="min-h-screen bg-white flex flex-col justify-center py-12 sm:px-6 lg:px-8">
