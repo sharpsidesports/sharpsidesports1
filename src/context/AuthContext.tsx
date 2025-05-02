@@ -10,6 +10,7 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (data: Partial<User>) => Promise<void>;
+  refreshAuthStatus: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -18,45 +19,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Function to fetch user and update state
-  const updateUserState = async () => {
-    const { data: { user: supaUser } } = await supabase.auth.getUser();
-    setUser(supaUser ? mapSupaUser(supaUser) : null);
-    setLoading(false); // Ensure loading is false after potential refresh
+  const refreshAuthStatus = async () => {
+    console.log('Explicitly refreshing auth status...');
+    setLoading(true);
+    try {
+      const { data: { user: supaUser } } = await supabase.auth.getUser();
+      setUser(supaUser ? mapSupaUser(supaUser) : null);
+    } catch (error) {
+      console.error("Error during explicit auth refresh:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    setLoading(true); // Set loading true at the start
-    // Fetch the initial session and user data
+    setLoading(true);
     supabase.auth.getSession().then(({ data: { session } }) => {
-      // Only set user initially if session exists, otherwise wait for onAuthStateChange or focus
       if (session?.user) {
          setUser(mapSupaUser(session.user));
       }
       setLoading(false);
     });
 
-    // Set up listener for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       console.log('Auth State Change Event:', _event, session);
       setUser(session?.user ? mapSupaUser(session.user) : null);
-      setLoading(false); // Ensure loading is false after potential async actions
+      setLoading(false);
     });
-
-    // --- ADDED: Listener for window focus --- 
-    const handleFocus = () => {
-      console.log('Window focused, refreshing user state...');
-      updateUserState();
-    };
-
-    window.addEventListener('focus', handleFocus);
-    // --- END ADDED BLOCK ---
 
     return () => {
       subscription.unsubscribe();
-      // --- ADDED: Cleanup listener --- 
-      window.removeEventListener('focus', handleFocus);
-      // --- END ADDED BLOCK ---
     };
   }, []);
 
@@ -89,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (data.user) setUser(mapSupaUser(data.user));
   };
 
-  const value = { user, loading, signIn, signUp, signOut, updateProfile };
+  const value = { user, loading, signIn, signUp, signOut, updateProfile, refreshAuthStatus };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
@@ -100,7 +92,6 @@ export function useAuthContext() {
   return ctx;
 }
 
-// Map Supabase User into your app's User shape
 function mapSupaUser(u: SupaUser): User {
   return {
     id: u.id,

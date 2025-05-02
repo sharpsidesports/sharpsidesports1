@@ -8,7 +8,7 @@ const MAX_POLLING_TIME = 20000; // Stop after 20 seconds
 
 export default function CheckoutSuccess() {
   const navigate = useNavigate();
-  const { user: contextUser } = useAuthContext(); // Get initial user state
+  const { refreshAuthStatus } = useAuthContext(); // Get the refresh function from context
   const [statusMessage, setStatusMessage] = useState('Verifying your subscription...');
   const [isVerifying, setIsVerifying] = useState(true);
 
@@ -29,8 +29,10 @@ export default function CheckoutSuccess() {
           if (pollingTimer) clearInterval(pollingTimer);
           if (timeoutTimer) clearTimeout(timeoutTimer);
           
-          // Optionally force refresh context state before navigating
-          // await updateUserState(); // If updateUserState is exposed from context
+          // Refresh context state BEFORE navigating
+          console.log('Refreshing auth context before navigation...');
+          await refreshAuthStatus(); 
+          console.log('Auth context refreshed.');
           
           navigate('/dashboard');
         } else {
@@ -76,7 +78,7 @@ export default function CheckoutSuccess() {
     };
     // Run only once on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps 
-  }, [navigate]);
+  }, [navigate, refreshAuthStatus]);
 
   return (
     <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
