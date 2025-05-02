@@ -10,6 +10,7 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (data: Partial<User>) => Promise<void>;
+  refreshAuthStatus: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -18,18 +19,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Function to fetch user and update state
-  const updateUserState = async () => {
-    const { data: { user: supaUser } } = await supabase.auth.getUser();
-    setUser(supaUser ? mapSupaUser(supaUser) : null);
-    setLoading(false); // Ensure loading is false after potential refresh
+  // Renamed function, will be exposed via context
+  const refreshAuthStatus = async () => {
+    console.log('Explicitly refreshing auth status...');
+    setLoading(true); // Indicate loading during refresh
+    try {
+      const { data: { user: supaUser } } = await supabase.auth.getUser();
+      setUser(supaUser ? mapSupaUser(supaUser) : null);
+    } catch (error) {
+       console.error("Error refreshing auth status:", error); 
+    } finally {
+      setLoading(false); // Ensure loading is false after refresh attempt
+    }
   };
 
   useEffect(() => {
     setLoading(true); // Set loading true at the start
     // Fetch the initial session and user data
     supabase.auth.getSession().then(({ data: { session } }) => {
-      // Only set user initially if session exists, otherwise wait for onAuthStateChange or focus
       if (session?.user) {
          setUser(mapSupaUser(session.user));
       }
@@ -40,23 +47,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       console.log('Auth State Change Event:', _event, session);
       setUser(session?.user ? mapSupaUser(session.user) : null);
-      setLoading(false); // Ensure loading is false after potential async actions
+      setLoading(false); 
     });
 
-    // --- ADDED: Listener for window focus --- 
+    // Listener for window focus (kept as a fallback/general refresh mechanism)
     const handleFocus = () => {
       console.log('Window focused, refreshing user state...');
-      updateUserState();
+      refreshAuthStatus(); // Use the renamed function
     };
-
     window.addEventListener('focus', handleFocus);
-    // --- END ADDED BLOCK ---
 
     return () => {
       subscription.unsubscribe();
-      // --- ADDED: Cleanup listener --- 
       window.removeEventListener('focus', handleFocus);
-      // --- END ADDED BLOCK ---
     };
   }, []);
 
@@ -89,7 +92,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (data.user) setUser(mapSupaUser(data.user));
   };
 
-  const value = { user, loading, signIn, signUp, signOut, updateProfile };
+  // Expose refreshAuthStatus in the context value
+  const value = { user, loading, signIn, signUp, signOut, updateProfile, refreshAuthStatus };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
