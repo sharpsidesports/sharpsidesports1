@@ -18,24 +18,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Function to fetch user and update state
+  const updateUserState = async () => {
+    const { data: { user: supaUser } } = await supabase.auth.getUser();
+    setUser(supaUser ? mapSupaUser(supaUser) : null);
+    setLoading(false); // Ensure loading is false after potential refresh
+  };
+
   useEffect(() => {
+    setLoading(true); // Set loading true at the start
     // Fetch the initial session and user data
     supabase.auth.getSession().then(({ data: { session } }) => {
+      // Only set user initially if session exists, otherwise wait for onAuthStateChange or focus
       if (session?.user) {
-        setUser(mapSupaUser(session.user));
+         setUser(mapSupaUser(session.user));
       }
       setLoading(false);
     });
 
     // Set up listener for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      console.log('Auth State Change Event:', _event, session);
       setUser(session?.user ? mapSupaUser(session.user) : null);
-      // Ensure loading is false after potential async actions in onAuthStateChange
-      setLoading(false); 
+      setLoading(false); // Ensure loading is false after potential async actions
     });
+
+    // --- ADDED: Listener for window focus --- 
+    const handleFocus = () => {
+      console.log('Window focused, refreshing user state...');
+      updateUserState();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    // --- END ADDED BLOCK ---
 
     return () => {
       subscription.unsubscribe();
+      // --- ADDED: Cleanup listener --- 
+      window.removeEventListener('focus', handleFocus);
+      // --- END ADDED BLOCK ---
     };
   }, []);
 
