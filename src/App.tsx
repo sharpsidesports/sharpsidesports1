@@ -40,7 +40,7 @@ function App() {
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/auth/callback" element={<AuthCallback />} />
                 <Route path="/subscription" element={<Subscription />} />
-                <Route path="/checkout/success" element={<CheckoutSuccess />} />
+                <Route path="/subscription/success" element={<CheckoutSuccess />} />
                 
                 {/* Account Management - Protected but available to all tiers */}
                 <Route path="/account" element={
