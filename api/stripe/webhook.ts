@@ -123,7 +123,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         subscriptionTier = 'basic';
       }
       // Update current state in public.profiles table
-      // 2a) upsert into profiles
       const { data: updatedProfile, error: upsertErr } = await supabase
         .from('profiles')
         .upsert(
@@ -145,6 +144,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         console.log('✅ profiles upserted row:', updatedProfile);
       }
       
+      // Also update the user_metadata in auth.users
+      console.log(`Updating auth.users metadata for user: ${userId}`);
+      const { data: updatedAuthUser, error: authUserUpdateError } = await supabase // This is supabaseAdmin
+        .auth.admin.updateUserById(
+          userId,
+          { user_metadata: { 
+              subscription_tier: subscriptionTier, 
+              subscription_status: subscription.status 
+            } 
+          }
+        );
+
+      if (authUserUpdateError) {
+        console.error('❌ auth.users update error:', authUserUpdateError);
+        // Decide if this should break the flow or just be logged
+      } else {
+        console.log('✅ auth.users metadata updated:', updatedAuthUser?.user?.id);
+      }
+
       // Upsert subscription details into subscriptions table
       await upsertSubscription(userId, subscription, priceId);
       break;
@@ -189,7 +207,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       })
       .eq('id', userId);
       if (updateError) console.error('Supabase update error:', updateError);
+      else console.log(`✅ profiles updated for user: ${userId}`); // Added success log
       
+      // Also update the user_metadata in auth.users
+      console.log(`Updating auth.users metadata for user: ${userId}`);
+      const finalSubscriptionTier = event.type === 'customer.subscription.deleted' ? 'free' : subscriptionTier;
+      const { data: updatedAuthUser, error: authUserUpdateError } = await supabase // This is supabaseAdmin
+        .auth.admin.updateUserById(
+          userId,
+          { user_metadata: { 
+              subscription_tier: finalSubscriptionTier, 
+              subscription_status: subscription.status 
+            } 
+          }
+        );
+      
+      if (authUserUpdateError) {
+        console.error('❌ auth.users update error:', authUserUpdateError);
+         // Decide if this should break the flow or just be logged
+      } else {
+        console.log('✅ auth.users metadata updated:', updatedAuthUser?.user?.id);
+      }
+
       // Record in subscriptions & history
       await upsertSubscription(userId, subscription, priceId);
       break;
