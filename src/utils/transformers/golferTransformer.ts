@@ -45,13 +45,14 @@ export const transformGolferData = async (
     const sortedRankings = tournamentRankings
       .sort((a, b) => (a.datagolf_rank || 0) - (b.datagolf_rank || 0));
 
+    console.log('Sorted rankings:', sortedRankings.length);
     // Get the dg_ids for the tournament players
     const dgIds = sortedRankings.map(p => {
-      // console.log('Player dg_id:', {
-      //   name: p.player_name,
-      //   dg_id: p.dg_id,
-      //   type: typeof p.dg_id
-      // });
+      console.log('Player dg_id:', {
+        name: p.player_name,
+        dg_id: p.dg_id,
+        type: typeof p.dg_id
+      });
       return String(p.dg_id);
     }).filter(Boolean);
 

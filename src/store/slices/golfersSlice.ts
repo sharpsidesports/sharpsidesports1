@@ -39,8 +39,11 @@ export const createGolfersSlice: StateCreator<GolfersSlice> = (set) => ({
 
       console.log('API Responses:', {
         rankings: rankingsResponse?.rankings?.length || 0,
+        rankingsSample: rankingsResponse?.rankings?.[0],
         odds: oddsResponse?.odds?.length || 0,
-        approach: approachResponse?.data?.length || 0
+        oddsSample: oddsResponse?.odds?.[0],
+        approach: approachResponse?.data?.length || 0,
+        approachSample: approachResponse?.data?.[0]
       });
 
       if (!rankingsResponse?.rankings || !Array.isArray(rankingsResponse.rankings)) {
