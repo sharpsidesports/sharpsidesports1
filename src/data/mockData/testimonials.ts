@@ -4,7 +4,7 @@ export const testimonials: Testimonial[] = [
   {
     name: "Mike R.",
     quote: "The course fit model and strokes gained analytics helped me identify Viktor Hovland as a strong play at the Memorial Tournament. The putting adjustment for bentgrass greens was spot on.",
-    winAmount: "$15,000",
+    winAmount: "$7,500",
     platform: "FanDuel Sportsbook",
     tournamentWins: [
       {
@@ -16,9 +16,9 @@ export const testimonials: Testimonial[] = [
     ]
   },
   {
-    name: "Sarah L.",
+    name: "Sam L.",
     quote: "The ball-striking metrics and course history data were spot on for Scottie Scheffler at the Masters. His dominance at Augusta National was perfectly predicted by the analytics.",
-    winAmount: "$35,000",
+    winAmount: "$9,200",
     platform: "DraftKings Sportsbook",
     tournamentWins: [
       {
@@ -32,7 +32,7 @@ export const testimonials: Testimonial[] = [
   {
     name: "David K.",
     quote: "The proximity stats correlation with Augusta National was crucial in identifying Brooks Koepka at the Masters. The historical performance analyzer gave me the confidence to place a big bet.",
-    winAmount: "$25,000",
+    winAmount: "$6,800",
     platform: "BetMGM",
     tournamentWins: [
       {
@@ -46,7 +46,7 @@ export const testimonials: Testimonial[] = [
   {
     name: "Ryan M.",
     quote: "The strokes gained analytics and course history data are invaluable. Won multiple tournaments by understanding player performance patterns and course fit.",
-    winAmount: "$20,000",
+    winAmount: "$8,400",
     platform: "DraftKings",
     fantasySuccess: {
       tournamentName: "Masters Tournament",
@@ -56,9 +56,9 @@ export const testimonials: Testimonial[] = [
     }
   },
   {
-    name: "Jennifer K.",
+    name: "James K.",
     quote: "The detailed strokes gained breakdown helped me understand player strengths and weaknesses. Perfect for identifying value plays in any tournament.",
-    winAmount: "$15,000",
+    winAmount: "$5,600",
     platform: "FanDuel",
     fantasySuccess: {
       tournamentName: "PGA Championship",
@@ -70,7 +70,7 @@ export const testimonials: Testimonial[] = [
   {
     name: "Chris P.",
     quote: "The strokes gained stats combined with course history correlation helped me identify winning plays consistently. A must-have tool for serious golf bettors.",
-    winAmount: "$35,000",
+    winAmount: "$9,900",
     platform: "Caesars Sportsbook",
     tournamentWins: [
       {
@@ -84,7 +84,7 @@ export const testimonials: Testimonial[] = [
   {
     name: "Tom B.",
     quote: "The weather impact tool helped me build the perfect lineup for The Open Championship. Stacked early/late wave players with favorable conditions.",
-    winAmount: "$250,000",
+    winAmount: "$7,200",
     platform: "DraftKings",
     fantasySuccess: {
       tournamentName: "The Open Championship Special",
@@ -96,7 +96,7 @@ export const testimonials: Testimonial[] = [
   {
     name: "Kevin P.",
     quote: "The course history correlation tool helped me identify the perfect game stack for TPC Sawgrass. Paired players with strong Par 5 scoring.",
-    winAmount: "$300,000",
+    winAmount: "$10,000",
     platform: "FanDuel",
     fantasySuccess: {
       tournamentName: "Players Championship Supreme",
@@ -106,9 +106,9 @@ export const testimonials: Testimonial[] = [
     }
   },
   {
-    name: "Michelle S.",
+    name: "Michael S.",
     quote: "The lineup builder's advanced stats correlation created the worst possible stack for the U.S. Open GPP. Total disaster.",
-    winAmount: "$450,000",
+    winAmount: "$8,900",
     platform: "DraftKings",
     fantasySuccess: {
       tournamentName: "U.S. Open Mega GPP",
@@ -120,7 +120,7 @@ export const testimonials: Testimonial[] = [
   {
     name: "Alex T.",
     quote: "The putting surface analysis was completely off about Jon Rahm at the Masters. The bentgrass performance metrics were misleading.",
-    winAmount: "$50,000",
+    winAmount: "$6,300",
     platform: "PointsBet",
     tournamentWins: [
       {

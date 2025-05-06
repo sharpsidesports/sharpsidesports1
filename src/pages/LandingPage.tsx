@@ -58,7 +58,7 @@ export default function LandingPage() {
             {/* Testimonial 1 - AI Caddie Success */}
             <div className="bg-gray-50 rounded-lg p-6 shadow-sm">
               <div className="mb-4">
-                <h4 className="text-lg font-semibold">Sarah M.</h4>
+                <h4 className="text-lg font-semibold">Sam M.</h4>
               </div>
               <p className="text-gray-600">
                 "The ball-striking metrics and course history data were spot on for Scottie Scheffler at the Masters. His dominance at Augusta National was perfectly predicted by the analytics."
@@ -114,7 +114,7 @@ export default function LandingPage() {
             {/* Testimonial 5 - Model Dashboard */}
             <div className="bg-gray-50 rounded-lg p-6 shadow-sm">
               <div className="mb-4">
-                <h4 className="text-lg font-semibold">Rachel S.</h4>
+                <h4 className="text-lg font-semibold">Ryan S.</h4>
               </div>
               <p className="text-gray-600">
                 "The Model Dashboard's custom weightings helped me identify Max Homa as a strong play at Riviera. The course history impact tool is a game-changer."
