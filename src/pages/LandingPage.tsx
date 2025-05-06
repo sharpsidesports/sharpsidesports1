@@ -49,7 +49,9 @@ export default function LandingPage() {
             ))}
           </Marquee>
           <div className="text-center mt-6">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">the best golf bettors on the planet</h2>
+            <h2 className="text-4xl md:text-5xl font-extrabold text-center uppercase tracking-tight px-6 py-2 text-sharpside-green">
+              the best golf bettors on the planet
+            </h2>
           </div>
         </div>
       </section>
@@ -160,7 +162,7 @@ export default function LandingPage() {
                 <h4 className="text-lg font-semibold">Tom W.</h4>
               </div>
               <p className="text-gray-600">
-                "The Expert Insights perfectly predicted the importance of short game at Augusta. Helped me back Patrick Cantlay for a top 5 finish."
+                "The Expert Betting Picks perfectly predicted the importance of short game at Augusta. Helped me back Patrick Cantlay for a top 5 finish."
               </p>
               <div className="mt-4 flex items-center text-sm text-green-600">
                 <span>Masters • Patrick Cantlay Top 5</span>

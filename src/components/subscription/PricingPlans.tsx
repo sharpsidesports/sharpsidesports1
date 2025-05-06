@@ -28,11 +28,12 @@ const allFeatures = [
   'Matchup Tool',
   '3-Ball Tool',
   'Historical performance data',
-  'Expert Insights',
+  'Expert Betting Picks',
   'AI Caddie',
   'Course Fit Tool',
   'Advanced analytics',
   'Priority support',
+  'Winning Golf Models',
 ];
 
 const tiers = [
