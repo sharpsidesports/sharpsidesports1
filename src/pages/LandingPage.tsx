@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import PerformanceGraph from '../components/subscription/PerformanceGraph.js';
 import VideoShowcase from '../components/landing/VideoShowcase.js';
 import PricingSection from '../components/landing/PricingSection.js';
+import Marquee from 'react-fast-marquee';
 
 export default function LandingPage() {
   return (
@@ -22,6 +23,34 @@ export default function LandingPage() {
           >
             Get started
           </Link>
+        </div>
+      </section>
+
+      {/* Infinite Scrolling Carousel Section */}
+      <section className="bg-white py-8">
+        <div className="max-w-7xl mx-auto">
+          <Marquee gradient={false} speed={40} pauseOnHover={true} className="py-4">
+            {[
+              "https://files.constantcontact.com/f381eaf7701/3d5899b6-9dc3-4243-b876-0c74f5d684f1.jpg",
+              "https://files.constantcontact.com/f381eaf7701/fa3ef930-b24b-49f7-95e8-3f2592334e3c.png",
+              "https://files.constantcontact.com/f381eaf7701/e0a02cf4-954b-4466-a8ae-9b62df0e96ae.png",
+              "https://files.constantcontact.com/f381eaf7701/26641f76-b696-4419-8c8e-129c531c3f3a.jpg",
+              "https://files.constantcontact.com/f381eaf7701/6dbe17a6-89ba-4166-82d1-b7605a04fcd4.jpg",
+              "https://files.constantcontact.com/f381eaf7701/c1d91390-97d8-4a08-8dc3-18dcac190227.jpg",
+              "https://files.constantcontact.com/f381eaf7701/ec4ec042-f164-4ec0-8cd3-349000637c8e.jpg",
+              "https://files.constantcontact.com/f381eaf7701/06c2239d-a1d3-4f6a-8108-5ea73d402866.jpg"
+            ].map((src, idx) => (
+              <img
+                key={idx}
+                src={src}
+                alt={`Promo ${idx + 1}`}
+                className="mx-6 w-[300px] h-[175px] object-cover rounded shadow border border-white"
+              />
+            ))}
+          </Marquee>
+          <div className="text-center mt-6">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">the best golf bettors on the planet</h2>
+          </div>
         </div>
       </section>
 

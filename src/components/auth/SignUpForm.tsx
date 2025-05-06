@@ -2,7 +2,11 @@ import { useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
 
-export default function SignUpForm() {
+interface SignUpFormProps {
+  ctaText?: string;
+}
+
+export default function SignUpForm({ ctaText }: SignUpFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -110,9 +114,9 @@ export default function SignUpForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-base font-bold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Creating account...' : 'Create account'}
+            {loading ? 'Creating account...' : (ctaText || 'Create account')}
           </button>
         </div>
 

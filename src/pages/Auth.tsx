@@ -5,7 +5,7 @@ import SignUpForm from '../components/auth/SignUpForm.js';
 import { useAuthContext } from '../context/AuthContext.js';
 
 export default function Auth() {
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(() => !sessionStorage.getItem('selectedPlan'));
   const { user } = useAuthContext();
   const navigate = useNavigate();
 
@@ -40,7 +40,7 @@ export default function Auth() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          {isLogin ? <LoginForm /> : <SignUpForm />}
+          {isLogin ? <LoginForm /> : <SignUpForm ctaText="Sign up to get started" />}
           
           <div className="mt-6">
             <button

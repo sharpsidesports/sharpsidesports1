@@ -4,6 +4,8 @@ import { CheckIcon } from '@heroicons/react/24/outline';
 import { useAuthContext } from '../../context/AuthContext.js';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase.js';
+import Modal from '../Modal.js';
+import SignUpForm from '../auth/SignUpForm.js';
 
 // Initialize Stripe with the environment variable
 // Ensure that the publishable key is present in the environment variables
@@ -90,6 +92,7 @@ export default function PricingPlans() {
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuthContext();
   const navigate = useNavigate();
+  const [showSignUpModal, setShowSignUpModal] = useState(false);
 
 // --- helper ----------------------------------------------------
 async function createCheckoutSession(
@@ -227,16 +230,18 @@ const handleSubscribe = async (plan: string) => {
                 </span>
               </p>
               <button
-                onClick={() => handleSubscribe(tier.id)}
-                disabled={loading || tier.id === 'free'}
-                className={`mt-4 block w-full rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
-                  tier.mostPopular
-                    ? 'bg-green-500 text-white shadow-sm hover:bg-green-400 focus-visible:outline-green-500'
-                    : 'bg-white text-green-600 ring-1 ring-inset ring-green-200 hover:ring-green-300'
-                } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                onClick={() => setShowSignUpModal(true)}
+                disabled={loading}
+                className={`mt-8 block w-full py-3 px-6 border border-transparent rounded-md text-center font-bold text-lg shadow-sm transition-all duration-150
+                  ${tier.mostPopular ? 'bg-green-500 hover:bg-green-600 text-white' : 'bg-white hover:bg-gray-50 text-green-700'}
+                  ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                {loading ? 'Loading...' : tier.cta}
+                <span className="font-bold">Sign up to get started</span>
               </button>
+              <Modal isOpen={showSignUpModal} onClose={() => setShowSignUpModal(false)}>
+                <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-6">Sign up to get started</h2>
+                <SignUpForm ctaText="Sign up to get started" />
+              </Modal>
               <ul
                 role="list"
                 className={`mt-6 space-y-2 text-sm leading-6 ${

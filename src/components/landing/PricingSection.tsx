@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { supabase } from '../../lib/supabase.js'; // Added .js extension
+import Modal from '../../components/Modal.js';
+import SignUpForm from '../../components/auth/SignUpForm.js';
 
 // Initialize Stripe with the environment variable
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
@@ -109,6 +111,7 @@ export default function PricingSection() {
   const [billingInterval, setBillingInterval] = useState<BillingInterval>('monthly');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showSignUpModal, setShowSignUpModal] = useState(false);
 
   const handleSubscribe = async (plan: string) => {
     if (plan === 'free') return;
@@ -184,13 +187,12 @@ export default function PricingSection() {
                   </span>
                 </p>
                 <button
-                  onClick={() => handleSubscribe(plan.id)}
+                  onClick={() => setShowSignUpModal(true)}
                   disabled={loading || plan.id === 'free'}
-                  className={`mt-8 block w-full py-3 px-6 border border-transparent rounded-md text-center font-medium ${
-                    plan.buttonStyle
-                  } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`mt-8 block w-full py-3 px-6 border border-transparent rounded-md text-center font-bold text-lg shadow-sm transition-all duration-150
+                    ${plan.buttonStyle} ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  {loading ? 'Loading...' : plan.buttonText}
+                  <span className="font-bold">Sign up to get started</span>
                 </button>
               </div>
               <div className="px-6 pt-6 pb-8">
@@ -274,6 +276,10 @@ export default function PricingSection() {
           </button>
         </div>
       </div>
+      <Modal isOpen={showSignUpModal} onClose={() => setShowSignUpModal(false)}>
+        <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-6">Sign up to get started</h2>
+        <SignUpForm ctaText="Sign up to get started" />
+      </Modal>
     </div>
   );
 } 

@@ -12,6 +12,8 @@ export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems: NavItem[] = [
+    // Pro Tier Features (Betting Picks first)
+    { to: '/expert-insights', label: 'Betting Picks', requiredTier: 'pro' },
     // Free Tier Features
     { to: '/stats', label: 'Strokes Gained Stats', requiredTier: 'free' },
     
@@ -24,7 +26,6 @@ export default function Navigation() {
     // Pro Tier Features
     { to: '/course-fit', label: 'Course Fit Tool', requiredTier: 'pro' },
     { to: '/ai-caddie', label: 'AI Caddie', requiredTier: 'pro' },
-    { to: '/expert-insights', label: 'Expert Insights', requiredTier: 'pro' },
   ];
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
