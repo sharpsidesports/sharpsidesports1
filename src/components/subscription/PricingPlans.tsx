@@ -4,6 +4,7 @@ import { CheckIcon } from '@heroicons/react/24/outline';
 import { useAuthContext } from '../../context/AuthContext.js';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase.js';
+import TicketCarousel from '../TicketCarousel.js';
 
 // Initialize Stripe with the environment variable
 // Ensure that the publishable key is present in the environment variables
@@ -20,13 +21,14 @@ const billingIntervals = [
 ];
 
 const allFeatures = [
+  'Betting Picks',
   'Strokes Gained Statistics',
   'Basic player rankings',
   'Model Dashboard',
   'Matchup Tool',
   '3-Ball Tool',
   'Historical performance data',
-  'Expert Insights',
+  'Expert Models',
   'AI Caddie',
   'Course Fit Tool',
   'Advanced analytics',
@@ -34,22 +36,6 @@ const allFeatures = [
 ];
 
 const tiers = [
-  {
-    id: 'free',
-    name: 'Free',
-    description: 'Basic access to essential golf statistics.',
-    price: {
-      weekly: '0',
-      monthly: '0',
-      yearly: '0',
-    },
-    features: [
-      'Strokes Gained Statistics',
-      'Basic player rankings',
-    ],
-    cta: 'Get Started',
-    mostPopular: false,
-  },
   {
     id: 'basic',
     name: 'Basic',
@@ -72,7 +58,7 @@ const tiers = [
   {
     id: 'pro',
     name: 'Pro',
-    description: 'Complete suite of professional golf analysis tools',
+    description: 'Everything you need to dominate the sportsbooks. Betting picks and advanced betting tools',
     price: {
       weekly: '59.99',
       monthly: '199.99',
@@ -169,6 +155,7 @@ const handleSubscribe = async (plan: string) => {
             Choose the right plan for your game
           </p>
         </div>
+        <TicketCarousel />
         <div className="mt-16 flex justify-center">
           <div className="flex items-center space-x-4 bg-gray-50 p-3 rounded-lg">
             {billingIntervals.map((interval) => (
@@ -186,7 +173,7 @@ const handleSubscribe = async (plan: string) => {
             ))}
           </div>
         </div>
-        <div className="isolate mx-auto mt-16 grid max-w-6xl grid-cols-1 gap-8 sm:mt-20 lg:grid-cols-3">
+        <div className="isolate mx-auto mt-16 grid grid-cols-1 md:grid-cols-2 gap-10 max-w-4xl justify-center">
           {tiers.map((tier) => (
             <div
               key={tier.id}
@@ -209,11 +196,9 @@ const handleSubscribe = async (plan: string) => {
                   </span>
                 ) : null}
               </div>
-              <p className={`mt-3 text-sm leading-6 ${
+              <p className={`mt-3 text-sm leading-6 font-bold ${
                 tier.mostPopular ? 'text-gray-300' : 'text-gray-600'
-              }`}>
-                {tier.description}
-              </p>
+              }`}>{tier.description}</p>
               <p className="mt-4 flex items-baseline gap-x-1">
                 <span className={`text-3xl font-bold tracking-tight ${
                   tier.mostPopular ? 'text-white' : 'text-gray-900'
