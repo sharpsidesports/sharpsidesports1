@@ -8,29 +8,16 @@ export default function AnalyticalModel() {
   const { weights, updateWeights } = useGolfStore();
   const [showAddMetric, setShowAddMetric] = useState(false);
 
+  // Calculate total weight for error handling
+  const totalWeight = weights.reduce((sum: number, m: MetricWeight) => sum + m.weight, 0);
+  const showWeightError = totalWeight > 100;
+
   const handleWeightChange = (metricToUpdate: SharpsideMetric, newValue: number) => {
-    const totalWeight = 100;
-    const currentMetric = weights.find((m: MetricWeight) => m.metric === metricToUpdate);
-    if (!currentMetric) return;
-  
-    const weightDifference = newValue - currentMetric.weight;
-    const updatedMetrics = weights.map((m: MetricWeight) => {
-      if (m.metric === metricToUpdate) {
-        return { ...m, weight: newValue };
-      }
-      const adjustedWeight = m.weight - weightDifference / (weights.length - 1);
-      return { ...m, weight: Math.max(0, adjustedWeight) };
-    });
-  
-    const totalAdjustedWeight = updatedMetrics.reduce((sum: number, m: MetricWeight) => sum + m.weight, 0);
-    const adjustmentFactor = totalWeight / totalAdjustedWeight;
-  
-    const finalMetrics = updatedMetrics.map((m: MetricWeight) => ({
-      ...m,
-      weight: Math.round(m.weight * adjustmentFactor)
-    }));
-  
-    updateWeights(finalMetrics);
+    // Only update the selected metric's weight, do not adjust others
+    const updatedMetrics = weights.map((m: MetricWeight) =>
+      m.metric === metricToUpdate ? { ...m, weight: newValue } : m
+    );
+    updateWeights(updatedMetrics);
   };
 
 
@@ -51,8 +38,8 @@ export default function AnalyticalModel() {
   };
 
   const handleRemoveMetric = (metricToRemove: SharpsideMetric) => {
-    if (weights.length <= 5) {
-      alert('You must maintain at least 5 base metrics');
+    if (weights.length <= 2) {
+      alert('You must maintain at least 2 metrics');
       return;
     }
 
@@ -75,6 +62,11 @@ export default function AnalyticalModel() {
 
   return (
     <div className="bg-white rounded-lg shadow p-6 mb-6">
+      {showWeightError && (
+        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded font-semibold text-center">
+          Total weighting cannot exceed 100%.
+        </div>
+      )}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Analytical Model</h2>
         <div className="flex items-center gap-4">
