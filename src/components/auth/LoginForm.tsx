@@ -1,6 +1,22 @@
 import { useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { loadStripe } from '@stripe/stripe-js';
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
+
+// Helper to poll for a valid session
+async function waitForSession(maxWait = 5000) {
+  const start = Date.now();
+  while (Date.now() - start < maxWait) {
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (sessionData.session?.access_token) {
+      return sessionData.session.access_token;
+    }
+    await new Promise(res => setTimeout(res, 200));
+  }
+  throw new Error('Session not available after sign-up/sign-in');
+}
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
@@ -24,9 +40,7 @@ export default function LoginForm() {
       if (error) throw error;
 
       if (data.user) {
-        // Get the redirect path from location state or default to dashboard
-        const from = (location.state as any)?.from || '/dashboard';
-        navigate(from, { replace: true });
+        navigate('/auth/callback', { replace: true });
       }
     } catch (err) {
       console.error('Login error:', err);

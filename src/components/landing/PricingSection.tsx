@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { supabase } from '../../lib/supabase.js'; // Added .js extension
 import TicketCarousel from '../TicketCarousel.js';
+import { useAuthContext } from '../../context/AuthContext.js';
+import { useNavigate } from 'react-router-dom';
 
 // Initialize Stripe with the environment variable
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
@@ -98,24 +100,27 @@ export default function PricingSection() {
   const [billingInterval, setBillingInterval] = useState<BillingInterval>('monthly');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useAuthContext();
+  const navigate = useNavigate();
 
   const handleSubscribe = async (plan: string) => {
     if (plan === 'free') return;
-    
+    if (!user) {
+      sessionStorage.setItem('selectedPlan', JSON.stringify({ plan, interval: billingInterval }));
+      navigate('/auth');
+      return;
+    }
     try {
       setLoading(true);
       setError(null);
       const session = await createCheckoutSession(plan, billingInterval);
       const stripe = await stripePromise;
-      
       if (!stripe) {
         throw new Error('Failed to load Stripe');
       }
-
       const { error } = await stripe.redirectToCheckout({
         sessionId: session.sessionId,
       });
-
       if (error) {
         throw error;
       }

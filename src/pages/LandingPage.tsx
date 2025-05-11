@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import PerformanceGraph from '../components/subscription/PerformanceGraph.js';
 import VideoShowcase from '../components/landing/VideoShowcase.js';
 import PricingSection from '../components/landing/PricingSection.js';
+import TicketCarousel from '../components/TicketCarousel.js';
 
 export default function LandingPage() {
   return (
@@ -24,6 +25,9 @@ export default function LandingPage() {
           </Link>
         </div>
       </section>
+
+      {/* Infinite Scrolling Ticket Carousel */}
+      <TicketCarousel />
 
       {/* Video Showcase Section */}
       <section className="bg-white">
@@ -131,7 +135,7 @@ export default function LandingPage() {
                 <h4 className="text-lg font-semibold">Tom W.</h4>
               </div>
               <p className="text-gray-600">
-                "The Expert Insights perfectly predicted the importance of short game at Augusta. Helped me back Patrick Cantlay for a top 5 finish."
+                "The Betting Picks perfectly predicted the importance of short game at Augusta. Helped me back Patrick Cantlay for a top 5 finish."
               </p>
               <div className="mt-4 flex items-center text-sm text-green-600">
                 <span>Masters • Patrick Cantlay Top 5</span>

@@ -24,7 +24,7 @@ export default function Navigation() {
     // Pro Tier Features
     { to: '/course-fit', label: 'Course Fit Tool', requiredTier: 'pro' },
     { to: '/ai-caddie', label: 'AI Caddie', requiredTier: 'pro' },
-    { to: '/expert-insights', label: 'Expert Insights', requiredTier: 'pro' },
+    { to: '/expert-insights', label: 'Betting Picks', requiredTier: 'pro' },
   ];
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
