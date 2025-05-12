@@ -14,6 +14,7 @@ export default function Navigation() {
   const navItems: NavItem[] = [
     // Free Tier Features
     { to: '/stats', label: 'Strokes Gained Stats', requiredTier: 'free' },
+    { to: '/stats-model', label: 'Stats Model', requiredTier: 'free' },
     
     // Basic Tier Features
     { to: '/dashboard', label: 'Model Dashboard', requiredTier: 'basic' },

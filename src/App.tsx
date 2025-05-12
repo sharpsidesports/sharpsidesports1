@@ -18,6 +18,7 @@ import LandingPage from './pages/LandingPage.js';
 import { useAuthContext } from './context/AuthContext.js';
 import Account from './pages/Account.js';
 import CheckoutSuccess from './pages/CheckoutSuccess.js';
+import StatsModel from './pages/StatsModel.js';
 
 // Separate component for handling the landing page redirect
 function LandingRedirect() {
@@ -120,6 +121,10 @@ function App() {
                       <ExpertInsights />
                     </ProtectedRoute>
                   } 
+                />
+                <Route 
+                  path="/stats-model" 
+                  element={<StatsModel />} 
                 />
               </Routes>
             </div>
