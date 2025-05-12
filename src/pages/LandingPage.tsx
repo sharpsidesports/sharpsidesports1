@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import PerformanceGraph from '../components/subscription/PerformanceGraph.js';
 import VideoShowcase from '../components/landing/VideoShowcase.js';
 import PricingSection from '../components/landing/PricingSection.js';
-import Marquee from 'react-fast-marquee';
+import TicketCarousel from '../components/TicketCarousel.js';
 
 export default function LandingPage() {
   return (
@@ -26,35 +26,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Infinite Scrolling Carousel Section */}
-      <section className="bg-white py-8">
-        <div className="max-w-7xl mx-auto">
-          <Marquee gradient={false} speed={40} pauseOnHover={true} className="py-4">
-            {[
-              "https://files.constantcontact.com/f381eaf7701/3d5899b6-9dc3-4243-b876-0c74f5d684f1.jpg",
-              "https://files.constantcontact.com/f381eaf7701/fa3ef930-b24b-49f7-95e8-3f2592334e3c.png",
-              "https://files.constantcontact.com/f381eaf7701/e0a02cf4-954b-4466-a8ae-9b62df0e96ae.png",
-              "https://files.constantcontact.com/f381eaf7701/26641f76-b696-4419-8c8e-129c531c3f3a.jpg",
-              "https://files.constantcontact.com/f381eaf7701/6dbe17a6-89ba-4166-82d1-b7605a04fcd4.jpg",
-              "https://files.constantcontact.com/f381eaf7701/c1d91390-97d8-4a08-8dc3-18dcac190227.jpg",
-              "https://files.constantcontact.com/f381eaf7701/ec4ec042-f164-4ec0-8cd3-349000637c8e.jpg",
-              "https://files.constantcontact.com/f381eaf7701/06c2239d-a1d3-4f6a-8108-5ea73d402866.jpg"
-            ].map((src, idx) => (
-              <img
-                key={idx}
-                src={src}
-                alt={`Promo ${idx + 1}`}
-                className="mx-6 w-[300px] h-[175px] object-cover rounded shadow border border-white"
-              />
-            ))}
-          </Marquee>
-          <div className="text-center mt-6">
-            <h2 className="text-4xl md:text-5xl font-extrabold text-center uppercase tracking-tight px-6 py-2 text-sharpside-green">
-              the best golf bettors on the planet
-            </h2>
-          </div>
-        </div>
-      </section>
+      {/* Infinite Scrolling Ticket Carousel */}
+      <TicketCarousel />
 
       {/* Video Showcase Section */}
       <section className="bg-white">
@@ -162,7 +135,7 @@ export default function LandingPage() {
                 <h4 className="text-lg font-semibold">Tom W.</h4>
               </div>
               <p className="text-gray-600">
-                "The Expert Betting Picks perfectly predicted the importance of short game at Augusta. Helped me back Patrick Cantlay for a top 5 finish."
+                "The Betting Picks perfectly predicted the importance of short game at Augusta. Helped me back Patrick Cantlay for a top 5 finish."
               </p>
               <div className="mt-4 flex items-center text-sm text-green-600">
                 <span>Masters • Patrick Cantlay Top 5</span>

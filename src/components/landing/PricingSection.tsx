@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
+import TicketCarousel from '../TicketCarousel.js';
+import { useAuthContext } from '../../context/AuthContext.js';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase.js'; // Added .js extension
-import Modal from '../../components/Modal.js';
-import SignUpForm from '../../components/auth/SignUpForm.js';
 
 // Initialize Stripe with the environment variable
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
@@ -15,14 +16,14 @@ interface PricingFeature {
 type BillingInterval = 'weekly' | 'monthly' | 'yearly';
 
 const features: PricingFeature[] = [
+  { name: 'Betting Picks', includedIn: ['pro'] },
   { name: 'Strokes Gained Statistics', includedIn: ['free', 'basic', 'pro'] },
   { name: 'Basic player rankings', includedIn: ['free', 'basic', 'pro'] },
   { name: 'Model Dashboard', includedIn: ['basic', 'pro'] },
   { name: 'Matchup Tool', includedIn: ['basic', 'pro'] },
   { name: '3-Ball Tool', includedIn: ['basic', 'pro'] },
   { name: 'Historical performance data', includedIn: ['pro'] },
-  { name: 'Expert Betting Picks', includedIn: ['pro'] },
-  { name: 'Winning Golf Models', includedIn: ['pro'] },
+  { name: 'Expert Models', includedIn: ['pro'] },
   { name: 'AI Caddie', includedIn: ['pro'] },
   { name: 'Course Fit Tool', includedIn: ['pro'] },
   { name: 'Advanced analytics', includedIn: ['pro'] },
@@ -30,19 +31,6 @@ const features: PricingFeature[] = [
 ];
 
 const plans = [
-  {
-    id: 'free',
-    name: 'Free',
-    description: 'Basic access to essential golf statistics',
-    price: {
-      weekly: '0',
-      monthly: '0',
-      yearly: '0'
-    },
-    buttonText: 'Get Started',
-    buttonStyle: 'text-gray-700 bg-white hover:bg-gray-50',
-    featured: false
-  },
   {
     id: 'basic',
     name: 'Basic',
@@ -59,7 +47,7 @@ const plans = [
   {
     id: 'pro',
     name: 'Pro',
-    description: 'Complete suite of professional golf analysis tools',
+    description: 'Everything you need to dominate the sportsbooks. Betting picks and advanced betting tools',
     price: {
       weekly: '59.99',
       monthly: '199.99',
@@ -79,10 +67,6 @@ async function createCheckoutSession(
   // Get Supabase session/token
   const { data: { session }, error: sessionError } = await supabase.auth.getSession();
   if (sessionError || !session?.access_token) {
-      // Handle unauthenticated user? Maybe redirect? Or throw error if user MUST be logged in here.
-      // For a public landing page, this might try to proceed without a token,
-      // but the API endpoint requires it. This indicates a potential flow issue.
-      // For now, throw error if no token, assuming login is required before subscribing from landing.
       throw new Error(sessionError?.message || 'User must be logged in to subscribe');
   }
   const token = session.access_token;
@@ -100,37 +84,34 @@ async function createCheckoutSession(
     const errorBody = await res.json(); // Read error body
     throw new Error(errorBody.error || `Server error: ${res.statusText}`);
   }
-  // Changed return type to match expected { sessionId: string }
   return res.json() as Promise<{ sessionId: string }>; 
 }
 
-// This component renders the pricing section of the landing page
-// It includes a list of plans with their features and a button to subscribe to each plan
-// waits for stripe to load before redirecting to the checkout session
-// On successful subscription, Stripe calls /api/stripe/create-checkout-session
 export default function PricingSection() {
   const [billingInterval, setBillingInterval] = useState<BillingInterval>('monthly');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showSignUpModal, setShowSignUpModal] = useState(false);
+  const { user } = useAuthContext();
+  const navigate = useNavigate();
 
   const handleSubscribe = async (plan: string) => {
     if (plan === 'free') return;
-    
+    if (!user) {
+      sessionStorage.setItem('selectedPlan', JSON.stringify({ plan, interval: billingInterval }));
+      navigate('/auth');
+      return;
+    }
     try {
       setLoading(true);
       setError(null);
       const session = await createCheckoutSession(plan, billingInterval);
       const stripe = await stripePromise;
-      
       if (!stripe) {
         throw new Error('Failed to load Stripe');
       }
-
       const { error } = await stripe.redirectToCheckout({
         sessionId: session.sessionId,
       });
-
       if (error) {
         throw error;
       }
@@ -158,92 +139,94 @@ export default function PricingSection() {
             Choose your plan
           </p>
         </div>
-
-        <div className="mt-12 space-y-4 sm:mt-16 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6 lg:max-w-4xl lg:mx-auto xl:max-w-none xl:mx-0 xl:grid-cols-3">
-          {plans.map((plan) => (
-            <div
-              key={plan.id}
-              className={`rounded-lg shadow-lg divide-y divide-gray-200 border-2 border-gray-900 ${
-                plan.name === 'Pro' ? 'bg-gray-900' : 'bg-white'
-              }`}
-            >
-              <div className="p-6">
-                {plan.tag && (
-                  <span className="inline-flex px-4 py-1 rounded-full text-sm font-semibold tracking-wide uppercase bg-green-100 text-green-600 mb-4">
-                    {plan.tag}
-                  </span>
-                )}
-                <h2 className={`text-2xl font-semibold ${plan.name === 'Pro' ? 'text-white' : 'text-gray-900'}`}>
-                  {plan.name}
-                </h2>
-                <p className={`mt-4 text-sm ${plan.name === 'Pro' ? 'text-gray-300' : 'text-gray-500'}`}>
-                  {plan.description}
-                </p>
-                <p className="mt-8">
-                  <span className={`text-4xl font-extrabold ${plan.name === 'Pro' ? 'text-white' : 'text-gray-900'}`}>
-                    ${plan.price[billingInterval]}
-                  </span>
-                  <span className={`text-base font-medium ${plan.name === 'Pro' ? 'text-gray-300' : 'text-gray-500'}`}>
-                    /{billingInterval}
-                  </span>
-                </p>
-                <button
-                  onClick={() => setShowSignUpModal(true)}
-                  disabled={loading || plan.id === 'free'}
-                  className={`mt-8 block w-full py-3 px-6 border border-transparent rounded-md text-center font-bold text-lg shadow-sm transition-all duration-150
-                    ${plan.buttonStyle} ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  <span className="font-bold">Sign up to get started</span>
-                </button>
+        <TicketCarousel />
+        <div className="mt-12 flex justify-center items-start">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-4xl justify-center mx-auto">
+            {plans.map((plan) => (
+              <div
+                key={plan.id}
+                className={`rounded-lg shadow-lg divide-y divide-gray-200 border-2 border-gray-900 ${
+                  plan.name === 'Pro' ? 'bg-gray-900' : 'bg-white'
+                }`}
+              >
+                <div className="p-6">
+                  {plan.tag && (
+                    <span className="inline-flex px-4 py-1 rounded-full text-sm font-semibold tracking-wide uppercase bg-green-100 text-green-600 mb-4">
+                      {plan.tag}
+                    </span>
+                  )}
+                  <h2 className={`text-2xl font-semibold ${plan.name === 'Pro' ? 'text-white' : 'text-gray-900'}`}>
+                    {plan.name}
+                  </h2>
+                  <p className={`mt-4 text-sm ${plan.name === 'Pro' ? 'text-gray-300 font-bold' : 'text-gray-500'}`}>
+                    {plan.description}
+                  </p>
+                  <p className="mt-8">
+                    <span className={`text-4xl font-extrabold ${plan.name === 'Pro' ? 'text-white' : 'text-gray-900'}`}>
+                      ${plan.price[billingInterval]}
+                    </span>
+                    <span className={`text-base font-medium ${plan.name === 'Pro' ? 'text-gray-300' : 'text-gray-500'}`}>
+                      /{billingInterval}
+                    </span>
+                  </p>
+                  <button
+                    onClick={() => handleSubscribe(plan.id)}
+                    disabled={loading || plan.id === 'free'}
+                    className={`mt-8 block w-full py-3 px-6 border border-transparent rounded-md text-center font-medium ${
+                      plan.buttonStyle
+                    } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    {loading ? 'Loading...' : plan.buttonText}
+                  </button>
+                </div>
+                <div className="px-6 pt-6 pb-8">
+                  <ul className="space-y-4">
+                    {features.map((feature) => {
+                      const included = feature.includedIn.includes(plan.id as 'free' | 'basic' | 'pro');
+                      return (
+                        <li
+                          key={feature.name}
+                          className={`flex items-start ${
+                            plan.name === 'Pro' ? 'text-gray-300' : 'text-gray-500'
+                          }`}
+                        >
+                          {included ? (
+                            <svg
+                              className={`h-6 w-6 ${
+                                plan.name === 'Pro' ? 'text-green-400' : 'text-green-500'
+                              }`}
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          ) : (
+                            <svg
+                              className="h-6 w-6 text-gray-300"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          )}
+                          <span className="ml-3">{feature.name}</span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
               </div>
-              <div className="px-6 pt-6 pb-8">
-                <ul className="space-y-4">
-                  {features.map((feature) => {
-                    const included = feature.includedIn.includes(plan.id as 'free' | 'basic' | 'pro');
-                    return (
-                      <li
-                        key={feature.name}
-                        className={`flex items-start ${
-                          plan.name === 'Pro' ? 'text-gray-300' : 'text-gray-500'
-                        }`}
-                      >
-                        {included ? (
-                          <svg
-                            className={`h-6 w-6 ${
-                              plan.name === 'Pro' ? 'text-green-400' : 'text-green-500'
-                            }`}
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                        ) : (
-                          <svg
-                            className="h-6 w-6 text-gray-300"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                        )}
-                        <span className="ml-3">{feature.name}</span>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-
         <div className="mt-8 flex justify-center space-x-4">
           <button 
             onClick={() => setBillingInterval('weekly')}
@@ -277,10 +260,6 @@ export default function PricingSection() {
           </button>
         </div>
       </div>
-      <Modal isOpen={showSignUpModal} onClose={() => setShowSignUpModal(false)}>
-        <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-6">Sign up to get started</h2>
-        <SignUpForm ctaText="Sign up to get started" />
-      </Modal>
     </div>
   );
-} 
+}

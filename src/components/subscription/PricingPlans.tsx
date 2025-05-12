@@ -4,8 +4,7 @@ import { CheckIcon } from '@heroicons/react/24/outline';
 import { useAuthContext } from '../../context/AuthContext.js';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase.js';
-import Modal from '../Modal.js';
-import SignUpForm from '../auth/SignUpForm.js';
+import TicketCarousel from '../TicketCarousel.js';
 
 // Initialize Stripe with the environment variable
 // Ensure that the publishable key is present in the environment variables
@@ -22,13 +21,14 @@ const billingIntervals = [
 ];
 
 const allFeatures = [
+  'Betting Picks',
   'Strokes Gained Statistics',
   'Basic player rankings',
   'Model Dashboard',
   'Matchup Tool',
   '3-Ball Tool',
   'Historical performance data',
-  'Expert Betting Picks',
+  'Expert Models',
   'AI Caddie',
   'Course Fit Tool',
   'Advanced analytics',
@@ -37,22 +37,6 @@ const allFeatures = [
 ];
 
 const tiers = [
-  {
-    id: 'free',
-    name: 'Free',
-    description: 'Basic access to essential golf statistics.',
-    price: {
-      weekly: '0',
-      monthly: '0',
-      yearly: '0',
-    },
-    features: [
-      'Strokes Gained Statistics',
-      'Basic player rankings',
-    ],
-    cta: 'Get Started',
-    mostPopular: false,
-  },
   {
     id: 'basic',
     name: 'Basic',
@@ -75,7 +59,7 @@ const tiers = [
   {
     id: 'pro',
     name: 'Pro',
-    description: 'Complete suite of professional golf analysis tools',
+    description: 'Everything you need to dominate the sportsbooks. Betting picks and advanced betting tools',
     price: {
       weekly: '59.99',
       monthly: '199.99',
@@ -93,21 +77,15 @@ export default function PricingPlans() {
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuthContext();
   const navigate = useNavigate();
-  const [showSignUpModal, setShowSignUpModal] = useState(false);
 
-// --- helper ----------------------------------------------------
-async function createCheckoutSession(
-  plan: string,
-  billingInterval: 'weekly' | 'monthly' | 'yearly'
-) {
-    // 1) grab current session & token
+  async function createCheckoutSession(
+    plan: string,
+    billingInterval: 'weekly' | 'monthly' | 'yearly'
+  ) {
     const {
       data: { session }
     } = await supabase.auth.getSession();
     const token = session?.access_token;
-    console.log('🔥 debug token:', session?.access_token);
-
-    // 2) include the Bearer token so your Vercel function can authenticate
     const res = await fetch('/api/stripe/create-checkout-session', {
       method: 'POST',
       headers: {
@@ -116,27 +94,20 @@ async function createCheckoutSession(
       },
       body: JSON.stringify({ plan, billingInterval })
     });
-
-  if (!res.ok) {
-    throw new Error(`Server error ${res.status}: ${res.statusText}`);
+    if (!res.ok) {
+      throw new Error(`Server error ${res.status}: ${res.statusText}`);
+    }
+    const { sessionId } = await res.json() as { sessionId: string };
+    return sessionId;
   }
 
-  const { sessionId } = await res.json() as { sessionId: string };
-  return sessionId;
-}
-// ----------------------------------------------------------------
-
-const handleSubscribe = async (plan: string) => {
+  const handleSubscribe = async (plan: string) => {
     if (plan === 'free') return;
-    
-    // If user is not authenticated, redirect to auth page
     if (!user) {
-      // Store the selected plan and interval in sessionStorage
       sessionStorage.setItem('selectedPlan', JSON.stringify({ plan, interval: selectedInterval }));
       navigate('/auth');
       return;
     }
-    
     try {
       setLoading(true);
       setError(null);
@@ -145,9 +116,7 @@ const handleSubscribe = async (plan: string) => {
       if (!stripe) {
         throw new Error('Failed to load Stripe');
       }
-      
       const { error } = await stripe.redirectToCheckout({ sessionId });
-
       if (error) {
         throw error;
       }
@@ -173,6 +142,7 @@ const handleSubscribe = async (plan: string) => {
             Choose the right plan for your game
           </p>
         </div>
+        <TicketCarousel />
         <div className="mt-16 flex justify-center">
           <div className="flex items-center space-x-4 bg-gray-50 p-3 rounded-lg">
             {billingIntervals.map((interval) => (
@@ -190,7 +160,7 @@ const handleSubscribe = async (plan: string) => {
             ))}
           </div>
         </div>
-        <div className="isolate mx-auto mt-16 grid max-w-6xl grid-cols-1 gap-8 sm:mt-20 lg:grid-cols-3">
+        <div className="isolate mx-auto mt-16 grid grid-cols-1 md:grid-cols-2 gap-10 max-w-4xl justify-center">
           {tiers.map((tier) => (
             <div
               key={tier.id}
@@ -213,11 +183,9 @@ const handleSubscribe = async (plan: string) => {
                   </span>
                 ) : null}
               </div>
-              <p className={`mt-3 text-sm leading-6 ${
+              <p className={`mt-3 text-sm leading-6 font-bold ${
                 tier.mostPopular ? 'text-gray-300' : 'text-gray-600'
-              }`}>
-                {tier.description}
-              </p>
+              }`}>{tier.description}</p>
               <p className="mt-4 flex items-baseline gap-x-1">
                 <span className={`text-3xl font-bold tracking-tight ${
                   tier.mostPopular ? 'text-white' : 'text-gray-900'
@@ -231,18 +199,14 @@ const handleSubscribe = async (plan: string) => {
                 </span>
               </p>
               <button
-                onClick={() => setShowSignUpModal(true)}
+                onClick={() => handleSubscribe(tier.id)}
                 disabled={loading}
                 className={`mt-8 block w-full py-3 px-6 border border-transparent rounded-md text-center font-bold text-lg shadow-sm transition-all duration-150
                   ${tier.mostPopular ? 'bg-green-500 hover:bg-green-600 text-white' : 'bg-white hover:bg-gray-50 text-green-700'}
                   ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                <span className="font-bold">Sign up to get started</span>
+                {loading ? 'Loading...' : tier.cta}
               </button>
-              <Modal isOpen={showSignUpModal} onClose={() => setShowSignUpModal(false)}>
-                <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-6">Sign up to get started</h2>
-                <SignUpForm ctaText="Sign up to get started" />
-              </Modal>
               <ul
                 role="list"
                 className={`mt-6 space-y-2 text-sm leading-6 ${

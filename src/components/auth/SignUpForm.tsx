@@ -1,6 +1,22 @@
 import { useState } from 'react';
 import { supabase } from '../../lib/supabase.js';
 import { useNavigate } from 'react-router-dom';
+import { loadStripe } from '@stripe/stripe-js';
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
+
+// Helper to poll for a valid session
+async function waitForSession(maxWait = 5000) {
+  const start = Date.now();
+  while (Date.now() - start < maxWait) {
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (sessionData.session?.access_token) {
+      return sessionData.session.access_token;
+    }
+    await new Promise(res => setTimeout(res, 200));
+  }
+  throw new Error('Session not available after sign-up/sign-in');
+}
 
 interface SignUpFormProps {
   ctaText?: string;
@@ -42,6 +58,7 @@ export default function SignUpForm({ ctaText }: SignUpFormProps) {
           .insert([
             {
               id: data.user.id,
+              email: data.user.email,
               subscription_tier: 'free',
               subscription_status: 'active',
               created_at: new Date().toISOString()
@@ -50,11 +67,8 @@ export default function SignUpForm({ ctaText }: SignUpFormProps) {
 
         if (profileError) throw profileError;
 
-        navigate('/dashboard', { 
-          replace: true,
-          state: { 
-            message: 'Account created successfully! You can now access free features or upgrade your plan.' 
-          }
+        navigate('/auth/callback', { 
+          replace: true
         });
       }
     } catch (err) {

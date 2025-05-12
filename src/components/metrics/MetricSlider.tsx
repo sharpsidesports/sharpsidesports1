@@ -28,7 +28,15 @@ export default function MetricSlider({ metric, weight, onWeightChange, onRemove 
           onChange={(e) => onWeightChange(parseInt(e.target.value))}
           className="flex-1"
         />
-        <span className="w-16 text-right font-medium">{weight}%</span>
+        <input
+          type="number"
+          min="0"
+          max="100"
+          value={weight}
+          onChange={(e) => onWeightChange(Number(e.target.value))}
+          className="w-16 text-right font-medium border border-gray-300 rounded px-2 py-1"
+        />
+        <span className="text-gray-500">%</span>
       </div>
     </div>
   );
