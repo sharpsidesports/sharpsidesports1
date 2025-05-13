@@ -18,7 +18,7 @@ import LandingPage from './pages/LandingPage.js';
 import { useAuthContext } from './context/AuthContext.js';
 import Account from './pages/Account.js';
 import CheckoutSuccess from './pages/CheckoutSuccess.js';
-import StatsModel from './pages/StatsModel.js';
+import StatsModel from './pages/statsmodel';
 
 // Separate component for handling the landing page redirect
 function LandingRedirect() {

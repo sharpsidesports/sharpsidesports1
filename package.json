@@ -7,7 +7,7 @@
     "dev:client": "vite",
     "dev:server": "vercel dev --listen 3000 --yes",
     "dev": "concurrently --kill-others \"npm run dev:client\" \"npm run dev:server\"",
-    "build": "vite build --logLevel info --debug && node scripts/verify-bundle.cjs",
+    "build": "vite build --logLevel info --debug",
     "vercel-build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",

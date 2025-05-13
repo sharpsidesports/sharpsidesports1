@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface Section {
   title: string;
@@ -6,9 +7,12 @@ interface Section {
 }
 
 export default function ExpertInsightContent() {
+  const navigate = useNavigate();
   const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showModelModal, setShowModelModal] = useState(false);
+  const [showProxModal, setShowProxModal] = useState(false);
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -108,6 +112,71 @@ export default function ExpertInsightContent() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
+      {/* Model Buttons and Modals */}
+      <div className="flex justify-center gap-4 mb-4">
+        <button
+          className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200 font-semibold shadow"
+          onClick={() => setShowModelModal(true)}
+        >
+          Our Model for This Week
+        </button>
+        <button
+          className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200 font-semibold shadow"
+          onClick={() => setShowProxModal(true)}
+        >
+          Proximity Model
+        </button>
+      </div>
+      {showModelModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-lg p-4 max-w-3xl w-full relative">
+            <button
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl font-bold"
+              onClick={() => setShowModelModal(false)}
+              aria-label="Close"
+            >
+              &times;
+            </button>
+            <h3 className="text-xl font-bold mb-4 text-green-700">Our Model for This Week</h3>
+            <iframe
+              src="https://docs.google.com/spreadsheets/d/1WcDLe9cZ6_z9jt_HD2dsoyDpMndZnF8XytWp7GcehVE/preview"
+              title="Model for This Week"
+              width="100%"
+              height="600px"
+              className="border rounded"
+              allowFullScreen
+            ></iframe>
+          </div>
+        </div>
+      )}
+      {showProxModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-lg p-4 max-w-3xl w-full relative">
+            <button
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl font-bold"
+              onClick={() => setShowProxModal(false)}
+              aria-label="Close"
+            >
+              &times;
+            </button>
+            <h3 className="text-xl font-bold mb-4 text-blue-700">Proximity Model</h3>
+            <iframe
+              src="https://docs.google.com/spreadsheets/d/15xnX4XUjgls4AgmsQIbY77wVZeDZZuGlrVt-zfpu02c/preview"
+              title="Proximity Model"
+              width="100%"
+              height="600px"
+              className="border rounded"
+              allowFullScreen
+            ></iframe>
+          </div>
+        </div>
+      )}
+      <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-200">
+        <h2 className="text-2xl font-bold text-green-600 font-heading mb-4">Expert Betting Picks</h2>
+        <p className="text-gray-600">
+          Our expert analysis and betting picks for this week's tournament. We analyze course conditions, player form, and historical data to provide you with the most accurate predictions.
+        </p>
+      </div>
       {sections.map((section, index) => (
         <div key={index} className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-200">
           <h2 className="text-2xl font-bold text-green-600 mb-6 font-heading">

@@ -8,7 +8,7 @@
     "skipDefaultLibCheck": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": false,
+    "noEmit": true,
     "outDir": "dist",
     "jsx": "react-jsx",
     "strict": true,
@@ -20,7 +20,8 @@
     "baseUrl": ".",
     "paths": {
       "rollup/parseAst": ["node_modules/rollup/dist/parseAst.d.ts"]
-    }
+    },
+    "allowImportingTsExtensions": true
   },
   "include": [
     "src/**/*.ts",
