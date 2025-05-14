@@ -50,8 +50,8 @@ const plans = [
     description: 'Everything you need to dominate the sportsbooks. Betting picks and advanced betting tools',
     price: {
       weekly: '59.99',
-      monthly: '199.99',
-      yearly: '999.99'
+      monthly: '239.99',
+      yearly: '599.99'
     },
     buttonText: 'Start Pro Plan',
     buttonStyle: 'text-white bg-green-500 hover:bg-green-600',
