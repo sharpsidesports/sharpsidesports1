@@ -132,11 +132,11 @@ export default function PricingSection() {
           </div>
         )}
         <div className="text-center">
-          <h2 className="text-base text-green-600 font-semibold tracking-wide uppercase">
-            Pricing
+          <h2 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
+            YOU WILL <span className="text-green-500">WIN</span> WITH US
           </h2>
-          <p className="mt-2 text-3xl font-bold text-gray-900 sm:text-4xl lg:text-5xl">
-            Choose your plan
+          <p className="mt-4 text-lg text-gray-500">
+            Premier golf analytics and DFS tools to help you beat the book!
           </p>
         </div>
         <TicketCarousel />
