@@ -4,6 +4,7 @@ import type { Database } from '../../types/supabase.js';
 type Tables = Database['public']['Tables'];
 type PlayerRound = Tables['player_rounds']['Row'];
 type ScoringStats = Tables['scoring_stats']['Row'];
+type CourseDifficulty = Tables['course_difficulty']['Row'];
 
 export class SupabaseError extends Error {
   constructor(
@@ -126,6 +127,40 @@ export async function getScoringStatsByDgIds(
     console.error('Failed to fetch scoring stats:', error);
     throw new SupabaseError(
       'Failed to fetch scoring stats',
+      undefined,
+      error instanceof Error ? error.message : undefined
+    );
+  }
+}
+
+export async function getCourseDifficulty(
+  courseNames?: string[]
+): Promise<CourseDifficulty[]> {
+  try {
+    let query = supabase
+      .from('course_difficulty')
+      .select('*')
+      .order('course_name', { ascending: true });
+
+    if (courseNames?.length) {
+      query = query.in('course_name', courseNames);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      return handleSupabaseError(error);
+    }
+
+    if (!data || data.length === 0) {
+      console.warn('No course difficulty data found for courses:', courseNames);
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error('Failed to fetch course difficulty:', error);
+    throw new SupabaseError(
+      'Failed to fetch course difficulty',
       undefined,
       error instanceof Error ? error.message : undefined
     );

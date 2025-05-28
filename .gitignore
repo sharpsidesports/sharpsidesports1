@@ -29,3 +29,5 @@ dist-ssr
 .env
 .env.stripe
 .env.production
+dev/pga/data/scoring_stats.csv
+scoring_stats.csv

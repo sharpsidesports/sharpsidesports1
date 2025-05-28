@@ -112,6 +112,38 @@ export interface Database {
           player_full_name?: string
         }
       }
+      course_difficulty: {
+        Row: {
+          course_name: string
+          driving_rank: number
+          scoring_rank: number
+          approach_rank: number
+          driving_difficulty: string
+          approach_difficulty: string
+          scoring_difficulty: string
+          created_at: string
+        }
+        Insert: {
+          course_name: string
+          driving_rank: number
+          scoring_rank: number
+          approach_rank: number
+          driving_difficulty: string
+          approach_difficulty: string
+          scoring_difficulty: string
+          created_at?: string
+        }
+        Update: {
+          course_name?: string
+          driving_rank?: number
+          scoring_rank?: number
+          approach_rank?: number
+          driving_difficulty?: string
+          approach_difficulty?: string
+          scoring_difficulty?: string
+          created_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never
