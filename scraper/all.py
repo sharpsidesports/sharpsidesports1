@@ -34,8 +34,6 @@ else:
     # Use SSG keys
     SUPABASE_URL = 'https://skpzfhljjsysmzyrtnho.supabase.co'  # SSG
     SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNrcHpmaGxqanN5c216eXJ0bmhvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczNDY2MzE0OSwiZXhwIjoyMDUwMjM5MTQ5fQ.DGneRgX4BA-Otfm4LSXw3NGwPSFIuIT6UJvYWBNj45w' #THEIRS
-# SUPABASE_URL = 'https://fsyvigmmevdsfaluzqjz.supabase.co'  # DEV
-# SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzeXZpZ21tZXZkc2ZhbHV6cWp6Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczNzMyMTI2MSwiZXhwIjoyMDUyODk3MjYxfQ.oLNgCXjYk3bxu_l5otSSIxRXFlKideW7x5wsKLuNzIM'
 
 
 # --- Course Difficulty Data ---
