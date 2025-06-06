@@ -27,6 +27,7 @@ function PageViewTracker() {
   const location = useLocation();
 
   useEffect(() => {
+    // Track page view on initial load and route changes
     trackPageView();
   }, [location.pathname]);
 
