@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { supabase } from '../lib/supabase.js';
 import type { User as SupaUser } from '@supabase/supabase-js';
 import type { User } from '../types/auth.js';
+import { trackEvent } from '../utils/metaPixel.js';
 
 interface AuthContextType {
   user: User | null;
@@ -56,7 +57,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
-    if (data.user) setUser(mapSupaUser(data.user));
+    if (data.user) {
+      setUser(mapSupaUser(data.user));
+      // Track login event
+      trackEvent('Login', {
+        method: 'email'
+      });
+    }
     setLoading(false);
   };
 
@@ -64,7 +71,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) throw error;
-    if (data.user) setUser(mapSupaUser(data.user));
+    if (data.user) {
+      setUser(mapSupaUser(data.user));
+      // Track signup event
+      trackEvent('CompleteRegistration', {
+        method: 'email'
+      });
+    }
     setLoading(false);
   };
 

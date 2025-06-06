@@ -4,6 +4,7 @@ import TicketCarousel from '../TicketCarousel.js';
 import { useAuthContext } from '../../context/AuthContext.js';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase.js'; // Added .js extension
+import { trackEvent } from '../../utils/metaPixel.js';
 
 // Initialize Stripe with the environment variable
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
@@ -96,6 +97,15 @@ export default function PricingSection() {
 
   const handleSubscribe = async (plan: string) => {
     if (plan === 'free') return;
+    
+    // Track subscription initiation
+    trackEvent('InitiateCheckout', {
+      content_name: `${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan`,
+      content_category: 'subscription',
+      value: parseFloat(plans.find(p => p.id === plan)?.price[billingInterval] || '0'),
+      currency: 'USD'
+    });
+    
     if (!user) {
       sessionStorage.setItem('selectedPlan', JSON.stringify({ plan, interval: billingInterval }));
       navigate('/auth');

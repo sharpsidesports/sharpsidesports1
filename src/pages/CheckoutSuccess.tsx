@@ -2,9 +2,24 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase.js'; // Import supabase client
 import { useAuthContext } from '../context/AuthContext.js'; // Import auth context
+import { trackPurchase } from '../utils/metaPixel.js';
 
 const POLLING_INTERVAL = 2000; // Check every 2 seconds
 const MAX_POLLING_TIME = 20000; // Stop after 20 seconds
+
+// Pricing mapping for Meta Pixel tracking
+const SUBSCRIPTION_PRICES = {
+  basic: {
+    weekly: 17.99,
+    monthly: 59.99,
+    yearly: 599.99
+  },
+  pro: {
+    weekly: 59.99,
+    monthly: 239.99,
+    yearly: 599.99
+  }
+};
 
 export default function CheckoutSuccess() {
   const navigate = useNavigate();
@@ -28,6 +43,15 @@ export default function CheckoutSuccess() {
           setIsVerifying(false);
           if (pollingTimer) clearInterval(pollingTimer);
           if (timeoutTimer) clearTimeout(timeoutTimer);
+          
+          // Track purchase with Meta Pixel
+          const tier = user.user_metadata.subscription_tier as 'basic' | 'pro';
+          // Default to monthly if no interval found, could be improved by storing this in metadata
+          const defaultPrice = SUBSCRIPTION_PRICES[tier]?.monthly || 99.99;
+          const contentName = `${tier.charAt(0).toUpperCase() + tier.slice(1)} Plan`;
+          
+          console.log('Tracking purchase:', { value: defaultPrice, contentName });
+          trackPurchase(defaultPrice, 'USD', contentName);
           
           // Refresh context state BEFORE navigating
           console.log('Refreshing auth context before navigation...');

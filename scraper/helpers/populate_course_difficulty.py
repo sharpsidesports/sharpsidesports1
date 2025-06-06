@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+# RUN THIS TO POPULATE THE COURSE DIFFICULTY TABLE IF IT DOESNT EXIST YET
 
 
 # CREATE TABLE course_difficulty (

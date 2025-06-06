@@ -5,6 +5,7 @@ import { useAuthContext } from '../../context/AuthContext.js';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase.js';
 import TicketCarousel from '../TicketCarousel.js';
+import { trackEvent } from '../../utils/metaPixel.js';
 
 // Initialize Stripe with the environment variable
 // Ensure that the publishable key is present in the environment variables
@@ -103,6 +104,15 @@ export default function PricingPlans() {
 
   const handleSubscribe = async (plan: string) => {
     if (plan === 'free') return;
+    
+    // Track subscription initiation
+    trackEvent('InitiateCheckout', {
+      content_name: `${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan`,
+      content_category: 'subscription',
+      value: parseFloat(tiers.find(t => t.id === plan)?.price[selectedInterval as keyof typeof tiers[0].price] || '0'),
+      currency: 'USD'
+    });
+    
     if (!user) {
       sessionStorage.setItem('selectedPlan', JSON.stringify({ plan, interval: selectedInterval }));
       navigate('/auth');

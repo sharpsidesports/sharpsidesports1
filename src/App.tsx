@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext.js';
 import ProtectedRoute from './components/auth/ProtectedRoute.js';
 import Header from './components/Header.js';
@@ -19,6 +19,19 @@ import { useAuthContext } from './context/AuthContext.js';
 import Account from './pages/Account.js';
 import CheckoutSuccess from './pages/CheckoutSuccess.js';
 import StatsModel from './pages/statsmodel';
+import { useEffect } from 'react';
+import { trackPageView } from './utils/metaPixel.js';
+
+// Component to track page views on route changes
+function PageViewTracker() {
+  const location = useLocation();
+
+  useEffect(() => {
+    trackPageView();
+  }, [location.pathname]);
+
+  return null;
+}
 
 // Separate component for handling the landing page redirect
 function LandingRedirect() {
@@ -30,6 +43,7 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <PageViewTracker />
         {/* <div className="min-h-screen bg-blue-50"> */}
         <div className="min-h-screen bg-gray-50">
           <Header />
