@@ -18,7 +18,7 @@ import LandingPage from './pages/LandingPage.js';
 import { useAuthContext } from './context/AuthContext.js';
 import Account from './pages/Account.js';
 import CheckoutSuccess from './pages/CheckoutSuccess.js';
-import StatsModel from './pages/statsmodel';
+import StatsModel from './pages/statsmodel.js';
 import { useEffect } from 'react';
 import { trackPageView } from './utils/metaPixel.js';
 

@@ -11,6 +11,12 @@ const META_PIXEL_ID = import.meta.env.VITE_META_PIXEL_ID;
 export const initializeMetaPixel = () => {
   if (typeof window === 'undefined' || !META_PIXEL_ID) return;
 
+  // Check if pixel is already loaded to prevent double initialization
+  if (window.fbq) {
+    console.log('Meta Pixel already initialized');
+    return;
+  }
+
   // Load the Meta Pixel script
   const script = document.createElement('script');
   script.innerHTML = `
@@ -25,16 +31,6 @@ export const initializeMetaPixel = () => {
     fbq('init', '${META_PIXEL_ID}');
   `;
   document.head.appendChild(script);
-
-  // Add noscript fallback
-  const noscript = document.createElement('noscript');
-  const img = document.createElement('img');
-  img.height = 1;
-  img.width = 1;
-  img.style.display = 'none';
-  img.src = `https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`;
-  noscript.appendChild(img);
-  document.head.appendChild(noscript);
 };
 
 export const trackPageView = () => {
