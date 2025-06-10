@@ -149,7 +149,12 @@ export default function PricingSection() {
             Premier golf analytics and DFS tools to help you beat the book!
           </p>
         </div>
-        <TicketCarousel />
+        <div className="mt-16">
+          <TicketCarousel />
+          <div className="text-center mt-12">
+            <h2 className="text-3xl font-bold text-gray-900">Choose the right plan for your game</h2>
+          </div>
+        </div>
         <div className="mt-12 flex justify-center items-start">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-4xl justify-center mx-auto">
             {plans.map((plan) => (

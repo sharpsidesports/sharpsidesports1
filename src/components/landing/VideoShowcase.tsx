@@ -10,6 +10,17 @@ interface FeatureVideo {
 
 const features: FeatureVideo[] = [
   {
+    title: 'Betting Picks',
+    description: 'Get access to professional betting picks and insights for every tournament and player.',
+    videoSrc: '/videos/expert insights.mp4',
+    posterSrc: '/videos/expert insights_poster.jpg',
+    features: [
+      'Professional betting picks',
+      'Tournament previews',
+      'Player spotlights'
+    ]
+  },
+  {
     title: 'Matchup Tool',
     description: 'Our advanced matchup analysis engine grades each head-to-head matchup, calculating precise Expected Value (EV) for both players based on current odds, historical performance, and course conditions.',
     videoSrc: '/videos/matchup tool.mp4',
@@ -51,17 +62,6 @@ const features: FeatureVideo[] = [
       'Course-specific analysis',
       'Historical performance tracking',
       'Detailed statistics breakdown'
-    ]
-  },
-  {
-    title: 'Betting Picks',
-    description: 'Get access to professional betting picks and insights for every tournament and player.',
-    videoSrc: '/videos/expert insights.mp4',
-    posterSrc: '/videos/expert insights_poster.jpg',
-    features: [
-      'Professional betting picks',
-      'Tournament previews',
-      'Player spotlights'
     ]
   },
   {
@@ -182,7 +182,7 @@ export default function VideoShowcase() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <p className="mt-2 text-3xl leading-8 font-bold tracking-tight text-gray-900 sm:text-4xl">
-            See Our Tools in Action
+            What We Offer
           </p>
         </div>
 
@@ -200,7 +200,7 @@ export default function VideoShowcase() {
                 <p className="mt-3 text-lg text-gray-500">
                   {feature.description}
                 </p>
-                <ul className="mt-6 space-y-4">
+                <ul className="mt-6 space-y-4 mb-8 lg:mb-0">
                   {feature.features.map((item) => (
                     <li key={item} className="flex items-center">
                       <span className="text-green-500">✓</span>

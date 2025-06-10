@@ -15,7 +15,7 @@ export default function LandingPage() {
             GAIN AN EDGE WITH SHARPSIDE GOLF
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Make data-driven decisions with professional-grade golf analytics. From course strategy to player performance, we provide the insights you need to gain a competitive advantage.
+            We provide expert picks, tools, and the insights you need to gain a competitive advantage.
           </p>
           <Link
             to="/auth"

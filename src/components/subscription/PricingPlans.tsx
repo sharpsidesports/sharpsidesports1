@@ -106,10 +106,12 @@ export default function PricingPlans() {
     if (plan === 'free') return;
     
     // Track subscription initiation
+    const key = selectedInterval as keyof typeof tiers[0]['price'];
+    const price = tiers.find(t => t.id === plan)?.price[key] || '0';
     trackEvent('InitiateCheckout', {
       content_name: `${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan`,
       content_category: 'subscription',
-      value: parseFloat(tiers.find(t => t.id === plan)?.price[selectedInterval as keyof typeof tiers[0].price] || '0'),
+      value: parseFloat(price),
       currency: 'USD'
     });
     
@@ -146,13 +148,12 @@ export default function PricingPlans() {
             <p className="text-red-700 text-sm">{error}</p>
           </div>
         )}
-        <div className="mx-auto max-w-4xl text-center">
-          <h2 className="text-base font-semibold leading-7 text-green-600">Pricing</h2>
-          <p className="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+        <TicketCarousel />
+        <div className="mx-auto max-w-4xl text-center mt-12">
+          <p className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
             Choose the right plan for your game
           </p>
         </div>
-        <TicketCarousel />
         <div className="mt-16 flex justify-center">
           <div className="flex items-center space-x-4 bg-gray-50 p-3 rounded-lg">
             {billingIntervals.map((interval) => (

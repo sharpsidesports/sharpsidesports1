@@ -15,11 +15,10 @@ export default function Navigation() {
     // Pro Tier Features (Betting Picks first)
     { to: '/expert-insights', label: 'Betting Picks', requiredTier: 'pro' },
     // Free Tier Features
-    { to: '/stats', label: 'Strokes Gained Stats', requiredTier: 'free' },
     { to: '/stats-model', label: 'Stats Model', requiredTier: 'free' },
     
     // Basic Tier Features
-    { to: '/dashboard', label: 'Model Dashboard', requiredTier: 'basic' },
+    { to: '/dashboard', label: 'Betting Model', requiredTier: 'basic' },
     { to: '/matchups', label: 'Matchup Tool', requiredTier: 'basic' },
     { to: '/three-ball', label: 'Three Ball Tool', requiredTier: 'basic' },
     { to: '/fantasy', label: 'Fantasy Optimizer', requiredTier: 'basic' },
