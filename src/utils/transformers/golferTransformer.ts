@@ -95,7 +95,8 @@ export const transformGolferData = async (
     // Transform the data into Golfer objects
     const maybeGolfers: (Golfer | null)[] = sortedRankings.map<Golfer | null>(ranking => {
       const playerOdds = odds.find(o => o.dg_id === ranking.dg_id) || {};
-      const approachData = approachStats.find(s => s.dg_id === ranking.dg_id) || {};
+      // Ensure dg_id comparison works even if types differ (number vs string)
+      const approachData = approachStats.find(s => String(s.dg_id) === String(ranking.dg_id)) || {};
       const playerScoringStats = scoringStats.filter(s => s.dg_id === String(ranking.dg_id));
       const playerSpecificRounds = playerRounds.filter(r => r.dg_id === String(ranking.dg_id));    
 

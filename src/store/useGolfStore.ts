@@ -47,12 +47,12 @@ export const useGolfStore = create<GolfStore>()(
             drivingAccuracy: avg('driving_acc'),
             drivingDistance: avg('driving_dist'),
             proximityMetrics: {
-              '100-125': proxAvg('prox_fw'),
-              '125-150': proxAvg('prox_rgh'),
-              '150-175': proxAvg('prox_fw'),
-              '175-200': proxAvg('prox_rgh'),
-              '200-225': proxAvg('prox_fw'),
-              '225plus': proxAvg('prox_rgh'),
+              '100-125': proxAvg('prox_fw') || golfer.proximityMetrics['100-125'],
+              '125-150': proxAvg('prox_rgh') || golfer.proximityMetrics['125-150'],
+              '150-175': proxAvg('prox_fw') || golfer.proximityMetrics['150-175'],
+              '175-200': proxAvg('prox_rgh') || golfer.proximityMetrics['175-200'],
+              '200-225': proxAvg('prox_fw') || golfer.proximityMetrics['200-225'],
+              '225plus': proxAvg('prox_rgh') || golfer.proximityMetrics['225plus'],
             },
             // scoringStats and other metrics can be recalculated similarly if needed
           };

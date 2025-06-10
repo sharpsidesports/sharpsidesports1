@@ -7,14 +7,17 @@ interface BlurredPreviewProps {
   requiredSubscription?: 'free' | 'basic' | 'pro';
 }
 
+// TEMPORARY OVERRIDE: Disable blur/upgrade gating during development
+const DISABLE_BLUR = false; // TODO: revert to false when re-enabling gating
+
 export default function BlurredPreview({ children, requiredSubscription = 'free' }: BlurredPreviewProps) {
   const { user } = useAuthContext();
   console.log('user in BlurredPreview', user);
   const userTier = user?.subscription_tier || 'free';
   const subscriptionLevels = { free: 0, basic: 1, pro: 2 };
 
-  // If user has sufficient subscription level, show content normally
-  if (user && subscriptionLevels[userTier] >= subscriptionLevels[requiredSubscription]) {
+  // If blur is disabled OR user has sufficient subscription level, show content normally
+  if (DISABLE_BLUR || (user && subscriptionLevels[userTier] >= subscriptionLevels[requiredSubscription])) {
     return <>{children}</>;
   }
 
