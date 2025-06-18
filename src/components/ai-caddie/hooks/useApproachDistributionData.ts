@@ -34,9 +34,9 @@ export function useApproachDistributionData() {
 
     const metrics = [
       {
-        name: 'Proximity 100-125 yards',
+        name: 'Proximity 0-125 yards',
         percentage: weights.prox100_125Weight,
-        description: 'Approach shots from 100-125 yards'
+        description: 'Approach shots from 0-125 yards'
       },
       {
         name: 'Proximity 125-150 yards',

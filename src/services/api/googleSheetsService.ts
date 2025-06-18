@@ -28,13 +28,20 @@ export const googleSheetsService = {
         throw new Error('Invalid data format');
       }
 
-      // Convert percentage strings to decimal numbers
+      // Helper to parse percentage strings like '24%' or numbers like 24
+      const parsePercent = (val: any) => {
+        if (val === undefined || val === null) return 0;
+        const clean = String(val).replace('%', '');
+        const num = parseFloat(clean);
+        return isNaN(num) ? 0 : num / 100;
+      };
+
       return {
         courseName: values[0],
-        ottWeight: parseFloat(values[1]) / 100,
-        approachWeight: parseFloat(values[2]) / 100,
-        aroundGreenWeight: parseFloat(values[3]) / 100,
-        puttingWeight: parseFloat(values[4]) / 100,
+        ottWeight: parsePercent(values[1]),
+        approachWeight: parsePercent(values[2]),
+        aroundGreenWeight: parsePercent(values[3]),
+        puttingWeight: parsePercent(values[4]),
         lastUpdated: values[5] || new Date().toISOString()
       };
     } catch (error) {

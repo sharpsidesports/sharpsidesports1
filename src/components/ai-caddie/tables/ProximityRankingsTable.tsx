@@ -7,7 +7,7 @@ interface ProximityRange {
 }
 
 const PROXIMITY_RANGES: ProximityRange[] = [
-  { key: '100-125', label: '100-125 yards' },
+  { key: '100-125', label: '0-125 yards' },
   { key: '125-150', label: '125-150 yards' },
   { key: '150-175', label: '150-175 yards' },
   { key: '175-200', label: '175-200 yards' },

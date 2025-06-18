@@ -44,7 +44,7 @@ export default function ApproachDistributionTable() {
               SG: APP
             </th>
             <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              100-125
+              0-125
             </th>
             <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
               125-150

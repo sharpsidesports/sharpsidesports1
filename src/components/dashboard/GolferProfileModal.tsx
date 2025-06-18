@@ -81,7 +81,7 @@ function GolferProfileModal({ golfer, onClose }: GolferProfileModalProps) {
               <h3 className="text-lg font-semibold mb-4">Proximity Stats</h3>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span>100-125 yards:</span>
+                  <span>0-125 yards:</span>
                   <span className="font-medium">{golfer.proximityMetrics['100-125'].toFixed(1)}'</span>
                 </div>
                 <div className="flex justify-between">
