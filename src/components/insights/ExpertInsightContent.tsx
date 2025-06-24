@@ -72,13 +72,17 @@ export default function ExpertInsightContent() {
       } 
       // otherwise, if we already have a section in flight...
       else if (currentSection) {
-        // If this line ends with a period, it's likely the end of a paragraph
-        if (/[.?!]$/.test(trimmedLine)) {
-          currentParagraph.push(trimmedLine);
-          currentSection.content.push(currentParagraph.join(' '));
-          currentParagraph = [];
-        } else {
-          currentParagraph.push(trimmedLine);
+        // Split the line by semicolons to allow for manual new lines
+        const semicolonParts = trimmedLine.split(';').map(part => part.trim()).filter(Boolean);
+        for (const part of semicolonParts) {
+          // If this part ends with a period, question mark, or exclamation mark, it's likely the end of a paragraph
+          if (/[.?!]$/.test(part)) {
+            currentParagraph.push(part);
+            currentSection.content.push(currentParagraph.join(' '));
+            currentParagraph = [];
+          } else {
+            currentParagraph.push(part);
+          }
         }
       }
     }
