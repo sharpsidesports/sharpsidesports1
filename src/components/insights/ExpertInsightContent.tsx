@@ -47,7 +47,6 @@ export default function ExpertInsightContent() {
     const lines = text.split('\n').filter(line => line.trim() !== '');
     const parsedSections: Section[] = [];
     let currentSection: Section | null = null;
-    let currentParagraph: string[] = [];
 
     for (const line of lines) {
       // Remove leading and trailing whitespace
@@ -57,13 +56,8 @@ export default function ExpertInsightContent() {
       if (trimmedLine.startsWith('#')) {
         // close out previous section
         if (currentSection) {
-          if (currentParagraph.length > 0) {
-            currentSection.content.push(currentParagraph.join(' '));
-            currentParagraph = [];
-          }
           parsedSections.push(currentSection);
         }
-        
         // Start a new section
         currentSection = {
           title: trimmedLine.slice(1).trim(),
@@ -72,26 +66,13 @@ export default function ExpertInsightContent() {
       } 
       // otherwise, if we already have a section in flight...
       else if (currentSection) {
-        // Split the line by semicolons to allow for manual new lines
-        const semicolonParts = trimmedLine.split(';').map(part => part.trim()).filter(Boolean);
-        for (const part of semicolonParts) {
-          // If this part ends with a period, question mark, or exclamation mark, it's likely the end of a paragraph
-          if (/[.?!]$/.test(part)) {
-            currentParagraph.push(part);
-            currentSection.content.push(currentParagraph.join(' '));
-            currentParagraph = [];
-          } else {
-            currentParagraph.push(part);
-          }
-        }
+        // Each non-empty line is a new paragraph
+        currentSection.content.push(trimmedLine);
       }
     }
 
-    // inside parseContent function, after the loop
+    // After the loop, push the last section if it exists
     if (currentSection) {
-      if (currentParagraph.length > 0) {
-        currentSection.content.push(currentParagraph.join(' '));
-      }
       parsedSections.push(currentSection);
     }
 
