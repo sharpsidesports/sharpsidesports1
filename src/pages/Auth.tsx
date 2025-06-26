@@ -10,20 +10,11 @@ export default function Auth() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // If user is authenticated, check for stored plan
+    // Always redirect new sign-ups to the pricing page
     if (user) {
-      const storedPlan = sessionStorage.getItem('selectedPlan');
-      if (storedPlan) {
-        // Clear the stored plan
-        sessionStorage.removeItem('selectedPlan');
-        // Redirect back to subscription page
-        navigate('/subscription', { replace: true });
-      } else {
-        // If no stored plan, redirect to dashboard
-        navigate('/dashboard', { replace: true });
-      }
+      window.location.href = '/subscription#plans';
     }
-  }, [user, navigate]);
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
