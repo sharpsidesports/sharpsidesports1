@@ -16,12 +16,13 @@ export default function UpgradePrompt({ requiredTier }: UpgradePromptProps) {
             ? 'Upgrade to our Basic plan to access advanced features including Matchups, Three Ball, and Fantasy Optimizer.'
             : 'Upgrade to our Pro plan to unlock premium features including AI Caddie, Course Fit, and Expert Insights.'}
         </p>
-        <Link
-          to="/pricing"
+        <button
+          type="button"
+          onClick={() => { window.location.href = '/subscription#plans'; }}
           className="inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
         >
           View Plans
-        </Link>
+        </button>
       </div>
     </div>
   );

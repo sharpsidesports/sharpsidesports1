@@ -5,8 +5,20 @@ import Testimonials from '../components/subscription/Testimonials.js';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import { useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 
 export default function Subscription() {
+  const location = useLocation();
+  const plansRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (location.hash === '#plans' && plansRef.current) {
+      setTimeout(() => {
+        plansRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [location.hash]);
+
   return (
     <div className="py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -19,8 +31,8 @@ export default function Subscription() {
           </p>
         </div>
 
-        <div className="mt-12">
-          <PricingPlans />
+        <div id="plans" className="mt-4 scroll-mt-24">
+          <PricingPlans ref={plansRef} />
         </div>
 
         <SimulationExplanation />

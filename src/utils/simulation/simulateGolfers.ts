@@ -4,8 +4,8 @@ import { simulateMultipleRounds } from './simulateRound.js';
 import { calculateImpliedProbability } from '../calculations/oddsCalculator.js';
 
 export const simulateGolfers = (golfers: Golfer[], weights: MetricWeight[], roundRange: number = 12): Golfer[] => {
-  // Use 200 rounds for a balance of accuracy and performance
-  const numRounds = 200;
+  // Use 1000 rounds for a balance of accuracy and performance
+  const numRounds = 1000;
   
   const simulatedGolfers = golfers.map(golfer => {
     const competitors = golfers.filter(g => g.id !== golfer.id);

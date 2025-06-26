@@ -21,6 +21,7 @@ import CheckoutSuccess from './pages/CheckoutSuccess.js';
 import StatsModel from './pages/statsmodel.js';
 import { useEffect } from 'react';
 import { trackPageView } from './utils/metaPixel.js';
+import DetroitGCArticle from './pages/articles/detroit-gc.js';
 
 // Component to track page views on route changes
 function PageViewTracker() {
@@ -140,6 +141,10 @@ function App() {
                 <Route 
                   path="/stats-model" 
                   element={<StatsModel />} 
+                />
+                <Route 
+                  path="/articles/detroit-gc" 
+                  element={<DetroitGCArticle />} 
                 />
               </Routes>
             </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, forwardRef } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { CheckIcon } from '@heroicons/react/24/outline';
 import { useAuthContext } from '../../context/AuthContext.js';
@@ -72,7 +72,7 @@ const tiers = [
   },
 ];
 
-export default function PricingPlans() {
+const PricingPlans = forwardRef<HTMLDivElement>((props, ref) => {
   const [selectedInterval, setSelectedInterval] = useState('monthly');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -141,7 +141,7 @@ export default function PricingPlans() {
   };
 
   return (
-    <div className="bg-white py-24">
+    <div className="bg-white py-8">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         {error && (
           <div className="mx-auto max-w-4xl mb-8 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -171,7 +171,8 @@ export default function PricingPlans() {
             ))}
           </div>
         </div>
-        <div className="isolate mx-auto mt-16 grid grid-cols-1 md:grid-cols-2 gap-10 max-w-4xl justify-center">
+        <div id="plans" className="h-0 scroll-mt-24" />
+        <div ref={ref} className="isolate mx-auto mt-16 grid grid-cols-1 md:grid-cols-2 gap-10 max-w-4xl justify-center">
           {tiers.map((tier) => (
             <div
               key={tier.id}
@@ -250,4 +251,6 @@ export default function PricingPlans() {
       </div>
     </div>
   );
-}
+});
+
+export default PricingPlans;
