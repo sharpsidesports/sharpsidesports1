@@ -58,7 +58,7 @@ export default function Navigation() {
     const handleMouseLeave = () => {
       closeTimeout.current = setTimeout(() => {
         setOpen(false);
-      }, 300); // 300ms delay
+      }, 500); // 500ms delay
     };
 
     return (
@@ -73,14 +73,20 @@ export default function Navigation() {
         </button>
         {open && (
           <div
-            className="absolute left-1/2 transform -translate-x-1/2 top-full mt-2 min-w-[220px] bg-white border border-gray-200 rounded shadow-lg z-50"
-            style={{ marginTop: '-4px', pointerEvents: 'auto' }}
+            className="absolute left-1/2 transform -translate-x-1/2 top-full min-w-[220px] bg-white border border-gray-200 rounded shadow-lg z-50 pt-2"
+            style={{ marginTop: '-8px', pointerEvents: 'auto' }}
           >
             <Link
               to="/articles/detroit-gc"
               className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
             >
               What to know about Detroit GC
+            </Link>
+            <Link
+              to="/articles/john-deere-classic"
+              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
+            >
+              John Deere Classic Things To Know
             </Link>
           </div>
         )}
