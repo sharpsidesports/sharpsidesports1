@@ -88,6 +88,12 @@ export default function Navigation() {
             >
               John Deere Classic Things To Know
             </Link>
+            <Link
+              to="/articles/john-deere-classic-betting-picks"
+              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
+            >
+              John Deere Classic Betting Mega Preview
+            </Link>
           </div>
         )}
       </div>

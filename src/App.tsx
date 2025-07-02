@@ -23,6 +23,7 @@ import { useEffect } from 'react';
 import { trackPageView } from './utils/metaPixel.js';
 import DetroitGCArticle from './pages/articles/detroit-gc.js';
 import JohnDeereClassicArticle from './pages/articles/john-deere-classic.js';
+import JohnDeereClassicBettingMegaPreview from './pages/articles/john-deere-classic-betting-picks.js';
 
 // Component to track page views on route changes
 function PageViewTracker() {
@@ -150,6 +151,10 @@ function App() {
                 <Route 
                   path="/articles/john-deere-classic" 
                   element={<JohnDeereClassicArticle />} 
+                />
+                <Route 
+                  path="/articles/john-deere-classic-betting-picks" 
+                  element={<JohnDeereClassicBettingMegaPreview />} 
                 />
               </Routes>
             </div>
