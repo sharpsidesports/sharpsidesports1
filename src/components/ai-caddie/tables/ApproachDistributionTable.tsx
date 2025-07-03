@@ -1,6 +1,7 @@
 import { useGolfStore } from '../../../store/useGolfStore.js';
 import { Golfer } from '../../../types/golf.js';
 import { useApproachDistributionData } from '../hooks/useApproachDistributionData.js';
+import GolferAvatar from '../../GolferAvatar.js';
 
 export default function ApproachDistributionTable() {
   const { golfers } = useGolfStore();
@@ -75,15 +76,14 @@ export default function ApproachDistributionTable() {
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center">
                   <div className="flex-shrink-0 h-10 w-10">
-                    <img 
-                      className="h-10 w-10 rounded-full object-cover" 
-                      src={golfer.imageUrl} 
-                      alt={golfer.name} 
-                    />
+                    <GolferAvatar name={golfer.name} dg_id={golfer.dg_id} size={32} />
                   </div>
                   <div className="ml-4">
                     <div className="text-sm font-medium text-gray-900">
-                      {golfer.name}
+                      <span className="inline-flex items-center gap-2">
+                        <GolferAvatar name={golfer.name} dg_id={golfer.dg_id} size={32} />
+                        {golfer.name}
+                      </span>
                     </div>
                   </div>
                 </div>

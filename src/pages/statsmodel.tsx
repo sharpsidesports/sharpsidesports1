@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useGolfStore } from '../store/useGolfStore.js';
 import { SharpsideMetric, METRIC_CATEGORIES, METRIC_LABELS, MetricWeight } from '../types/metrics.js';
 import MetricCategory from '../components/metrics/MetricCategory.js';
+import GolferAvatar from '../components/GolferAvatar.js';
 
 export default function StatsModel() {
   const { golfers, weights, updateWeights } = useGolfStore();
@@ -145,7 +146,12 @@ export default function StatsModel() {
             {sortedGolfers.map((golfer: any, idx: number) => (
               <tr key={golfer.id}>
                 <td className="px-4 py-2">{idx + 1}</td>
-                <td className="px-4 py-2 font-medium">{golfer.name}</td>
+                <td className="px-4 py-2 font-medium">
+                  <span className="inline-flex items-center gap-2">
+                    <GolferAvatar name={golfer.name} dg_id={golfer.dg_id} size={32} />
+                    {golfer.name}
+                  </span>
+                </td>
                 {weights.map((w: MetricWeight) => (
                   <td key={w.metric} className="px-4 py-2">{getMetricValue(golfer, w.metric).toFixed(2)}</td>
                 ))}

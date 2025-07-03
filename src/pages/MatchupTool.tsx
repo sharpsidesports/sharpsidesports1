@@ -250,14 +250,16 @@ function MatchupTool() {
       setSelectedMatchup(matchup);
       setIsYourPickP1(true);
 
-      // Get available bookmakers and select the first one
+      // Get available bookmakers and select the first one with valid odds
       const bookmakers = getAvailableBookmakers(matchup);
-      const firstBook = bookmakers[0] || '';
+      const firstBook = bookmakers.find(book => matchup.odds[book] && matchup.odds[book].p1 && matchup.odds[book].p2) || '';
       setSelectedBookmaker(firstBook);
 
-      // Set odds based on selected bookmaker
+      // Set odds based on selected bookmaker, fallback to empty string if not available
       if (firstBook && matchup.odds[firstBook]) {
-        setOdds(matchup.odds[firstBook].p1);
+        setOdds(matchup.odds[firstBook].p1 || '');
+      } else {
+        setOdds('');
       }
 
       // Find golfers in our simulation data
@@ -266,6 +268,13 @@ function MatchupTool() {
 
       setSelectedGolfer1(golfer1 || null);
       setSelectedGolfer2(golfer2 || null);
+    } else {
+      // If no matchup found, reset state
+      setSelectedMatchup(null);
+      setSelectedBookmaker('');
+      setOdds('');
+      setSelectedGolfer1(null);
+      setSelectedGolfer2(null);
     }
   };
 
@@ -586,11 +595,13 @@ function MatchupTool() {
               <button
                 key={book}
                 onClick={() => {
-                  setSelectedBookmaker(book);
-                  setOdds(isYourPickP1 
-                    ? selectedMatchup.odds[book].p1 
-                    : selectedMatchup.odds[book].p2
-                  );
+                  if (selectedMatchup.odds[book] && selectedMatchup.odds[book].p1 && selectedMatchup.odds[book].p2) {
+                    setSelectedBookmaker(book);
+                    setOdds(isYourPickP1 
+                      ? selectedMatchup.odds[book].p1 
+                      : selectedMatchup.odds[book].p2
+                    );
+                  }
                 }}
                 className={`p-3 rounded-lg border ${
                   selectedBookmaker === book 
@@ -601,6 +612,7 @@ function MatchupTool() {
                     ? 'ring-2 ring-green-500' 
                     : ''
                 }`}
+                disabled={!(selectedMatchup.odds[book] && selectedMatchup.odds[book].p1 && selectedMatchup.odds[book].p2)}
               >
                 <div className="flex justify-between items-center">
                   <span className="font-medium">{book}</span>
@@ -609,10 +621,11 @@ function MatchupTool() {
                       ? 'text-green-600 font-semibold' 
                       : 'text-gray-500'
                   }`}>
-                    {isYourPickP1 
-                      ? selectedMatchup.odds[book].p1 
-                      : selectedMatchup.odds[book].p2
-                    }
+                    {selectedMatchup.odds[book] && selectedMatchup.odds[book].p1 && selectedMatchup.odds[book].p2
+                      ? (isYourPickP1 
+                          ? selectedMatchup.odds[book].p1 
+                          : selectedMatchup.odds[book].p2)
+                      : <span className="text-red-500">N/A</span>}
                     {book === bestOddsBookmaker && (
                       <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
                         Best Odds

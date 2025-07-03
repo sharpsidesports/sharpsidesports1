@@ -4,6 +4,7 @@ import GolferProfileModal from './GolferProfileModal.js';
 import { Golfer } from '../../types/golf.js';
 import { SharpsideMetric } from '../../types/metrics.js';
 import { formatAmericanOdds } from '../../utils/calculations/oddsCalculator.js';
+import GolferAvatar from '../GolferAvatar.js';
 
 type SortField = 'rank' | 'name' | 'averageFinish' | 'top10Percentage' | 'winPercentage' | 'fanduelOdds' | 'impliedProbability' | SharpsideMetric;
 type SortDirection = 'asc' | 'desc';
@@ -400,18 +401,10 @@ function PerformanceTable() {
               onClick={() => setSelectedGolfer(golfer)}
             >
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0 h-10 w-10">
-                    <img 
-                      className="h-10 w-10 rounded-full object-cover" 
-                      src={golfer.imageUrl} 
-                      alt={golfer.name} 
-                    />
-                  </div>
-                  <div className="ml-4">
-                    <div className="font-medium text-gray-900">{golfer.name}</div>
-                  </div>
-                </div>
+                <span className="inline-flex items-center gap-2">
+                  <GolferAvatar name={golfer.name} dg_id={golfer.dg_id} size={32} />
+                  <div className="font-medium text-gray-900">{golfer.name}</div>
+                </span>
               </td>
               {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {golfer.simulationStats.averageFinish.toFixed(2)}
