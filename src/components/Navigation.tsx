@@ -75,6 +75,8 @@ export default function Navigation() {
           <div
             className="absolute left-1/2 transform -translate-x-1/2 top-full min-w-[220px] bg-white border border-gray-200 rounded shadow-lg z-50 pt-2"
             style={{ marginTop: '-8px', pointerEvents: 'auto' }}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
           >
             <Link
               to="/articles/detroit-gc"
