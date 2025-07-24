@@ -17,28 +17,22 @@ export default function ExpertInsightContent() {
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        const DOC_ID = '1n36VnBsK-Kj_bsS9hkMG4VR6Ayw0tr1Ware5e4CKseo';
+        const DOC_ID = '1G0nQxpIRIRsSimkJ_zZVJHJgGqjyUPt4GHFaaGXYUlE';
         const response = await fetch(
           `https://docs.google.com/document/d/${DOC_ID}/export?format=txt`
         );
-        
         if (!response.ok) {
           throw new Error('Failed to fetch content');
         }
-
         const text = await response.text();
-        console.log('Raw text:', text); // Debug log
         const parsedSections = parseContent(text);
-        console.log('Parsed sections:', parsedSections); // Debug log
         setSections(parsedSections);
       } catch (err) {
         setError('Failed to load expert insights. Please try again later.');
-        console.error('Error fetching content:', err);
       } finally {
         setLoading(false);
       }
     };
-
     fetchContent();
   }, []);
 
@@ -51,31 +45,22 @@ export default function ExpertInsightContent() {
     for (const line of lines) {
       // Remove leading and trailing whitespace
       const trimmedLine = line.trim();
-      
       // New section starts with a '#'
       if (trimmedLine.startsWith('#')) {
-        // close out previous section
         if (currentSection) {
           parsedSections.push(currentSection);
         }
-        // Start a new section
         currentSection = {
           title: trimmedLine.slice(1).trim(),
           content: []
         };
-      } 
-      // otherwise, if we already have a section in flight...
-      else if (currentSection) {
-        // Each non-empty line is a new paragraph
+      } else if (currentSection) {
         currentSection.content.push(trimmedLine);
       }
     }
-
-    // After the loop, push the last section if it exists
     if (currentSection) {
       parsedSections.push(currentSection);
     }
-
     return parsedSections;
   };
 

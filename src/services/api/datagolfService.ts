@@ -1,179 +1,101 @@
-import { apiClient } from './apiClient.js';
-import { ENDPOINTS } from './endpoints.js';
-import { DFSEventData, DFSSite, DFSTour } from '../../types/fantasy.js';
-import type { ApproachStat } from '../../types/golf.js'; // make sure this path is correct
-
-// This interface is used to define the structure of the response from the DataGolf API for betting odds.
-
-/*interface BettingOddsResponse {
-  event_name: string;
-  last_updated: string;
-  market: string;
-  odds: Array<{
-    player_name: string;
-    fanduel?: number;
-    datagolf?: {
-      baseline?: number;
-      baseline_history_fit?: number;
-    };
-  }>;
-}*/
-
-// This interface is used to define the structure of the response from the DataGolf API for player rankings.
-
-export interface RankingsResponse {
-  event_name: string;
-  last_updated: string;
-  market: string;
-  rankings: Array<{
-    dg_id: string;
-    datagolf_rank: number;
-    player_name: string;
-    fanduel?: number;
-    datagolf?: {
-      baseline?: number;
-      baseline_history_fit?: number;
-    };
-  }>;
-}
-
+// DataGolf API service - fetches real data from the API proxy
 export const datagolfService = {
-  async getPlayerRankings(): Promise<RankingsResponse> {
+  getPlayerRankings: async () => {
     try {
-      const response = await apiClient.get<RankingsResponse>(ENDPOINTS.RANKINGS);
-      return response;
+      const response = await fetch('/api/datagolf/rankings');
+      if (!response.ok) throw new Error('Failed to fetch rankings');
+      return await response.json();
     } catch (error) {
       console.error('Error fetching player rankings:', error);
-      throw error;
+      return { rankings: [] };
     }
   },
 
-  async getSkillRatings() {
+  getSkillRatings: async () => {
     try {
-      const response = await apiClient.get(ENDPOINTS.SKILL_RATINGS, {
-        display: 'value'
-      });
-      return response;
+      const response = await fetch('/api/datagolf/skill-ratings');
+      if (!response.ok) throw new Error('Failed to fetch skill ratings');
+      return await response.json();
     } catch (error) {
       console.error('Error fetching skill ratings:', error);
-      throw error;
+      return {};
     }
   },
 
-  async getBettingOdds() {
+  getBettingOdds: async () => {
     try {
-      const response = await apiClient.get<{
-        event_name: string;
-        last_updated: string;
-        market: string;
-        odds: Array<{
-          player_name: string;
-          dg_id: string;
-          fanduel?: number;
-        }>;
-      }>(ENDPOINTS.OUTRIGHTS, {
-        tour: 'pga',
-        market: 'win',
-        odds_format: 'american'
-      });
-
-      console.log('Betting odds response:', {
-        eventName: response?.event_name,
-        lastUpdated: response?.last_updated,
-        oddsCount: response?.odds?.length || 0,
-        sampleOdds: response?.odds?.[0]
-      });
-
-      return response;
+      const response = await fetch('/api/datagolf/betting-odds');
+      if (!response.ok) throw new Error('Failed to fetch betting odds');
+      return await response.json();
     } catch (error) {
       console.error('Error fetching betting odds:', error);
-      throw error;
+      return {};
     }
   },
 
-  async getApproachStats(): Promise<{ data: ApproachStat[] }> {
+  getApproachStats: async () => {
     try {
-      const response = await apiClient.get<{ data: ApproachStat[] }>(ENDPOINTS.APPROACH_SKILL, {
-        period: 'l12'
-      });
-      return response;
+      const response = await fetch('/api/datagolf/approach-stats');
+      if (!response.ok) throw new Error('Failed to fetch approach stats');
+      return await response.json();
     } catch (error) {
       console.error('Error fetching approach stats:', error);
-      throw error;
+      return { data: [] };
     }
   },
 
-  async getEventList() {
+  getEventList: async () => {
     try {
-      const response = await apiClient.get(ENDPOINTS.EVENT_LIST, {
-        file_format: 'json'
-      });
-      return response;
+      const response = await fetch('/api/datagolf/events');
+      if (!response.ok) throw new Error('Failed to fetch events');
+      return await response.json();
     } catch (error) {
-      console.error('Error fetching event list:', error);
-      throw error;
+      console.error('Error fetching events:', error);
+      return [];
     }
   },
 
-  async getRoundScoring(tour: string, eventId: string, year: string) {
+  getRoundScoring: async () => {
     try {
-      const response = await apiClient.get<DFSEventData>(ENDPOINTS.HISTORICAL_ROUNDS, {
-        tour,
-        event_id: eventId,
-        year,
-        file_format: 'json'
-      });
-      return response;
+      const response = await fetch('/api/datagolf/round-scoring');
+      if (!response.ok) throw new Error('Failed to fetch round scoring');
+      return await response.json();
     } catch (error) {
       console.error('Error fetching round scoring:', error);
-      throw error;
+      return {};
     }
   },
 
-  async getThreeBallOdds() {
+  getThreeBallOdds: async () => {
     try {
-      const response = await apiClient.get(ENDPOINTS.MATCHUPS, {
-        tour: 'pga',
-        market: '3_balls',
-        odds_format: 'american'
-      });
-      return response;
+      const response = await fetch('/api/datagolf/three-ball-odds');
+      if (!response.ok) throw new Error('Failed to fetch three ball odds');
+      return await response.json();
     } catch (error) {
       console.error('Error fetching three ball odds:', error);
-      throw error;
+      return [];
     }
   },
 
-  async getMatchups() {
+  getMatchups: async () => {
     try {
-      const response = await apiClient.get(ENDPOINTS.MATCHUPS, {
-        tour: 'pga',
-        market: 'round_matchups',
-        odds_format: 'american',
-        file_format: 'json'
-      });
-      return response;
+      const response = await fetch('/api/datagolf/matchups');
+      if (!response.ok) throw new Error('Failed to fetch matchups');
+      return await response.json();
     } catch (error) {
       console.error('Error fetching matchups:', error);
-      throw error;
+      return [];
     }
   },
 
-  async getDFSProjections(params: {
-    tour: DFSTour;
-    site: DFSSite;
-  }): Promise<DFSEventData> {
+  getDFSProjections: async (site: string = 'draftkings') => {
     try {
-      const response = await apiClient.get<DFSEventData>(ENDPOINTS.FANTASY_PROJECTIONS, {
-        tour: params.tour,
-        site: params.site,
-        slate: 'main',
-        file_format: 'json'
-      });
-      return response;
+      const response = await fetch(`/api/datagolf/dfs-projections?site=${site}`);
+      if (!response.ok) throw new Error('Failed to fetch DFS projections');
+      return await response.json();
     } catch (error) {
       console.error('Error fetching DFS projections:', error);
-      throw error;
+      return {};
     }
   }
 };

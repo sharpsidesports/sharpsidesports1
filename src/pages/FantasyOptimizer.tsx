@@ -17,6 +17,7 @@ export default function FantasyOptimizer() {
     loading,
     dfsEventData,
     fetchDFSProjections,
+    fetchGolferData,
     updateFantasyPlayers,
     setGolfers 
   } = useGolfStore();
@@ -51,28 +52,8 @@ export default function FantasyOptimizer() {
     const fetchTopPlayers = async () => {
       if (golfers.length === 0) {
         try {
-          const rankingsResponse = await datagolfService.getPlayerRankings();
-          
-          if (!rankingsResponse?.rankings || !Array.isArray(rankingsResponse.rankings)) {
-            throw new Error('Invalid rankings data received');
-          }
-
-          // Sort rankings by datagolf_rank and take only top 10
-          const top10Rankings = rankingsResponse.rankings
-            .sort((a, b) => (a.datagolf_rank || 0) - (b.datagolf_rank || 0))
-            .slice(0, 10);
-
-          const scoringStats = loadScoringStats();
-
-          const enrichedData = await transformGolferData(
-            top10Rankings,
-            [], // No odds data
-            [], // No approach stats
-            [], // No selected courses
-            scoringStats
-          );
-
-          setGolfers(enrichedData);
+          // Fetch real Data Golf data
+          await fetchGolferData();
         } catch (error) {
           console.error('Error fetching top players:', error);
         }
@@ -80,7 +61,7 @@ export default function FantasyOptimizer() {
     };
 
     fetchTopPlayers();
-  }, [golfers.length, setGolfers]);
+  }, [golfers.length, fetchGolferData]);
 
   // Update fantasy players when DFS data or golfers change
   useEffect(() => {
@@ -108,6 +89,7 @@ export default function FantasyOptimizer() {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-sharpside-green mx-auto mb-4"></div>
           <div className="text-gray-600">Loading DFS projections...</div>
         </div>
       </div>
@@ -116,58 +98,112 @@ export default function FantasyOptimizer() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="bg-white rounded-lg shadow p-6">
-        <h1 className="text-2xl font-bold mb-2">Fantasy Golf Optimizer</h1>
-        {dfsEventData && (
-          <div className="text-sm text-gray-600 mb-6">
-            <div>Event: {dfsEventData.event_name}</div>
-            <div>Last Updated: {new Date(dfsEventData.last_updated).toLocaleString()}</div>
-            {dfsEventData.note && <div className="text-green-600">{dfsEventData.note}</div>}
-          </div>
-        )}
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div>
-            <OptimizationSettings 
-              settings={settings}
-              onSettingsChange={setSettings}
-            />
-            <div className="mt-6">
-              <LineupBuilder
-                selectedPlayers={selectedPlayers}
-                lockedPlayers={lockedPlayers}
-                onLockPlayer={setLockedPlayers}
-                excludedPlayers={excludedPlayers}
-                onExcludePlayer={setExcludedPlayers}
-                onRemovePlayer={(playerId) => setSelectedPlayers(selectedPlayers.filter(id => id !== playerId))}
-              />
+      <h2 className="text-2xl font-bold mb-6">Fantasy Optimizer</h2>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Settings Panel */}
+        <div className="lg:col-span-1">
+          <div className="bg-white rounded-lg shadow p-6">
+            <h3 className="text-lg font-semibold mb-4">Optimization Settings</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  DFS Site
+                </label>
+                <select
+                  value={settings.site}
+                  onChange={(e) => setSettings(prev => ({ ...prev, site: e.target.value as DFSSite }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sharpside-green"
+                >
+                  <option value="draftkings">DraftKings</option>
+                  <option value="fanduel">FanDuel</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Number of Lineups
+                </label>
+                <input
+                  type="number"
+                  value={settings.lineups}
+                  onChange={(e) => setSettings(prev => ({ ...prev, lineups: parseInt(e.target.value) }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sharpside-green"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Budget
+                </label>
+                <input
+                  type="number"
+                  value={settings.budget}
+                  onChange={(e) => setSettings(prev => ({ ...prev, budget: parseInt(e.target.value) }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sharpside-green"
+                />
+              </div>
             </div>
           </div>
-
-          <PlayerPool
-            golfers={fantasyPlayers}
-            selectedPlayers={selectedPlayers}
-            onSelectPlayer={setSelectedPlayers}
-            lockedPlayers={lockedPlayers}
-            excludedPlayers={excludedPlayers}
-          />
         </div>
 
-        <div className="mt-6">
-          <button
-            onClick={handleOptimize}
-            className="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-          >
-            Generate Optimal Lineups
-          </button>
+        {/* Player Pool */}
+        <div className="lg:col-span-2">
+          <div className="bg-white rounded-lg shadow p-6">
+            <h3 className="text-lg font-semibold mb-4">Player Pool ({fantasyPlayers.length} players)</h3>
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {fantasyPlayers.map((player) => (
+                <div key={player.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                  <div>
+                    <span className="font-medium">{player.name}</span>
+                    <span className="text-sm text-gray-500 ml-2">${player.salary.toLocaleString()}</span>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-medium">{player.projectedPoints.toFixed(1)} pts</div>
+                    <div className="text-sm text-gray-500">{player.position}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
+      </div>
 
-        {generatedLineups.length > 0 && (
-          <GeneratedLineups
-            lineups={generatedLineups}
-            players={fantasyPlayers}
-          />
-        )}
+      {/* Generated Lineups */}
+      {generatedLineups.length > 0 && (
+        <div className="mt-8 bg-white rounded-lg shadow p-6">
+          <h3 className="text-lg font-semibold mb-4">Generated Lineups</h3>
+          <div className="space-y-4">
+            {generatedLineups.map((lineup, index) => (
+              <div key={index} className="border border-gray-200 rounded-lg p-4">
+                <h4 className="font-medium mb-2">Lineup {index + 1}</h4>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {lineup.players.map((playerId, playerIndex) => {
+                    const player = fantasyPlayers.find(p => p.id === playerId);
+                    return player ? (
+                      <div key={playerIndex} className="text-sm">
+                        <span className="font-medium">{player.name}</span>
+                        <span className="text-gray-500 ml-2">${player.salary.toLocaleString()}</span>
+                      </div>
+                    ) : null;
+                  })}
+                </div>
+                <div className="mt-2 text-sm text-gray-600">
+                  Total Salary: ${lineup.totalSalary.toLocaleString()} | 
+                  Projected Points: {lineup.projectedPoints.toFixed(1)}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Optimize Button */}
+      <div className="mt-6 text-center">
+        <button
+          onClick={handleOptimize}
+          className="bg-sharpside-green text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
+        >
+          Generate Optimal Lineups
+        </button>
       </div>
     </div>
   );

@@ -30,48 +30,27 @@ export const createGolfersSlice: StateCreator<GolfersSlice> = (set) => ({
   fetchGolferData: async () => {
     set({ loading: true, error: null });
     try {
-      // Fetch data from DataGolf API
-      const [rankingsResponse, oddsResponse, approachResponse] = await Promise.all([
+      // Fetch real Data Golf data
+      const [rankingsResponse, oddsResponse, approachStatsResponse, scoringStats] = await Promise.all([
         datagolfService.getPlayerRankings(),
         datagolfService.getBettingOdds(),
         datagolfService.getApproachStats(),
+        loadScoringStats()
       ]);
 
-      console.log('API Responses:', {
-        rankings: rankingsResponse?.rankings?.length || 0,
-        rankingsSample: rankingsResponse?.rankings?.[0],
-        odds: oddsResponse?.odds?.length || 0,
-        oddsSample: oddsResponse?.odds?.[0],
-        approach: approachResponse?.data?.length || 0,
-        approachSample: approachResponse?.data?.[0]
-      });
-
-      if (!rankingsResponse?.rankings || !Array.isArray(rankingsResponse.rankings)) {
-        throw new Error('Invalid rankings data received');
-      }
-
-      const { selectedCourses } = useGolfStore.getState();
-      const scoringStats = loadScoringStats();
-
+      // Transform the data using the existing transformer
       const enrichedData = await transformGolferData(
-        rankingsResponse.rankings,
-        oddsResponse?.odds || [],
-        approachResponse?.data || [],
-        selectedCourses,
+        rankingsResponse.rankings || [],
+        oddsResponse.odds || [],
+        approachStatsResponse.data || [],
+        [], // selected courses - empty for now
         scoringStats
       );
 
-      if (!Array.isArray(enrichedData)) {
-        throw new Error('Transformed data is not an array');
-      }
-      console.log('Fetched and transformed data:', enrichedData);
-
-      set({ golfers: enrichedData, error: null });
+      set({ golfers: enrichedData, error: null, loading: false });
     } catch (err) {
-      console.error('Error in fetchGolferData:', err);
-      set({ error: err instanceof Error ? err.message : 'Failed to fetch golfer data', loading: false });
-    } finally {
-      set({ loading: false });
+      console.error('Error fetching golfer data:', err);
+      set({ error: 'Failed to load golfer data', loading: false });
     }
   }
 });

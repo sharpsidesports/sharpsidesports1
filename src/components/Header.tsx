@@ -12,7 +12,7 @@ function Header() {
         <div className="text-center sm:text-left mb-4 sm:mb-0">
           <Link to="/" className="text-3xl sm:text-4xl font-bold tracking-tight">
             <span className="text-sharpside-black">SHARPSIDE</span>
-            <span className="text-sharpside-green"> GOLF</span>
+            <span className="text-sharpside-green"> SPORTS</span>
           </Link>
           <p className="text-sm text-gray-600 tracking-wide mt-1 hidden sm:block">BET ON THE SHARPSIDE--</p>
           <div className="text-xs text-gray-500 mt-1 hidden sm:block">
@@ -22,14 +22,7 @@ function Header() {
         <div className="flex items-center">
           {user ? (
             <UserMenu />
-          ) : (
-            <Link
-              to="/auth"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-            >
-              Sign In
-            </Link>
-          )}
+          ) : null}
         </div>
       </div>
     </header>

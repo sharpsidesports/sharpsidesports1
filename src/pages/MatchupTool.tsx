@@ -34,6 +34,7 @@ function MatchupTool() {
   const [selectedGolfer1, setSelectedGolfer1] = useState<Golfer | null>(null);
   const [selectedGolfer2, setSelectedGolfer2] = useState<Golfer | null>(null);
   const [error, setError] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
   const [eventName, setEventName] = useState<string>('');
   const [lastUpdated, setLastUpdated] = useState<string>('');
   const [selectedBookmaker, setSelectedBookmaker] = useState<string>('');
@@ -60,18 +61,42 @@ function MatchupTool() {
       if (golfers.length === 0) return; // Wait for golfers to be loaded
 
       try {
-        const response = await datagolfService.getMatchups() as MatchupResponse;
-
-        setEventName(response.event_name);
-        setLastUpdated(response.last_updated);
-
-        if (typeof response.match_list === 'string') {
-          setError(response.match_list);
-          setMatchups([]);
-        } else {
-          setMatchups(response.match_list || []);
+        // Placeholder: No real DataGolf API, show static message
+        setEventName('Tournament Name');
+        setLastUpdated('Last Updated: 2023-10-27 10:00 AM');
+        setMatchups([
+          {
+            p1_player_name: 'Tiger Woods',
+            p2_player_name: 'Phil Mickelson',
+            odds: {
+              bet365: { p1: '+120', p2: '-110', tie: 'Push' },
+              pinnacle: { p1: '+110', p2: '-105', tie: 'Push' },
+              draftkings: { p1: '+115', p2: '-100', tie: 'Push' },
+            },
+            ties: 'void',
+          },
+          {
+            p1_player_name: 'Rory McIlroy',
+            p2_player_name: 'Jordan Spieth',
+            odds: {
+              bet365: { p1: '+150', p2: '-130', tie: 'Push' },
+              pinnacle: { p1: '+140', p2: '-120', tie: 'Push' },
+              draftkings: { p1: '+145', p2: '-125', tie: 'Push' },
+            },
+            ties: 'separate bet offered',
+          },
+          {
+            p1_player_name: 'Dustin Johnson',
+            p2_player_name: 'Justin Thomas',
+            odds: {
+              bet365: { p1: '+200', p2: '-180', tie: 'Push' },
+              pinnacle: { p1: '+190', p2: '-170', tie: 'Push' },
+              draftkings: { p1: '+195', p2: '-175', tie: 'Push' },
+            },
+            ties: 'void',
+          },
+        ]);
           setError('');
-        }
       } catch (error) {
         console.error('Error fetching matchups:', error);
         setError('Failed to fetch matchups. Please try again later.');
@@ -382,376 +407,209 @@ function MatchupTool() {
     return stat1 > stat2;
   };
 
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-sharpside-green"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h2 className="text-2xl font-bold mb-6">Matchup Analysis Tool</h2>
+        <div className="text-center text-red-500 py-12">{error}</div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h2 className="text-2xl font-bold mb-6">Matchup Analysis Tool</h2>
       
-      {/* <button
-        onClick={runSimulation}
-        className="bg-sharpside-green text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
-      >
-        Run Simulation
-      </button> */}
-
-      <div className="mb-6">
-        <div className="text-sm text-gray-600">
-          Event: {eventName}
-        </div>
-        <div className="text-sm text-gray-600">
-          Last Updated: {lastUpdated}
-        </div>
-      </div>
-
-      {/* Add Sportsbook Filter */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Filter by Sportsbook
-        </label>
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => setSelectedFilterBookmaker('')}
-            className={`px-4 py-2 rounded-lg text-sm ${
-              !selectedFilterBookmaker
-                ? 'bg-green-500 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-          >
-            All Sportsbooks
-          </button>
-          {getAllAvailableBookmakers().map(book => (
-            <button
-              key={book}
-              onClick={() => setSelectedFilterBookmaker(book)}
-              className={`px-4 py-2 rounded-lg text-sm ${
-                selectedFilterBookmaker === book
-                  ? 'bg-green-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
+      {/* Player Selection */}
+      <div className="mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Player 1
+            </label>
+            <select
+              value={selectedGolfer1?.name || ''}
+              onChange={(e) => handlePlayerSelect(`${e.target.value}|${selectedGolfer2?.name || ''}|${selectedMatchup?.ties}`)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sharpside-green"
             >
-              {book}
-              <span className="ml-2 text-xs">
-                ({matchups.filter(m => m.odds[book]).length})
-              </span>
-            </button>
-          ))}
+              <option value="">Select Player 1</option>
+              {golfers.map((golfer) => (
+                <option key={golfer.id} value={golfer.name}>
+                  {golfer.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Player 2
+            </label>
+            <select
+              value={selectedGolfer2?.name || ''}
+              onChange={(e) => handlePlayerSelect(`${selectedGolfer1?.name || ''}|${e.target.value}|${selectedMatchup?.ties}`)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sharpside-green"
+            >
+              <option value="">Select Player 2</option>
+              {golfers.map((golfer) => (
+                <option key={golfer.id} value={golfer.name}>
+                  {golfer.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
-      {/* Add Positive Edge Filter */}
-      <div className="mb-6">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowOnlyPositiveEdge(!showOnlyPositiveEdge)}
-            className={`px-4 py-2 rounded-lg text-sm flex items-center gap-2 ${
-              showOnlyPositiveEdge
-                ? 'bg-green-500 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-          >
-            {showOnlyPositiveEdge ? (
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-              </svg>
-            ) : (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-            )}
-            Show Only Positive Edge Matchups
-          </button>
-          {showOnlyPositiveEdge && (
-            <span className="text-sm text-gray-500">
-              Showing {filteredMatchups.length} matchups with positive edge
-            </span>
-          )}
-        </div>
-      </div>
-
-      {error && (
-        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-              </svg>
+      {/* Matchup Analysis */}
+      {selectedGolfer1 && selectedGolfer2 && (
+        <div className="bg-white rounded-lg shadow p-6 mb-8">
+          <h3 className="text-lg font-semibold mb-4">Matchup Analysis</h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Player 1 Stats */}
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h4 className="font-semibold mb-3">{selectedGolfer1.name}</h4>
+              {(() => {
+                const player1 = golfers.find(g => g.name === selectedGolfer1.name);
+                if (!player1) return <p className="text-gray-500">Player not found</p>;
+                
+                return (
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>Strokes Gained Total:</span>
+                      <span className={isStatFavorable(player1.strokesGainedTotal, 0) ? 'text-green-600' : 'text-red-600'}>
+                        {player1.strokesGainedTotal.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Top 10 %:</span>
+                      <span className={isStatFavorable(player1.simulationStats.top10Percentage, 0) ? 'text-green-600' : 'text-red-600'}>
+                        {player1.simulationStats.top10Percentage.toFixed(1)}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Win %:</span>
+                      <span className={isStatFavorable(player1.simulationStats.winPercentage, 0) ? 'text-green-600' : 'text-red-600'}>
+                        {player1.simulationStats.winPercentage.toFixed(1)}%
+                      </span>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
-            <div className="ml-3">
-              <p className="text-sm text-yellow-700">No {error}</p>
+
+            {/* Player 2 Stats */}
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h4 className="font-semibold mb-3">{selectedGolfer2.name}</h4>
+              {(() => {
+                const player2 = golfers.find(g => g.name === selectedGolfer2.name);
+                if (!player2) return <p className="text-gray-500">Player not found</p>;
+                
+                return (
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>Strokes Gained Total:</span>
+                      <span className={isStatFavorable(player2.strokesGainedTotal, 0) ? 'text-green-600' : 'text-red-600'}>
+                        {player2.strokesGainedTotal.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Top 10 %:</span>
+                      <span className={isStatFavorable(player2.simulationStats.top10Percentage, 0) ? 'text-green-600' : 'text-red-600'}>
+                        {player2.simulationStats.top10Percentage.toFixed(1)}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Win %:</span>
+                      <span className={isStatFavorable(player2.simulationStats.winPercentage, 0) ? 'text-green-600' : 'text-red-600'}>
+                        {player2.simulationStats.winPercentage.toFixed(1)}%
+                      </span>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           </div>
+
+          {/* Value Analysis */}
+          {(() => {
+            const player1 = golfers.find(g => g.name === selectedGolfer1.name);
+            const player2 = golfers.find(g => g.name === selectedGolfer2.name);
+            
+            if (!player1 || !player2) return null;
+            
+            const valueIndicator = getValueIndicator(player1, player2);
+            
+            return (
+              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                <h4 className="font-semibold mb-2">Value Analysis</h4>
+                {valueIndicator ? (
+                  <p className="text-blue-700 font-medium">{valueIndicator}</p>
+                ) : (
+                  <p className="text-gray-600">No clear value edge detected</p>
+                )}
+              </div>
+            );
+          })()}
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-green-50 p-4 rounded-lg border-2 border-green-200">
-          <div className="flex items-center justify-between mb-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Select Matchup
-            </label>
-            {selectedGolfer1 && selectedGolfer2 && (
-              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                getValueIndicator(selectedGolfer1, selectedGolfer2) 
-                  ? 'bg-green-100 text-green-800' 
-                  : 'bg-gray-100 text-gray-800'
-              }`}>
-                {getValueIndicator(selectedGolfer1, selectedGolfer2) || 'Even Matchup'}
-              </span>
-            )}
-          </div>
-          <select
-            className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-            value={selectedMatchup ? `${selectedMatchup.p1_player_name}|${selectedMatchup.p2_player_name}|${selectedMatchup.ties}` : ''}
-            onChange={(e) => handlePlayerSelect(e.target.value)}
-          >
-            <option value="">Select Matchup</option>
-            {filteredMatchups.map((matchup) => (
-              <option 
-                key={getMatchupKey(matchup)} 
-                value={`${matchup.p1_player_name}|${matchup.p2_player_name}|${matchup.ties}`}
-              >
-                {getMatchupDisplayText(matchup)}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="bg-gray-50 p-4 rounded-lg border-2 border-gray-200">
-          <div className="flex items-center justify-between mb-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Your Pick
-            </label>
-            <div className="flex space-x-2">
-              <button
-                onClick={() => setIsYourPickP1(true)}
-                className={`px-3 py-1 text-xs rounded-full ${isYourPickP1 
-                  ? 'bg-green-500 text-white' 
-                  : 'bg-gray-200 text-gray-700'}`}
-              >
-                {selectedMatchup?.p1_player_name || 'Player 1'}
-              </button>
-              <button
-                onClick={() => setIsYourPickP1(false)}
-                className={`px-3 py-1 text-xs rounded-full ${!isYourPickP1 
-                  ? 'bg-green-500 text-white' 
-                  : 'bg-gray-200 text-gray-700'}`}
-              >
-                {selectedMatchup?.p2_player_name || 'Player 2'}
-              </button>
-            </div>
-          </div>
-          <div className="text-center p-2 bg-gray-100 rounded-md">
-            {selectedMatchup ? (
-              <span className="font-medium">
-                {isYourPickP1 ? selectedMatchup.p1_player_name : selectedMatchup.p2_player_name}
-              </span>
-            ) : (
-              <span className="text-gray-500">Select a matchup first</span>
-            )}
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Odds for Your Pick (e.g., +120 or -110)
-          </label>
-          <input
-            type="text"
-            className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-            value={odds}
-            readOnly
-          />
-          {selectedMatchup && (
-            <div className="mt-1 text-sm text-gray-500">
-              Ties: {selectedMatchup.ties === "void" ? (
-                <span className="text-orange-600">Void (push if tied)</span>
-              ) : (
-                <span className="text-purple-600">
-                  Separate bet available
-                  {selectedMatchup.odds.bet365?.tie && ` (${selectedMatchup.odds.bet365.tie})`}
-                </span>
-              )}
-            </div>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Bet Amount ($)
-          </label>
-          <input
-            type="number"
-            className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-            value={betAmount}
-            onChange={(e) => setBetAmount(e.target.value)}
-          />
-        </div>
-      </div>
-
-      {selectedMatchup && (
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Available Sportsbooks</label>
-          <div className="mt-1 grid grid-cols-1 md:grid-cols-3 gap-4">
-            {filteredBookmakers.map(book => (
-              <button
-                key={book}
-                onClick={() => {
-                  if (selectedMatchup.odds[book] && selectedMatchup.odds[book].p1 && selectedMatchup.odds[book].p2) {
-                    setSelectedBookmaker(book);
-                    setOdds(isYourPickP1 
-                      ? selectedMatchup.odds[book].p1 
-                      : selectedMatchup.odds[book].p2
-                    );
-                  }
-                }}
-                className={`p-3 rounded-lg border ${
-                  selectedBookmaker === book 
-                    ? 'border-green-500 bg-green-50' 
-                    : 'border-gray-200 hover:border-green-300'
-                } ${
-                  book === bestOddsBookmaker 
-                    ? 'ring-2 ring-green-500' 
-                    : ''
-                }`}
-                disabled={!(selectedMatchup.odds[book] && selectedMatchup.odds[book].p1 && selectedMatchup.odds[book].p2)}
-              >
-                <div className="flex justify-between items-center">
-                  <span className="font-medium">{book}</span>
-                  <span className={`text-sm ${
-                    book === bestOddsBookmaker 
-                      ? 'text-green-600 font-semibold' 
-                      : 'text-gray-500'
-                  }`}>
-                    {selectedMatchup.odds[book] && selectedMatchup.odds[book].p1 && selectedMatchup.odds[book].p2
-                      ? (isYourPickP1 
-                          ? selectedMatchup.odds[book].p1 
-                          : selectedMatchup.odds[book].p2)
-                      : <span className="text-red-500">N/A</span>}
-                    {book === bestOddsBookmaker && (
-                      <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
-                        Best Odds
-                      </span>
-                    )}
+      {/* Available Matchups */}
+      {matchups.length > 0 && (
+        <div className="bg-white rounded-lg shadow p-6">
+          <h3 className="text-lg font-semibold mb-4">Available Matchups</h3>
+          <div className="space-y-4">
+            {getFilteredMatchups().map((matchup, index) => (
+              <div key={index} className="border border-gray-200 rounded-lg p-4">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="font-medium">{getMatchupDisplayText(matchup)}</span>
+                  <span className="text-sm text-gray-500">
+                    {matchup.odds && Object.keys(matchup.odds).length > 0 ? 
+                      `${Object.keys(matchup.odds).length} bookmakers` : 
+                      'No odds available'
+                    }
                   </span>
                 </div>
-              </button>
+                
+                {matchup.odds && Object.keys(matchup.odds).length > 0 && (
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="font-medium">{matchup.p1_player_name}:</span>
+                      <div className="space-y-1 mt-1">
+                        {Object.entries(matchup.odds).map(([bookmaker, odds]) => (
+                          <div key={bookmaker} className="flex justify-between">
+                            <span className="text-gray-600">{bookmaker}:</span>
+                            <span>{odds.p1}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="font-medium">{matchup.p2_player_name}:</span>
+                      <div className="space-y-1 mt-1">
+                        {Object.entries(matchup.odds).map(([bookmaker, odds]) => (
+                          <div key={bookmaker} className="flex justify-between">
+                            <span className="text-gray-600">{bookmaker}:</span>
+                            <span>{odds.p2}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             ))}
-          </div>
-        </div>
-      )}
-
-      {selectedGolfer1 && selectedGolfer2 && odds && (
-        <div className="col-span-1 md:col-span-2">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold mb-4">Head-to-Head Comparison</h3>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead>
-                  <tr>
-                    <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Metric
-                    </th>
-                    <th className="px-6 py-3 bg-green-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {selectedGolfer1.name} {isYourPickP1 && '(Your Pick)'}
-                    </th>
-                    <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {selectedGolfer2.name} {!isYourPickP1 && '(Your Pick)'}
-                    </th>
-                    <th className="px-6 py-3 bg-gray-50 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Edge
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  <tr>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      SG: Total
-                    </td>
-                    <td className={`px-6 py-4 whitespace-nowrap text-sm text-right ${
-                      isStatFavorable(selectedGolfer1.strokesGainedTotal, selectedGolfer2.strokesGainedTotal)
-                        ? 'text-green-600 font-semibold'
-                        : 'text-gray-500'
-                    }`}>
-                      {selectedGolfer1.strokesGainedTotal.toFixed(2)}
-                    </td>
-                    <td className={`px-6 py-4 whitespace-nowrap text-sm text-right ${
-                      isStatFavorable(selectedGolfer2.strokesGainedTotal, selectedGolfer1.strokesGainedTotal)
-                        ? 'text-green-600 font-semibold'
-                        : 'text-gray-500'
-                    }`}>
-                      {selectedGolfer2.strokesGainedTotal.toFixed(2)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        Math.abs(selectedGolfer1.strokesGainedTotal - selectedGolfer2.strokesGainedTotal) > 0.5
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-600'
-                      }`}>
-                        {Math.abs(selectedGolfer1.strokesGainedTotal - selectedGolfer2.strokesGainedTotal).toFixed(2)}
-                      </span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      Top 10 %
-                    </td>
-                    <td className={`px-6 py-4 whitespace-nowrap text-sm text-right ${
-                      isStatFavorable(selectedGolfer1.simulationStats.top10Percentage, selectedGolfer2.simulationStats.top10Percentage)
-                        ? 'text-green-600 font-semibold'
-                        : 'text-gray-500'
-                    }`}>
-                      {selectedGolfer1.simulationStats.top10Percentage.toFixed(1)}%
-                    </td>
-                    <td className={`px-6 py-4 whitespace-nowrap text-sm text-right ${
-                      isStatFavorable(selectedGolfer2.simulationStats.top10Percentage, selectedGolfer1.simulationStats.top10Percentage)
-                        ? 'text-green-600 font-semibold'
-                        : 'text-gray-500'
-                    }`}>
-                      {selectedGolfer2.simulationStats.top10Percentage.toFixed(1)}%
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        Math.abs(selectedGolfer1.simulationStats.top10Percentage - selectedGolfer2.simulationStats.top10Percentage) > 5
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-600'
-                      }`}>
-                        {Math.abs(selectedGolfer1.simulationStats.top10Percentage - selectedGolfer2.simulationStats.top10Percentage).toFixed(1)}%
-                      </span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {selectedGolfer1 && selectedGolfer2 && odds && (
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 col-span-2">
-          <div className={`p-4 rounded-lg ${edge && edge > 0 ? 'bg-green-50 border-2 border-green-200' : 'bg-gray-50'}`}>
-            <h3 className="text-sm font-medium text-gray-500 mb-1">Model Edge</h3>
-            <p className={`text-2xl font-bold ${edge && edge > 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {edge ? `${edge.toFixed(1)}%` : '-'}
-            </p>
-            <p className="text-sm text-gray-500 mt-1">
-              {edge && edge > 0 ? (
-                <span className="flex items-center">
-                  <svg className="w-4 h-4 text-green-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  Favorable Edge
-                </span>
-              ) : 'Unfavorable Edge'}
-            </p>
-          </div>
-
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h3 className="text-sm font-medium text-gray-500 mb-1">Potential Payout</h3>
-            <p className="text-2xl font-bold text-gray-900">
-              ${payout || '-'}
-            </p>
-            <p className="text-sm text-gray-500 mt-1">
-              If {selectedGolfer1?.name} wins
-            </p>
           </div>
         </div>
       )}

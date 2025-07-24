@@ -20,31 +20,35 @@ export const createFantasySlice: StateCreator<FantasySlice> = (set, get) => ({
   fetchDFSProjections: async (site: DFSSite) => {
     set({ loading: true, error: null });
     try {
-      const data = await datagolfService.getDFSProjections({
-        tour: 'pga',
-        site
-      });
+      const response = await datagolfService.getDFSProjections(site);
       
-      set({ dfsEventData: data });
-      
-      // Convert projections to fantasy players and sort by ownership
-      const fantasyPlayers = data.projections
-        .map(proj => ({
-          id: proj.dg_id.toString(),
-          name: proj.player_name,
-          salary: proj.salary,
-          projectedPoints: proj.proj_points_total,
-          position: 'G',
-          ownership: proj.proj_ownership / 100
-        }))
-        .sort((a, b) => b.ownership - a.ownership)  // Sort by ownership descending
-        // .slice(0, 20);  // Take top 20
-      
-      set({ fantasyPlayers });
+      if (response && response.data) {
+        const fantasyPlayers: FantasyPlayer[] = response.data.map((player: any) => ({
+          id: player.dg_id?.toString() || player.id?.toString() || '',
+          name: player.player_name || player.name || '',
+          salary: player.salary || 0,
+          projected_points: player.projected_points || 0,
+          position: player.position || 'G',
+          team: player.team || '',
+          odds: player.odds || 0,
+          approach_stats: player.approach_stats || {
+            avg_approach_distance: 0,
+            avg_approach_accuracy: 0
+          },
+          selected_courses: player.selected_courses || []
+        }));
+
+        set({ 
+          fantasyPlayers, 
+          dfsEventData: response.event_data || {},
+          loading: false 
+        });
+      } else {
+        set({ loading: false, error: 'No DFS data available' });
+      }
     } catch (error) {
-      set({ error: error instanceof Error ? error.message : 'Failed to fetch DFS projections' });
-    } finally {
-      set({ loading: false });
+      console.error('Error fetching DFS projections:', error);
+      set({ loading: false, error: 'Failed to fetch DFS projections' });
     }
   },
 

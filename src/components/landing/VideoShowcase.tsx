@@ -1,180 +1,57 @@
-import { useState, useRef } from 'react';
+import React, { useState } from 'react';
 
-interface FeatureVideo {
+interface FeatureImage {
   title: string;
   description: string;
-  videoSrc: string;
-  posterSrc: string;
+  imageSrc: string;
   features: string[];
 }
 
-const features: FeatureVideo[] = [
+const features: FeatureImage[] = [
   {
-    title: 'Betting Picks',
-    description: 'Get access to professional betting picks and insights for every tournament and player.',
-    videoSrc: '/videos/expert insights.mp4',
-    posterSrc: '/videos/expert insights_poster.jpg',
+    title: 'Expert Betting Picks',
+    description: 'Get access to professional betting picks and insights everyday that will help you profit.',
+    imageSrc: 'https://files.constantcontact.com/f381eaf7701/18be7f91-9a7b-475b-96db-48018ac7c8f5.png',
     features: [
       'Professional betting picks',
-      'Tournament previews',
-      'Player spotlights'
+      'Daily insights',
+      'Profit-focused analysis'
     ]
   },
   {
-    title: 'Matchup Tool',
-    description: 'Our advanced matchup analysis engine grades each head-to-head matchup, calculating precise Expected Value (EV) for both players based on current odds, historical performance, and course conditions.',
-    videoSrc: '/videos/matchup tool.mp4',
-    posterSrc: '/videos/matchup tool_poster.jpg',
+    title: 'Model Projections',
+    description: 'Access to all of our proprietary models that will give you the edge, in every sport we model',
+    imageSrc: 'https://files.constantcontact.com/f381eaf7701/2d143453-422a-47eb-9a85-805adda3b256.png',
     features: [
-      'EV-based matchup grading',
-      'Value-based recommendations',
-      'Course-specific insights'
+      'Proprietary models',
+      'Multi-sport coverage',
+      'Edge-focused analysis'
     ]
   },
   {
-    title: 'AI Caddie',
-    description: 'Get personalized insights and recommendations from our advanced AI system, analyzing every aspect of the game.',
-    videoSrc: '/videos/ai caddie.mp4',
-    posterSrc: '/videos/ai caddie_poster.jpg',
+    title: '+EV Tools',
+    description: 'Use state of the art betting tools that can give you the edge you need to grow your bankroll.',
+    imageSrc: 'https://files.constantcontact.com/f381eaf7701/f1173c9a-1267-4e77-b6fd-caf91ec57a5e.png',
     features: [
-      'Course-specific strategies',
-      'Player matchup analysis',
-      'Weather-adjusted performance forecasts'
-    ]
-  },
-  {
-    title: 'Fantasy Optimizer',
-    description: 'Build winning lineups with our advanced optimization engine that considers all possible combinations and constraints.',
-    videoSrc: '/videos/Fantasy Optimizer.mp4',
-    posterSrc: '/videos/Fantasy Optimizer_poster.jpg',
-    features: [
-      'Advanced lineup optimization',
-      'Real-time updates',
-      'Custom player pools'
-    ]
-  },
-  {
-    title: 'Course Fit Tool',
-    description: 'Analyze how well players match up with specific courses based on historical performance and course characteristics.',
-    videoSrc: '/videos/course fit .mp4',
-    posterSrc: '/videos/course fit _poster.jpg',
-    features: [
-      'Course-specific analysis',
-      'Historical performance tracking',
-      'Detailed statistics breakdown'
-    ]
-  },
-  {
-    title: 'Model Dashboard',
-    description: 'View all our predictive models in one place with our comprehensive dashboard.',
-    videoSrc: '/videos/model dashboard.mp4',
-    posterSrc: '/videos/model dashboard_poster.jpg',
-    features: [
-      'Real-time updates',
-      'Multiple model views',
-      'Custom filters'
+      'Advanced betting tools',
+      'Bankroll growth focus',
+      'Edge identification'
     ]
   }
 ];
 
-const VideoPlayer = ({ video }: { video: FeatureVideo }) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleVideoClick = async () => {
-    if (videoRef.current) {
-      try {
-        if (isPlaying) {
-          await videoRef.current.pause();
-        } else {
-          const playPromise = videoRef.current.play();
-          if (playPromise !== undefined) {
-            await playPromise;
-          }
-        }
-        setIsPlaying(!isPlaying);
-        setError(null);
-      } catch (err) {
-        console.error('Video playback error:', err);
-        setError('Error playing video');
-        setIsPlaying(false);
-      }
-    }
-  };
-
-  const handleVideoEnded = () => {
-    setIsPlaying(false);
-    if (videoRef.current) {
-      videoRef.current.currentTime = 0;
-    }
-  };
-
-  const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
-    console.error('Video error:', e);
-    setError('Error loading video');
-    setIsPlaying(false);
-  };
-
-  // Get video extension
-  const videoExt = video.videoSrc.split('.').pop()?.toLowerCase();
-
+function ImagePlayer({ feature }: { feature: FeatureImage }) {
   return (
-    <div className="relative rounded-lg overflow-hidden shadow-lg group cursor-pointer">
-      <video 
-        ref={videoRef}
-        className="w-full h-auto"
-        poster={video.posterSrc}
-        onClick={handleVideoClick}
-        onEnded={handleVideoEnded}
-        onError={handleVideoError}
-        playsInline
-        preload="metadata"
-        muted
-        controls
-      >
-        <source 
-          src={video.videoSrc} 
-          type={videoExt === 'mov' ? 'video/quicktime' : 'video/mp4'} 
-        />
-        {/* Add MP4 fallback for MOV files */}
-        {videoExt === 'mov' && (
-          <source 
-            src={video.videoSrc.replace('.mov', '.mp4')} 
-            type="video/mp4" 
-          />
-        )}
-        Your browser does not support the video tag.
-      </video>
-      
-      {/* Play/Pause Overlay */}
-      <div 
-        className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
-          isPlaying ? 'opacity-0' : 'opacity-100'
-        } hover:opacity-100`}
-        onClick={handleVideoClick}
-      >
-        <div className="rounded-full bg-white bg-opacity-90 p-4 shadow-lg transform transition-transform duration-200 hover:scale-110">
-          {error ? (
-            <div className="text-red-600 text-sm">{error}</div>
-          ) : (
-            <svg 
-              className="w-12 h-12 text-green-600" 
-              fill="currentColor" 
-              viewBox="0 0 20 20"
-            >
-              {isPlaying ? (
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-              ) : (
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-              )}
-            </svg>
-          )}
-        </div>
-      </div>
+    <div className="relative">
+      <img
+        src={feature.imageSrc}
+        alt={feature.title}
+        className="w-full h-auto rounded-lg shadow-lg"
+        style={{ maxHeight: '400px', objectFit: 'cover' }}
+      />
     </div>
   );
-};
+}
 
 export default function VideoShowcase() {
   return (
@@ -182,7 +59,7 @@ export default function VideoShowcase() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <p className="mt-2 text-3xl leading-8 font-bold tracking-tight text-gray-900 sm:text-4xl">
-            What We Offer
+            What You Get
           </p>
         </div>
 
@@ -210,9 +87,9 @@ export default function VideoShowcase() {
                 </ul>
               </div>
 
-              {/* Video Section */}
+              {/* Image Section */}
               <div className={index % 2 === 1 ? 'lg:order-1' : ''}>
-                <VideoPlayer video={feature} />
+                <ImagePlayer feature={feature} />
               </div>
             </div>
           ))}

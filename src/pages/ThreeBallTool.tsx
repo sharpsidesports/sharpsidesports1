@@ -61,18 +61,34 @@ function ThreeBallTool() {
 
       try {
         setLoading(true);
-        const response = await datagolfService.getThreeBallOdds() as ThreeBallResponse;
-        
-        setEventName(response.event_name);
-        setLastUpdated(response.last_updated);
-
-        if (typeof response.match_list === 'string') {
-          setError(response.match_list);
-          setThreeBallOdds([]);
-        } else {
-          setThreeBallOdds(response.match_list || []);
-          setError('');
-        }
+        // Placeholder: No real DataGolf API, show static message
+        setEventName('Example Event');
+        setLastUpdated('2023-10-27T10:00:00Z');
+        setThreeBallOdds([
+          {
+            odds: {
+              datagolf: { p1: 100, p2: 200, p3: 300 },
+              bookmakerA: { p1: 110, p2: 220, p3: 330 },
+              bookmakerB: { p1: 95, p2: 190, p3: 285 },
+            },
+            p1_player_name: 'Player 1',
+            p2_player_name: 'Player 2',
+            p3_player_name: 'Player 3',
+            ties: 'dead heat',
+          },
+          {
+            odds: {
+              datagolf: { p1: 150, p2: 250, p3: 350 },
+              bookmakerA: { p1: 160, p2: 260, p3: 360 },
+              bookmakerB: { p1: 145, p2: 245, p3: 345 },
+            },
+            p1_player_name: 'Player 4',
+            p2_player_name: 'Player 5',
+            p3_player_name: 'Player 6',
+            ties: 'dead heat',
+          },
+        ]);
+        setError('');
       } catch (err) {
         setError('Failed to fetch odds. Please try again later.');
         console.error('Error fetching three ball odds:', err);
@@ -296,311 +312,242 @@ function ThreeBallTool() {
     return matchup.ties || 'dead heat';
   };
 
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-sharpside-green"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h2 className="text-2xl font-bold mb-6">Three Ball Tool</h2>
+        <div className="text-center text-red-500 py-12">{error}</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold mb-2">Three Ball Analysis Tool</h2>
-        {eventName && (
-          <div className="text-sm text-gray-600 mb-4">
-            Event: {eventName}<br />
-            Last Updated: {new Date(lastUpdated).toLocaleString()}
-          </div>
-        )}
-        
-        {loading && <div className="text-center">Loading odds...</div>}
-        {error && (
-          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm text-yellow-700">{error}</p>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-green-50 p-4 rounded-lg border-2 border-green-200">
-            <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-gray-700">
-                Select Three Ball Matchup
-              </label>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                Three Golfer Group
-              </span>
-            </div>
-            <select
-              className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-              value={selectedMatchup ? `${selectedMatchup.p1_player_name}|${selectedMatchup.p2_player_name}|${selectedMatchup.p3_player_name}` : ''}
-              onChange={(e) => handleMatchupSelect(e.target.value)}
-            >
-              <option value="">Select Matchup</option>
-              {getFilteredMatchups().map((matchup) => (
-                <option 
-                  key={getMatchupKey(matchup)} 
-                  value={`${matchup.p1_player_name}|${matchup.p2_player_name}|${matchup.p3_player_name}`}
-                >
-                  {getMatchupDisplayText(matchup)}
-                </option>
-              ))}
-            </select>
-          </div>
+    <div className="container mx-auto px-4 py-8">
+      <h2 className="text-2xl font-bold mb-6">Three Ball Tool</h2>
+      
+      {/* Event Information */}
+      {eventName && (
+        <div className="bg-white rounded-lg shadow p-4 mb-6">
+          <h3 className="text-lg font-semibold mb-2">{eventName}</h3>
+          {lastUpdated && (
+            <p className="text-sm text-gray-600">{lastUpdated}</p>
+          )}
+        </div>
+      )}
 
-          <div className="bg-gray-50 p-4 rounded-lg border-2 border-gray-200 col-span-2">
-            <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-gray-700">
-                Your Pick
-              </label>
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => setSelectedPosition('p1')}
-                  className={`px-3 py-1 text-xs rounded-full ${selectedPosition === 'p1' 
-                    ? 'bg-green-500 text-white' 
-                    : 'bg-gray-200 text-gray-700'}`}
-                >
-                  {selectedMatchup?.p1_player_name || 'Player 1'}
-                </button>
-                <button
-                  onClick={() => setSelectedPosition('p2')}
-                  className={`px-3 py-1 text-xs rounded-full ${selectedPosition === 'p2' 
-                    ? 'bg-green-500 text-white' 
-                    : 'bg-gray-200 text-gray-700'}`}
-                >
-                  {selectedMatchup?.p2_player_name || 'Player 2'}
-                </button>
-                <button
-                  onClick={() => setSelectedPosition('p3')}
-                  className={`px-3 py-1 text-xs rounded-full ${selectedPosition === 'p3' 
-                    ? 'bg-green-500 text-white' 
-                    : 'bg-gray-200 text-gray-700'}`}
-                >
-                  {selectedMatchup?.p3_player_name || 'Player 3'}
-                </button>
-              </div>
-            </div>
-            <div className="text-center p-2 bg-gray-100 rounded-md">
-              {selectedMatchup ? (
-                <span className="font-medium">
-                  {getSelectedGolferName()}
-                </span>
-              ) : (
-                <span className="text-gray-500">Select a matchup first</span>
-              )}
-            </div>
-          </div>
+      {/* Matchup Selection */}
+      <div className="bg-white rounded-lg shadow p-6 mb-6">
+        <h3 className="text-lg font-semibold mb-4">Select Matchup</h3>
+        <select
+          value={selectedMatchup ? getMatchupKey(selectedMatchup) : ''}
+          onChange={(e) => handleMatchupSelect(e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sharpside-green"
+        >
+          <option value="">Select a three-ball matchup</option>
+          {getFilteredMatchups().map((matchup) => (
+            <option key={getMatchupKey(matchup)} value={getMatchupKey(matchup)}>
+              {getMatchupDisplayText(matchup)}
+            </option>
+          ))}
+        </select>
+      </div>
 
-          <div className="col-span-1 md:col-span-3">
-            <div className="grid grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Odds for Your Pick (e.g., +120 or -110)
-                </label>
-                <input
-                  type="text"
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                  value={getCurrentOdds() || ''}
-                  readOnly
-                />
-                {selectedMatchup && (
-                  <div className="mt-1 text-sm text-gray-500">
-                    Ties: {getTieHandlingText(selectedMatchup) === "dead heat" ? (
-                      <span className="text-blue-600">Dead Heat (payout divided if tied)</span>
-                    ) : (
-                      <span className="text-purple-600">{getTieHandlingText(selectedMatchup)}</span>
-                    )}
+      {/* Selected Matchup Analysis */}
+      {selectedMatchup && (
+        <div className="bg-white rounded-lg shadow p-6 mb-6">
+          <h3 className="text-lg font-semibold mb-4">Matchup Analysis</h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            {/* Player 1 */}
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h4 className="font-semibold mb-2">{selectedMatchup.p1_player_name}</h4>
+              {(() => {
+                const player = golfers.find(g => g.name === selectedMatchup.p1_player_name);
+                if (!player) return <p className="text-sm text-gray-500">No data available</p>;
+                
+                return (
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span>SG Total:</span>
+                      <span>{player.strokesGainedTotal.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Win %:</span>
+                      <span>{player.simulationStats.winPercentage.toFixed(1)}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Top 10 %:</span>
+                      <span>{player.simulationStats.top10Percentage.toFixed(1)}%</span>
+                    </div>
                   </div>
-                )}
-              </div>
+                );
+              })()}
+            </div>
 
+            {/* Player 2 */}
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h4 className="font-semibold mb-2">{selectedMatchup.p2_player_name}</h4>
+              {(() => {
+                const player = golfers.find(g => g.name === selectedMatchup.p2_player_name);
+                if (!player) return <p className="text-sm text-gray-500">No data available</p>;
+                
+                return (
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span>SG Total:</span>
+                      <span>{player.strokesGainedTotal.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Win %:</span>
+                      <span>{player.simulationStats.winPercentage.toFixed(1)}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Top 10 %:</span>
+                      <span>{player.simulationStats.top10Percentage.toFixed(1)}%</span>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Player 3 */}
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h4 className="font-semibold mb-2">{selectedMatchup.p3_player_name}</h4>
+              {(() => {
+                const player = golfers.find(g => g.name === selectedMatchup.p3_player_name);
+                if (!player) return <p className="text-sm text-gray-500">No data available</p>;
+                
+                return (
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span>SG Total:</span>
+                      <span>{player.strokesGainedTotal.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Win %:</span>
+                      <span>{player.simulationStats.winPercentage.toFixed(1)}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Top 10 %:</span>
+                      <span>{player.simulationStats.top10Percentage.toFixed(1)}%</span>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+
+          {/* Odds Comparison */}
+          <div className="mb-6">
+            <h4 className="font-semibold mb-3">Available Odds</h4>
+            <div className="overflow-x-auto">
+              <table className="min-w-full border border-gray-200">
+                <thead>
+                  <tr className="bg-gray-50">
+                    <th className="px-4 py-2 border">Bookmaker</th>
+                    <th className="px-4 py-2 border">{selectedMatchup.p1_player_name}</th>
+                    <th className="px-4 py-2 border">{selectedMatchup.p2_player_name}</th>
+                    <th className="px-4 py-2 border">{selectedMatchup.p3_player_name}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(selectedMatchup.odds).map(([bookmaker, odds]) => (
+                    <tr key={bookmaker} className="border-t">
+                      <td className="px-4 py-2 border font-medium">{bookmaker}</td>
+                      <td className="px-4 py-2 border text-center">{odds.p1}</td>
+                      <td className="px-4 py-2 border text-center">{odds.p2}</td>
+                      <td className="px-4 py-2 border text-center">{odds.p3}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Betting Interface */}
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h4 className="font-semibold mb-3">Betting Calculator</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Bet Amount ($)
                 </label>
                 <input
-                  type="text"
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                  type="number"
                   value={betAmount}
                   onChange={(e) => setBetAmount(e.target.value)}
-                  placeholder="100"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sharpside-green"
                 />
               </div>
-            </div>
-          </div>
-
-          <div className="col-span-1 md:col-span-3">
-            {selectedMatchup && (
-              <div className="bg-white p-4 rounded-lg border-2 border-gray-200">
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Select Bookmaker
+                  Selected Player
                 </label>
                 <select
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                  value={selectedBookmaker}
-                  onChange={(e) => setSelectedBookmaker(e.target.value)}
+                  value={selectedPosition}
+                  onChange={(e) => setSelectedPosition(e.target.value as 'p1' | 'p2' | 'p3')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sharpside-green"
                 >
-                  <option value="">Select Bookmaker</option>
-                  {getAvailableBookmakers(selectedMatchup).map(book => (
-                    <option key={book} value={book}>{book}</option>
-                  ))}
+                  <option value="p1">Player 1</option>
+                  <option value="p2">Player 2</option>
+                  <option value="p3">Player 3</option>
                 </select>
+              </div>
+            </div>
+            
+            {selectedMatchup && (
+              <div className="mt-4 space-y-2">
+                <div className="flex justify-between">
+                  <span>Current Odds:</span>
+                  <span className="font-medium">{getCurrentOdds()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Potential Payout:</span>
+                  <span className="font-medium">${payout || '0.00'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Edge:</span>
+                  <span className={`font-medium ${(edge || 0) > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {(edge || 0) > 0 ? '+' : ''}{(edge || 0).toFixed(2)}%
+                  </span>
+                </div>
               </div>
             )}
           </div>
         </div>
+      )}
 
-        {selectedMatchup && selectedBookmaker && (
-          <div className="col-span-1 md:col-span-3 mt-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="text-sm font-medium text-gray-500 mb-1">Model Edge</h3>
-                <p className={`text-2xl font-bold ${edge && edge > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {edge ? `${edge.toFixed(1)}%` : '-'}
-                </p>
-                <p className="text-sm text-gray-500 mt-1">
-                  {edge && edge > 0 ? 'Favorable Edge' : 'Unfavorable Edge'}
-                </p>
+      {/* Available Matchups List */}
+      {threeBallOdds.length > 0 && (
+        <div className="bg-white rounded-lg shadow p-6">
+          <h3 className="text-lg font-semibold mb-4">All Available Three-Ball Matchups</h3>
+          <div className="space-y-4">
+            {getFilteredMatchups().map((matchup, index) => (
+              <div key={index} className="border border-gray-200 rounded-lg p-4">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="font-medium">{getMatchupDisplayText(matchup)}</span>
+                  <span className="text-sm text-gray-500">
+                    {Object.keys(matchup.odds).length} bookmakers
+                  </span>
+                </div>
+                <div className="text-sm text-gray-600">
+                  {getTieHandlingText(matchup)}
+                </div>
               </div>
-
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="text-sm font-medium text-gray-500 mb-1">Potential Payout</h3>
-                <p className="text-2xl font-bold text-gray-900">
-                  ${payout || '-'}
-                </p>
-                <p className="text-sm text-gray-500 mt-1">
-                  If {getSelectedGolferName()} wins
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {golfer1 && golfer2 && golfer3 && (
-          <div className="col-span-1 md:col-span-3 mt-8">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold mb-4">Three Ball Comparison</h3>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead>
-                    <tr>
-                      <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Metric
-                      </th>
-                      <th className="px-6 py-3 bg-green-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {selectedPosition === 'p1' ? `${golfer1.name} (Your Pick)` : golfer1.name}
-                      </th>
-                      <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {selectedPosition === 'p2' ? `${golfer2.name} (Your Pick)` : golfer2.name}
-                      </th>
-                      <th className="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {selectedPosition === 'p3' ? `${golfer3.name} (Your Pick)` : golfer3.name}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        SG: Total
-                      </td>
-                      <td className={`px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 ${selectedPosition === 'p1' ? 'bg-green-50' : ''}`}>
-                        {golfer1.strokesGainedTotal.toFixed(2)}
-                      </td>
-                      <td className={`px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 ${selectedPosition === 'p2' ? 'bg-green-50' : ''}`}>
-                        {golfer2.strokesGainedTotal.toFixed(2)}
-                      </td>
-                      <td className={`px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 ${selectedPosition === 'p3' ? 'bg-green-50' : ''}`}>
-                        {golfer3.strokesGainedTotal.toFixed(2)}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        Top 10 %
-                      </td>
-                      <td className={`px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 ${selectedPosition === 'p1' ? 'bg-green-50' : ''}`}>
-                        {golfer1.simulationStats.top10Percentage.toFixed(1)}%
-                      </td>
-                      <td className={`px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 ${selectedPosition === 'p2' ? 'bg-green-50' : ''}`}>
-                        {golfer2.simulationStats.top10Percentage.toFixed(1)}%
-                      </td>
-                      <td className={`px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 ${selectedPosition === 'p3' ? 'bg-green-50' : ''}`}>
-                        {golfer3.simulationStats.top10Percentage.toFixed(1)}%
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Add Sportsbook Filter */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Filter by Sportsbook
-          </label>
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setSelectedFilterBookmaker('')}
-              className={`px-4 py-2 rounded-lg text-sm ${
-                !selectedFilterBookmaker
-                  ? 'bg-green-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              All Sportsbooks
-            </button>
-            {getAllAvailableBookmakers().map(book => (
-              <button
-                key={book}
-                onClick={() => setSelectedFilterBookmaker(book)}
-                className={`px-4 py-2 rounded-lg text-sm ${
-                  selectedFilterBookmaker === book
-                    ? 'bg-green-500 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {book}
-                <span className="ml-2 text-xs">
-                  ({threeBallOdds.filter(m => m.odds[book]).length})
-                </span>
-              </button>
             ))}
           </div>
         </div>
-
-        {/* Add Positive Edge Filter */}
-        <div className="mb-6">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowOnlyPositiveEdge(!showOnlyPositiveEdge)}
-              className={`px-4 py-2 rounded-lg text-sm flex items-center gap-2 ${
-                showOnlyPositiveEdge
-                  ? 'bg-green-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              {showOnlyPositiveEdge ? (
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-              )}
-              Show Only Positive Edge Matchups
-            </button>
-            {showOnlyPositiveEdge && (
-              <span className="text-sm text-gray-500">
-                Showing {getFilteredMatchups().length} matchups with positive edge
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

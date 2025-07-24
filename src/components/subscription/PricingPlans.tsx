@@ -4,7 +4,7 @@ import { CheckIcon } from '@heroicons/react/24/outline';
 import { useAuthContext } from '../../context/AuthContext.js';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase.js';
-import TicketCarousel from '../TicketCarousel.js';
+import BettingTicketsGrid from '../BettingTicketsGrid.js';
 import { trackEvent } from '../../utils/metaPixel.js';
 
 // Initialize Stripe with the environment variable
@@ -21,54 +21,65 @@ const billingIntervals = [
   { id: 'yearly', name: 'Yearly' },
 ];
 
-const allFeatures = [
-  'Betting Picks',
-  'Strokes Gained Statistics',
-  'Basic player rankings',
-  'Model Dashboard',
-  'Matchup Tool',
-  '3-Ball Tool',
-  'Historical performance data',
-  'Expert Models',
-  'AI Caddie',
-  'Course Fit Tool',
-  'Advanced analytics',
+const allAccessFeatures = [
+  'All sports coverage',
+  'Betting picks',
+  'All tools & models',
   'Priority support',
-  'Winning Golf Models',
+];
+
+const footballFeatures = [
+  'NFL betting picks',
+  'CFB betting picks',
+  'Football models & tools',
+  'Season-long access',
+];
+
+const golfFeatures = [
+  'Golf betting picks',
+  'All golf tools',
+  'Course fit analysis',
+  'Priority support',
 ];
 
 const tiers = [
   {
-    id: 'basic',
-    name: 'Basic',
-    description: 'Advanced tools for serious golf analysis',
+    id: 'all-access',
+    name: 'All Access',
+    description: 'Complete access to all sports and tools',
     price: {
-      weekly: '17.99',
-      monthly: '59.99',
-      yearly: '599.99',
+      weekly: '99.99',
+      monthly: '299.99',
+      yearly: '1199.99',
     },
-    features: [
-      'Strokes Gained Statistics',
-      'Basic player rankings',
-      'Model Dashboard',
-      'Matchup Tool',
-      '3-Ball Tool',
-    ],
-    cta: 'Start Basic Plan',
-    mostPopular: false,
+    features: allAccessFeatures,
+    cta: 'Start All Access Plan',
+    mostPopular: true,
   },
   {
-    id: 'pro',
-    name: 'Pro',
-    description: 'Everything you need to dominate the sportsbooks. Betting picks and advanced betting tools',
+    id: 'football-season',
+    name: 'Football Season',
+    description: 'Complete NFL & CFB coverage for the entire season',
+    price: {
+      season: '799.99',
+    },
+    features: footballFeatures,
+    cta: 'Get Season Subscription',
+    mostPopular: false,
+    isSeasonPass: true,
+  },
+  {
+    id: 'golf-only',
+    name: 'Golf Only',
+    description: 'Complete golf analytics and betting tools',
     price: {
       weekly: '59.99',
       monthly: '239.99',
       yearly: '599.99',
     },
-    features: allFeatures,
-    cta: 'Start Pro Plan',
-    mostPopular: true,
+    features: golfFeatures,
+    cta: 'Start Golf Plan',
+    mostPopular: false,
   },
 ];
 
@@ -81,7 +92,7 @@ const PricingPlans = forwardRef<HTMLDivElement>((props, ref) => {
 
   async function createCheckoutSession(
     plan: string,
-    billingInterval: 'weekly' | 'monthly' | 'yearly'
+    billingInterval: 'weekly' | 'monthly' | 'yearly' | 'season'
   ) {
     const {
       data: { session }
@@ -106,24 +117,26 @@ const PricingPlans = forwardRef<HTMLDivElement>((props, ref) => {
     if (plan === 'free') return;
     
     // Track subscription initiation
-    const key = selectedInterval as keyof typeof tiers[0]['price'];
-    const price = tiers.find(t => t.id === plan)?.price[key] || '0';
+    const tier = tiers.find(t => t.id === plan);
+    const key = tier?.isSeasonPass ? 'season' : selectedInterval;
+    const price = tier?.price[key as keyof typeof tier.price] || '0';
     trackEvent('InitiateCheckout', {
-      content_name: `${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan`,
+      content_name: `${tier?.name || plan} Plan`,
       content_category: 'subscription',
       value: parseFloat(price),
       currency: 'USD'
     });
     
     if (!user) {
-      sessionStorage.setItem('selectedPlan', JSON.stringify({ plan, interval: selectedInterval }));
+      sessionStorage.setItem('selectedPlan', JSON.stringify({ plan, interval: tier?.isSeasonPass ? 'season' : selectedInterval }));
       navigate('/auth');
       return;
     }
     try {
       setLoading(true);
       setError(null);
-      const sessionId = await createCheckoutSession(plan, selectedInterval as 'weekly' | 'monthly' | 'yearly');
+      const billingInterval = tier?.isSeasonPass ? 'season' : selectedInterval as 'weekly' | 'monthly' | 'yearly' | 'season';
+      const sessionId = await createCheckoutSession(plan, billingInterval);
       const stripe = await stripePromise;
       if (!stripe) {
         throw new Error('Failed to load Stripe');
@@ -148,105 +161,164 @@ const PricingPlans = forwardRef<HTMLDivElement>((props, ref) => {
             <p className="text-red-700 text-sm">{error}</p>
           </div>
         )}
-        <TicketCarousel />
-        <div className="mx-auto max-w-4xl text-center mt-12">
-          <p className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-            Choose the right plan for your game
-          </p>
-        </div>
-        <div className="mt-16 flex justify-center">
-          <div className="flex items-center space-x-4 bg-gray-50 p-3 rounded-lg">
-            {billingIntervals.map((interval) => (
-              <button
-                key={interval.id}
-                onClick={() => setSelectedInterval(interval.id)}
-                className={`px-6 py-3 text-base font-semibold rounded-md transition-all duration-200 ${
-                  selectedInterval === interval.id
-                    ? 'bg-green-600 text-white shadow-lg'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                {interval.name}
-              </button>
-            ))}
-          </div>
-        </div>
+        <BettingTicketsGrid />
+        {/* Removed headline and subheadline to avoid duplication with the hero section */}
+
         <div id="plans" className="h-0 scroll-mt-24" />
-        <div ref={ref} className="isolate mx-auto mt-16 grid grid-cols-1 md:grid-cols-2 gap-10 max-w-4xl justify-center">
-          {tiers.map((tier) => (
-            <div
-              key={tier.id}
-              className={`rounded-3xl p-8 ring-1 ring-gray-200 transition-all duration-200 hover:ring-2 hover:ring-green-500 ${
-                tier.mostPopular ? 'bg-gray-900 text-white ring-gray-900' : 'bg-white'
-              }`}
-            >
-              <div className="flex items-center justify-between gap-x-4">
-                <h3
-                  id={tier.name}
-                  className={`text-base font-semibold leading-7 ${
-                    tier.mostPopular ? 'text-white' : 'text-gray-900'
+        
+        {/* All Access Section */}
+        <div className="mt-16">
+          <div className="text-center mb-8">
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">All Access</h3>
+            <p className="text-gray-600">Complete access to all sports and tools</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {billingIntervals.map((interval) => {
+              const allAccessTier = tiers.find(t => t.id === 'all-access');
+              const allAccessPrice = allAccessTier?.price[interval.id as keyof typeof allAccessTier.price] || '0';
+              const isPopular = interval.id === 'monthly';
+              
+              return (
+                <div
+                  key={interval.id}
+                  className={`rounded-lg shadow-lg border-2 p-6 relative ${
+                    isPopular ? 'border-green-500 bg-white' : 'border-gray-200 bg-white'
                   }`}
                 >
-                  {tier.name}
-                </h3>
-                {tier.mostPopular ? (
-                  <span className="rounded-full bg-green-500/10 px-2 py-0.5 text-xs font-semibold leading-5 text-green-400">
-                    Most popular
-                  </span>
-                ) : null}
+                  {isPopular && (
+                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                      <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                        Most Popular
+                      </span>
+                    </div>
+                  )}
+                  <div className="text-center">
+                    <h4 className="text-xl font-semibold text-gray-900 mb-2">{interval.name}</h4>
+                    <p className="text-4xl font-bold text-gray-900 mb-1">${allAccessPrice}</p>
+                    <p className="text-gray-500 mb-6">per {interval.id}</p>
+                    <button 
+                      onClick={() => {
+                        const urls = {
+                          weekly: 'https://www.winible.com/checkout/1359269787951190914?store_url=/sharpsidesports&interval=week',
+                          monthly: 'https://www.winible.com/checkout/1359269787951190914?store_url=/sharpsidesports&interval=month',
+                          yearly: 'https://www.winible.com/checkout/1359269787951190914?store_url=/sharpsidesports&interval=year'
+                        };
+                        window.location.href = urls[interval.id as keyof typeof urls];
+                      }}
+                      className={`w-full py-3 px-6 rounded-md transition-colors ${
+                        isPopular 
+                          ? 'bg-green-500 hover:bg-green-600 text-white' 
+                          : 'bg-gray-900 hover:bg-gray-800 text-white'
+                      }`}
+                    >
+                      {`Start ${interval.name}`}
+                    </button>
+                  </div>
+                  <ul className="mt-6 space-y-3 text-sm text-gray-600">
+                    {allAccessFeatures.map((feature) => (
+                      <li key={feature} className="flex items-center">
+                        <CheckIcon className="h-4 w-4 text-green-500 mr-2" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Football Season Section */}
+        <div className="mt-16">
+          <div className="text-center mb-8">
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Football Season</h3>
+            <p className="text-gray-600">Complete NFL & CFB coverage for the entire season</p>
+          </div>
+          <div className="max-w-md mx-auto">
+            <div className="bg-white rounded-lg shadow-lg border-2 border-blue-500 p-6">
+                              <div className="text-center">
+                  <h4 className="text-xl font-semibold text-gray-900 mb-2">Season Pass</h4>
+                  <p className="text-4xl font-bold text-gray-900 mb-1">$799.99</p>
+                  <p className="text-gray-500 mb-6">for the entire season</p>
+                  <button 
+                    onClick={() => window.location.href = 'https://www.winible.com/checkout/1378745735868076494?pid=1378745735876465103'}
+                    className="w-full py-3 px-6 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                  >
+                    Get Season Subscription
+                  </button>
               </div>
-              <p className={`mt-3 text-sm leading-6 font-bold ${
-                tier.mostPopular ? 'text-gray-300' : 'text-gray-600'
-              }`}>{tier.description}</p>
-              <p className="mt-4 flex items-baseline gap-x-1">
-                <span className={`text-3xl font-bold tracking-tight ${
-                  tier.mostPopular ? 'text-white' : 'text-gray-900'
-                }`}>
-                  ${tier.price[selectedInterval as keyof typeof tier.price]}
-                </span>
-                <span className={`text-sm font-semibold leading-6 ${
-                  tier.mostPopular ? 'text-gray-300' : 'text-gray-600'
-                }`}>
-                  /{selectedInterval}
-                </span>
-              </p>
-              <button
-                onClick={() => handleSubscribe(tier.id)}
-                disabled={loading}
-                className={`mt-8 block w-full py-3 px-6 border border-transparent rounded-md text-center font-bold text-lg shadow-sm transition-all duration-150
-                  ${tier.mostPopular ? 'bg-green-500 hover:bg-green-600 text-white' : 'bg-white hover:bg-gray-50 text-green-700'}
-                  ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                {loading ? 'Loading...' : tier.cta}
-              </button>
-              <ul
-                role="list"
-                className={`mt-6 space-y-2 text-sm leading-6 ${
-                  tier.mostPopular ? 'text-gray-300' : 'text-gray-600'
-                }`}
-              >
-                {allFeatures.map((feature) => (
-                  <li key={feature} className="flex gap-x-3">
-                    {tier.features.includes(feature) ? (
-                      <CheckIcon
-                        className={`h-5 w-5 flex-none ${
-                          tier.mostPopular ? 'text-green-400' : 'text-green-600'
-                        }`}
-                        aria-hidden="true"
-                      />
-                    ) : (
-                      <div className={`h-5 w-5 flex-none rounded-full border ${
-                        tier.mostPopular ? 'border-gray-600' : 'border-gray-300'
-                      }`} />
-                    )}
-                    <span className={tier.features.includes(feature) ? '' : 'opacity-50'}>
-                      {feature}
-                    </span>
+              <ul className="mt-6 space-y-3 text-sm text-gray-600">
+                {footballFeatures.map((feature) => (
+                  <li key={feature} className="flex items-center">
+                    <CheckIcon className="h-4 w-4 text-green-500 mr-2" />
+                    {feature}
                   </li>
                 ))}
               </ul>
             </div>
-          ))}
+          </div>
+        </div>
+
+        {/* Golf Only Section */}
+        <div className="mt-16">
+          <div className="text-center mb-8">
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Golf Only</h3>
+            <p className="text-gray-600">Complete golf analytics and betting tools</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {billingIntervals.map((interval) => {
+              const golfTier = tiers.find(t => t.id === 'golf-only');
+              const golfPrice = golfTier?.price[interval.id as keyof typeof golfTier.price] || '0';
+              const isPopular = interval.id === 'monthly';
+              
+              return (
+                <div
+                  key={interval.id}
+                  className={`rounded-lg shadow-lg border-2 p-6 relative ${
+                    isPopular ? 'border-green-500 bg-white' : 'border-gray-200 bg-white'
+                  }`}
+                >
+                  {isPopular && (
+                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                      <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                        Best Value
+                      </span>
+                    </div>
+                  )}
+                  <div className="text-center">
+                    <h4 className="text-xl font-semibold text-gray-900 mb-2">{interval.name}</h4>
+                    <p className="text-4xl font-bold text-gray-900 mb-1">${golfPrice}</p>
+                    <p className="text-gray-500 mb-6">per {interval.id}</p>
+                    <button 
+                      onClick={() => {
+                        const urls = {
+                          weekly: 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=week',
+                          monthly: 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=month',
+                          yearly: 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=year'
+                        };
+                        window.location.href = urls[interval.id as keyof typeof urls];
+                      }}
+                      className={`w-full py-3 px-6 rounded-md transition-colors ${
+                        isPopular 
+                          ? 'bg-green-500 hover:bg-green-600 text-white' 
+                          : 'bg-gray-900 hover:bg-gray-800 text-white'
+                      }`}
+                    >
+                      {`Start ${interval.name}`}
+                    </button>
+                  </div>
+                  <ul className="mt-6 space-y-3 text-sm text-gray-600">
+                    {golfFeatures.map((feature) => (
+                      <li key={feature} className="flex items-center">
+                        <CheckIcon className="h-4 w-4 text-green-500 mr-2" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
