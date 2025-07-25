@@ -68,7 +68,7 @@ export const testimonials: Testimonial[] = [
         player: "Lions -6",
         odds: "+400",
         year: 2024
-      }
+    }
     ]
   },
   {
@@ -110,7 +110,7 @@ export const testimonials: Testimonial[] = [
         player: "Chiefs +3",
         odds: "+400",
         year: 2024
-      }
+    }
     ]
   },
   {

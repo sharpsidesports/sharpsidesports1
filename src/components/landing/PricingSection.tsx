@@ -170,7 +170,7 @@ export default function PricingSection() {
           <div className="text-center mb-8">
             <h3 className="text-2xl font-bold text-gray-900 mb-2">All Access</h3>
             <p className="text-gray-600">Complete access to all sports and tools</p>
-          </div>
+        </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {['weekly', 'monthly', 'yearly'].map((interval) => {
               const plan = plans.find(p => p.id === 'all-access');
@@ -178,24 +178,24 @@ export default function PricingSection() {
               const isPopular = interval === 'monthly';
               
               return (
-                <div
+              <div
                   key={interval}
                   className={`bg-white rounded-lg shadow-lg border-2 p-6 relative ${
                     isPopular ? 'border-green-500' : 'border-gray-200'
-                  }`}
-                >
+                }`}
+              >
                   {isPopular && (
                     <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                       <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
                         Most Popular
-                      </span>
+                    </span>
                     </div>
                   )}
                   <div className="text-center">
                     <h4 className="text-xl font-semibold text-gray-900 mb-2">{interval.charAt(0).toUpperCase() + interval.slice(1)}</h4>
                     <p className="text-4xl font-bold text-gray-900 mb-1">${price}</p>
                     <p className="text-gray-500 mb-6">per {interval}</p>
-                    <button
+                  <button
                       onClick={() => {
                         const urls = {
                           weekly: 'https://www.winible.com/checkout/1359269787951190914?store_url=/sharpsidesports&interval=week',
@@ -209,18 +209,18 @@ export default function PricingSection() {
                           ? 'bg-green-500 hover:bg-green-600 text-white' 
                           : 'bg-gray-900 hover:bg-gray-800 text-white'
                       }`}
-                    >
+                  >
                       {`Start ${interval.charAt(0).toUpperCase() + interval.slice(1)}`}
-                    </button>
-                  </div>
+                  </button>
+                </div>
                   <ul className="mt-6 space-y-3 text-sm text-gray-600">
                     {features.filter(f => f.includedIn.includes('all-access')).map((feature) => (
                       <li key={feature.name} className="flex items-center">
                         <svg className="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
+                            </svg>
                         {feature.name}
-                      </li>
+                        </li>
                     ))}
                   </ul>
                 </div>
@@ -292,7 +292,7 @@ export default function PricingSection() {
                     <h4 className="text-xl font-semibold text-gray-900 mb-2">{interval.charAt(0).toUpperCase() + interval.slice(1)}</h4>
                     <p className="text-4xl font-bold text-gray-900 mb-1">${price}</p>
                     <p className="text-gray-500 mb-6">per {interval}</p>
-                    <button
+          <button 
                       onClick={() => {
                         const urls = {
                           weekly: 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=week',
@@ -305,10 +305,10 @@ export default function PricingSection() {
                         isPopular 
                           ? 'bg-green-500 hover:bg-green-600 text-white' 
                           : 'bg-gray-900 hover:bg-gray-800 text-white'
-                      }`}
-                    >
+            }`}
+          >
                       {`Start ${interval.charAt(0).toUpperCase() + interval.slice(1)}`}
-                    </button>
+          </button>
                   </div>
                   <ul className="mt-6 space-y-3 text-sm text-gray-600">
                     {features.filter(f => f.includedIn.includes('golf-only')).map((feature) => (

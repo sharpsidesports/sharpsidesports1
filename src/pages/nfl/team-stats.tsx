@@ -138,7 +138,7 @@ export default function TeamStatsLanding() {
           Overall Defense Rankings
         </Link>
       </div>
-
+      
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Offensive Stats - SEO optimized */}
         <div className="bg-white border border-gray-200 rounded-lg shadow p-6">

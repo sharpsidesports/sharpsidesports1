@@ -42,7 +42,7 @@ export default function BettingTicketsGrid() {
                   className="w-full h-auto block"
                 />
                 <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
-                  SHARPSIDE
+                  Sharpside
                 </div>
               </div>
             </div>

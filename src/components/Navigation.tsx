@@ -51,8 +51,8 @@ export default function Navigation() {
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     `inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
       isActive
-        ? 'border-sharpside-green text-gray-900'
-        : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+        ? 'border-sharpside-green text-black'
+        : 'border-transparent text-black hover:border-gray-300 hover:text-gray-700'
     }`;
 
   const mobileNavLinkClass = ({ isActive }: { isActive: boolean }) =>
@@ -282,7 +282,7 @@ export default function Navigation() {
     <nav className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Desktop Navigation */}
-        <div className="hidden md:flex space-x-8 h-16">
+        <div className="hidden md:flex space-x-8 h-16 justify-center">
           <NavLink to="/expert-insights" className={navLinkClass}>Betting Picks</NavLink>
           <GolfDropdown />
           <NFLDropdown />

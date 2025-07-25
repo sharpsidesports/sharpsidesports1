@@ -8,8 +8,8 @@ export default function Footer() {
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
             <div className="text-2xl font-bold mb-4">
-              <span className="text-white">SHARPSIDE</span>
-              <span className="text-green-500"> SPORTS</span>
+              <span className="text-white">Sharpside</span>
+              <span className="text-green-500"> Sports</span>
             </div>
             <p className="text-gray-300 mb-4">
               Premier handicapping and tools service dedicated to helping you gain an edge and beat the book.

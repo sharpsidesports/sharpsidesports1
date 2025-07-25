@@ -33,7 +33,7 @@ export default function Subscription() {
         </div>
 
         <NFLRecords />
-        
+
         <div id="plans" className="mt-4 scroll-mt-24">
           <PricingPlans ref={plansRef} />
         </div>

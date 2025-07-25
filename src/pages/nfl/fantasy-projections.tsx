@@ -116,7 +116,7 @@ export default function FantasyProjectionsLanding() {
         <p className="text-gray-600">
           Updated daily with the latest <strong>fantasy football projections</strong> including current ADP trends, 
           league-specific rankings, and real-time draft data analysis.
-        </p>
+      </p>
       </header>
 
       {/* Position Cards - Moved to top */}

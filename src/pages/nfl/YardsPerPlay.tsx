@@ -181,56 +181,56 @@ export default function YardsPerPlay() {
       ) : (
         <>
           {/* SEO-optimized table */}
-          <div className="overflow-x-auto rounded-lg shadow">
-            <table className="min-w-full text-sm font-medium">
-              <thead className="bg-sharpside-green/90 text-white sticky top-0 z-10">
-                <tr>
-                  {headers.map((col, i) => (
-                    <th
-                      key={i}
-                      onClick={() => handleSort(i)}
-                      className={
-                        `px-4 py-3 text-center uppercase tracking-wider font-semibold whitespace-nowrap cursor-pointer select-none bg-sharpside-green text-white` +
-                        (i === 0 ? ' sticky left-0 z-20 shadow-lg' : '')
-                      }
-                    >
-                      <span className="flex items-center justify-center">
-                        {col}
-                        {sortColumn === i && (
-                          <span className="ml-1 text-xs">
-                            {sortDirection === 'asc' ? '▲' : '▼'}
-                          </span>
-                        )}
-                      </span>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {sortedRows.map((row, idx) => (
-                  <tr
-                    key={idx}
+        <div className="overflow-x-auto rounded-lg shadow">
+          <table className="min-w-full text-sm font-medium">
+            <thead className="bg-sharpside-green/90 text-white sticky top-0 z-10">
+              <tr>
+                {headers.map((col, i) => (
+                  <th
+                    key={i}
+                    onClick={() => handleSort(i)}
                     className={
-                      (idx % 2 === 0 ? 'bg-white' : 'bg-gray-50') +
-                      ' hover:bg-green-50 transition-colors duration-100'
+                      `px-4 py-3 text-center uppercase tracking-wider font-semibold whitespace-nowrap cursor-pointer select-none bg-sharpside-green text-white` +
+                      (i === 0 ? ' sticky left-0 z-20 shadow-lg' : '')
                     }
                   >
-                    {row.map((cell, j) => (
-                      <td
-                        key={j}
-                        className={
-                          `px-4 py-3 text-center whitespace-nowrap` +
-                          (j === 2 ? ' font-bold bg-white sticky left-0 z-10 shadow-lg' : '')
-                        }
-                      >
-                        {cell}
-                      </td>
-                    ))}
-                  </tr>
+                    <span className="flex items-center justify-center">
+                      {col}
+                      {sortColumn === i && (
+                        <span className="ml-1 text-xs">
+                          {sortDirection === 'asc' ? '▲' : '▼'}
+                        </span>
+                      )}
+                    </span>
+                  </th>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedRows.map((row, idx) => (
+                <tr
+                  key={idx}
+                  className={
+                    (idx % 2 === 0 ? 'bg-white' : 'bg-gray-50') +
+                    ' hover:bg-green-50 transition-colors duration-100'
+                  }
+                >
+                  {row.map((cell, j) => (
+                    <td
+                      key={j}
+                      className={
+                        `px-4 py-3 text-center whitespace-nowrap` +
+                          (j === 2 ? ' font-bold bg-white sticky left-0 z-10 shadow-lg' : '')
+                      }
+                    >
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
           {/* Additional SEO content */}
           <section className="mt-12 bg-gray-50 rounded-lg p-6">

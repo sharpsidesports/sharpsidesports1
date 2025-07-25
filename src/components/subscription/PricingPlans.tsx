@@ -189,14 +189,14 @@ const PricingPlans = forwardRef<HTMLDivElement>((props, ref) => {
                     <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                       <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
                         Most Popular
-                      </span>
-                    </div>
+                  </span>
+              </div>
                   )}
                   <div className="text-center">
                     <h4 className="text-xl font-semibold text-gray-900 mb-2">{interval.name}</h4>
                     <p className="text-4xl font-bold text-gray-900 mb-1">${allAccessPrice}</p>
                     <p className="text-gray-500 mb-6">per {interval.id}</p>
-                    <button 
+              <button
                       onClick={() => {
                         const urls = {
                           weekly: 'https://www.winible.com/checkout/1359269787951190914?store_url=/sharpsidesports&interval=week',
@@ -210,9 +210,9 @@ const PricingPlans = forwardRef<HTMLDivElement>((props, ref) => {
                           ? 'bg-green-500 hover:bg-green-600 text-white' 
                           : 'bg-gray-900 hover:bg-gray-800 text-white'
                       }`}
-                    >
+              >
                       {`Start ${interval.name}`}
-                    </button>
+              </button>
                   </div>
                   <ul className="mt-6 space-y-3 text-sm text-gray-600">
                     {allAccessFeatures.map((feature) => (
@@ -251,7 +251,7 @@ const PricingPlans = forwardRef<HTMLDivElement>((props, ref) => {
                 {footballFeatures.map((feature) => (
                   <li key={feature} className="flex items-center">
                     <CheckIcon className="h-4 w-4 text-green-500 mr-2" />
-                    {feature}
+                      {feature}
                   </li>
                 ))}
               </ul>

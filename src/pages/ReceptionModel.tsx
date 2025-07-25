@@ -147,12 +147,12 @@ export default function WRRedzoneStats() {
                         {row.map((cell, j) => {
                           if (j === projRecIdx && !showVIP) {
                             // Show blurred numbers with button overlay
-                            return (
-                              <td
-                                key={j}
-                                className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 relative"
-                                style={{ position: 'relative' }}
-                              >
+                              return (
+                                <td
+                                  key={j}
+                                  className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 relative"
+                                  style={{ position: 'relative' }}
+                                >
                                 {/* Show the actual number but blurred */}
                                 <span className="blur-sm">{cell}</span>
                                 {/* Blur overlay */}
@@ -173,8 +173,8 @@ export default function WRRedzoneStats() {
                                     </button>
                                   </div>
                                 )}
-                              </td>
-                            );
+                                </td>
+                              );
                           } else {
                             return (
                               <td

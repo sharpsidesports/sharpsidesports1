@@ -19,7 +19,7 @@ export interface SEOConfig {
 
 export const applySEOOptimization = (config: SEOConfig) => {
   // Update document title
-  document.title = `${config.pageTitle} | SharpSide Sports`;
+  document.title = `${config.pageTitle} | Sharpside Sports`;
   
   // Update meta description
   const metaDescription = document.querySelector('meta[name="description"]');
@@ -63,7 +63,7 @@ export const applySEOOptimization = (config: SEOConfig) => {
   // Add additional meta tags for SEO
   const metaTags = [
     { name: 'keywords', content: config.keywords },
-    { name: 'author', content: 'SharpSide Sports' },
+    { name: 'author', content: 'Sharpside Sports' },
     { name: 'robots', content: 'index, follow' },
     { property: 'og:title', content: config.ogTitle },
     { property: 'og:description', content: config.ogDescription },
