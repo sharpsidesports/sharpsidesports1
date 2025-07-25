@@ -15,9 +15,6 @@ function Header() {
             <span className="text-sharpside-green"> Sports</span>
           </Link>
           <p className="text-sm text-gray-600 tracking-wide mt-1 hidden sm:block">BET ON THE SHARPSIDE--</p>
-          <div className="text-xs text-gray-500 mt-1 hidden sm:block">
-            Version {VERSION.major}.{VERSION.minor}.{VERSION.patch} - {VERSION.label}
-          </div>
         </div>
         <div className="flex items-center">
           {user ? (
