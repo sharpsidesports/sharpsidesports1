@@ -55,7 +55,7 @@ export default function LandingPage() {
               <div className="bg-white rounded-lg shadow-lg border-2 border-gray-200 p-6">
                 <div className="text-center">
                   <h4 className="text-xl font-semibold text-gray-900 mb-2">Weekly</h4>
-                  <p className="text-4xl font-bold text-gray-900 mb-1">$59.99</p>
+                  <p className="text-4xl font-bold text-gray-900 mb-1">$99.99</p>
                   <p className="text-gray-500 mb-6">per week</p>
                   <button 
                     onClick={() => window.location.href = 'https://www.winible.com/checkout/1359269787951190914?store_url=/sharpsidesports&interval=week'}
@@ -95,7 +95,7 @@ export default function LandingPage() {
                 </div>
                 <div className="text-center">
                   <h4 className="text-xl font-semibold text-gray-900 mb-2">Monthly</h4>
-                  <p className="text-4xl font-bold text-gray-900 mb-1">$199.99</p>
+                  <p className="text-4xl font-bold text-gray-900 mb-1">$299.99</p>
                   <p className="text-gray-500 mb-6">per month</p>
                   <button 
                     onClick={() => window.location.href = 'https://www.winible.com/checkout/1359269787951190914?store_url=/sharpsidesports&interval=month'}
@@ -136,9 +136,9 @@ export default function LandingPage() {
               <div className="bg-white rounded-lg shadow-lg border-2 border-gray-200 p-6">
                 <div className="text-center">
                   <h4 className="text-xl font-semibold text-gray-900 mb-2">Yearly</h4>
-                  <p className="text-4xl font-bold text-gray-900 mb-1">$1,999.99</p>
+                  <p className="text-4xl font-bold text-gray-900 mb-1">$1,199.99</p>
                   <p className="text-gray-500 mb-2">per year</p>
-                  <p className="text-green-600 text-sm mb-6">Save $400/year</p>
+                  <p className="text-green-600 text-sm mb-6">Save $600/year</p>
                   <button 
                     onClick={() => window.location.href = 'https://www.winible.com/checkout/1359269787951190914?store_url=/sharpsidesports&interval=year'}
                     className="w-full py-3 px-6 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors"
@@ -186,7 +186,7 @@ export default function LandingPage() {
               <div className="bg-white rounded-lg shadow-lg border-2 border-blue-500 p-6">
                 <div className="text-center">
                   <h4 className="text-xl font-semibold text-gray-900 mb-2">Season Pass</h4>
-                  <p className="text-4xl font-bold text-gray-900 mb-1">$299.99</p>
+                  <p className="text-4xl font-bold text-gray-900 mb-1">$799.99</p>
                   <p className="text-gray-500 mb-6">for the entire season</p>
                   <button 
                     onClick={() => window.location.href = 'https://www.winible.com/checkout/1378745735868076494?pid=1378745735876465103'}
@@ -236,7 +236,7 @@ export default function LandingPage() {
               <div className="bg-white rounded-lg shadow-lg border-2 border-gray-200 p-6">
                 <div className="text-center">
                   <h4 className="text-xl font-semibold text-gray-900 mb-2">Weekly</h4>
-                  <p className="text-4xl font-bold text-gray-900 mb-1">$29.99</p>
+                  <p className="text-4xl font-bold text-gray-900 mb-1">$59.99</p>
                   <p className="text-gray-500 mb-6">per week</p>
                   <button 
                     onClick={() => window.location.href = 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=week'}
@@ -276,7 +276,7 @@ export default function LandingPage() {
                 </div>
                 <div className="text-center">
                   <h4 className="text-xl font-semibold text-gray-900 mb-2">Monthly</h4>
-                  <p className="text-4xl font-bold text-gray-900 mb-1">$99.99</p>
+                  <p className="text-4xl font-bold text-gray-900 mb-1">$239.99</p>
                   <p className="text-gray-500 mb-6">per month</p>
                   <button 
                     onClick={() => window.location.href = 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=month'}
@@ -317,9 +317,9 @@ export default function LandingPage() {
               <div className="bg-white rounded-lg shadow-lg border-2 border-gray-200 p-6">
                 <div className="text-center">
                   <h4 className="text-xl font-semibold text-gray-900 mb-2">Yearly</h4>
-                  <p className="text-4xl font-bold text-gray-900 mb-1">$999.99</p>
+                  <p className="text-4xl font-bold text-gray-900 mb-1">$599.99</p>
                   <p className="text-gray-500 mb-2">per year</p>
-                  <p className="text-green-600 text-sm mb-6">Save $200/year</p>
+                  <p className="text-green-600 text-sm mb-6">Save $280/year</p>
                   <button 
                     onClick={() => window.location.href = 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=year'}
                     className="w-full py-3 px-6 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors"

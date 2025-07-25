@@ -360,7 +360,6 @@ export default function Navigation() {
             >
               Pricing
             </NavLink>
-            <ArticlesDropdown />
             <div className="relative">
               <NavLink
                 to="/nfl/redzone-stats"
@@ -401,7 +400,9 @@ export default function Navigation() {
                 </NavLink>
               </div>
             </div>
+            {/* Move ArticlesDropdown to the very end of the mobile menu */}
           </div>
+          <ArticlesDropdown />
         </div>
       )}
     </nav>

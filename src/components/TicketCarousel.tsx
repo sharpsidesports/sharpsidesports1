@@ -44,8 +44,8 @@ export default function TicketCarousel() {
         {/* @ts-ignore */}
         <Slider {...settings}>
           {ticketImages.map((src, idx) => (
-            <div key={idx} className="mx-4 w-80 flex justify-center items-center bg-white p-2">
-              <img src={src} alt={`Ticket ${idx + 1}`} className="object-contain h-64" />
+            <div key={idx} className="mx-4 w-64 flex justify-center items-center bg-white p-2">
+              <img src={src} alt={`Ticket ${idx + 1}`} className="object-contain h-48" />
             </div>
           ))}
         </Slider>
