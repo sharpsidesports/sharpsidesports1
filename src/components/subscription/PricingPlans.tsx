@@ -50,7 +50,7 @@ const tiers = [
     price: {
       weekly: '99.99',
       monthly: '299.99',
-      yearly: '1199.99',
+      yearly: '1299.99',
     },
     features: allAccessFeatures,
     cta: 'Start All Access Plan',
@@ -61,7 +61,7 @@ const tiers = [
     name: 'Football Season',
     description: 'Complete NFL & CFB coverage for the entire season',
     price: {
-      season: '799.99',
+      season: '899.99',
     },
     features: footballFeatures,
     cta: 'Get Season Subscription',
@@ -238,7 +238,7 @@ const PricingPlans = forwardRef<HTMLDivElement>((props, ref) => {
             <div className="bg-white rounded-lg shadow-lg border-2 border-blue-500 p-6">
                               <div className="text-center">
                   <h4 className="text-xl font-semibold text-gray-900 mb-2">Season Pass</h4>
-                  <p className="text-4xl font-bold text-gray-900 mb-1">$799.99</p>
+                  <p className="text-4xl font-bold text-gray-900 mb-1">$899.99</p>
                   <p className="text-gray-500 mb-6">for the entire season</p>
                   <button 
                     onClick={() => window.location.href = 'https://www.winible.com/checkout/1378745735868076494?pid=1378745735876465103'}
@@ -269,7 +269,7 @@ const PricingPlans = forwardRef<HTMLDivElement>((props, ref) => {
             {billingIntervals.map((interval) => {
               const golfTier = tiers.find(t => t.id === 'golf-only');
               const golfPrice = golfTier?.price[interval.id as keyof typeof golfTier.price] || '0';
-              const isPopular = interval.id === 'monthly';
+              const isPopular = interval.id === 'yearly';
               
               return (
                 <div

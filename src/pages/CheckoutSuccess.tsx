@@ -17,7 +17,7 @@ const SUBSCRIPTION_PRICES = {
   pro: {
     weekly: 59.99,
     monthly: 239.99,
-    yearly: 599.99
+    yearly: 1299.99
   }
 };
 
