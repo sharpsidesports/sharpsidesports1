@@ -323,19 +323,14 @@ export default function Navigation() {
       {isMobileMenuOpen && (
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1">
-            {/* Golf Section - redirect */}
-            <div className="relative">
-              <NavLink
-                to="#"
-                className={mobileNavLinkClass}
-                onClick={(e) => {
-                  e.preventDefault();
-                  window.location.href = 'https://sharpsidegolf.com/dashboard';
-                }}
-              >
-                Golf Dashboard
-              </NavLink>
-            </div>
+            {/* Pricing - First option */}
+            <NavLink
+              to="/subscription"
+              className={mobileNavLinkClass}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Pricing
+            </NavLink>
             {navItems.map(item => (
               <NavLink
                 key={item.to}
@@ -352,13 +347,6 @@ export default function Navigation() {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               NFL Reception Model
-            </NavLink>
-            <NavLink
-              to="/subscription"
-              className={mobileNavLinkClass}
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Pricing
             </NavLink>
             <div className="relative">
               <NavLink
@@ -377,6 +365,23 @@ export default function Navigation() {
                 </NavLink>
                 <NavLink to="/redzone/te" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
                   TE Redzone Stats
+                </NavLink>
+              </div>
+            </div>
+            <div className="relative">
+              <NavLink
+                to="/nfl/fantasy-projections"
+                className={mobileNavLinkClass}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Fantasy Projections
+              </NavLink>
+              <div className="pl-4">
+                <NavLink to="/fantasy/qb-projections" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
+                  QB Projections
+                </NavLink>
+                <NavLink to="/fantasy/wr-projections" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
+                  WR Projections
                 </NavLink>
               </div>
             </div>

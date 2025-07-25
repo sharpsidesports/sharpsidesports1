@@ -3,6 +3,7 @@ import { AuthProvider } from './context/AuthContext.js';
 import ProtectedRoute from './components/auth/ProtectedRoute.js';
 import Header from './components/Header.js';
 import Navigation from './components/Navigation.js';
+import Footer from './components/Footer.js';
 import Dashboard from './pages/Dashboard.js';
 import MatchupTool from './pages/MatchupTool.js';
 import ThreeBallTool from './pages/ThreeBallTool.js';
@@ -63,6 +64,8 @@ import CBBPickAndRoll from './pages/cbb/pick-and-roll.js';
 import CBBSpotUpShooting from './pages/cbb/spot-up-shooting.js';
 import CBBSpotUpDefense from './pages/cbb/spot-up-defense.js';
 import CBBPickAndRollDefense from './pages/cbb/pick-and-roll-defense.js';
+import SubscriptionManagement from './pages/SubscriptionManagement.js';
+import TermsOfService from './pages/TermsOfService.js';
 
 // Component to track page views on route changes
 function PageViewTracker() {
@@ -88,10 +91,10 @@ function App() {
       <AuthProvider>
         <PageViewTracker />
         {/* <div className="min-h-screen bg-blue-50"> */}
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 flex flex-col">
           <Header />
           <Navigation />
-          <main className="relative max-w-7xl mx-auto py-4 sm:py-6 px-2 sm:px-4 md:px-6 lg:px-8">
+          <main className="relative max-w-7xl mx-auto py-4 sm:py-6 px-2 sm:px-4 md:px-6 lg:px-8 flex-grow">
             <div className="w-full overflow-x-hidden">
               <Routes>
                 {/* Public Routes */}
@@ -99,6 +102,8 @@ function App() {
                 <Route path="/auth/callback" element={<AuthCallback />} />
                 <Route path="/subscription" element={<Subscription />} />
                 <Route path="/subscription/success" element={<CheckoutSuccess />} />
+                <Route path="/subscription-management" element={<SubscriptionManagement />} />
+                <Route path="/terms" element={<TermsOfService />} />
                 
                 {/* Account Management - Protected but available to all tiers */}
                 <Route path="/account" element={
@@ -239,6 +244,7 @@ function App() {
               </Routes>
             </div>
           </main>
+          <Footer />
         </div>
       </AuthProvider>
     </BrowserRouter>
