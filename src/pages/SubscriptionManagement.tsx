@@ -106,6 +106,87 @@ export default function SubscriptionManagement() {
           </div>
         </div>
 
+        {/* New Subscription Renewal and Cancellation Section */}
+        <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Subscription Renewal & Cancellation Policy
+            </h2>
+            <p className="text-gray-600">
+              Important information about automatic renewals and cancellation procedures
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-lg">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-lg font-medium text-yellow-800">
+                    Automatic Renewal
+                  </h3>
+                  <p className="text-yellow-700 mt-1">
+                    <strong>Packages renew automatically at the end of each subscription period (recurring).</strong>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-red-900 mb-4">
+                  Subscribed BEFORE 11/2/24
+                </h3>
+                <div className="space-y-3 text-red-800">
+                  <p className="font-medium">Cancellation Process:</p>
+                  <ul className="list-disc list-inside space-y-2 text-sm">
+                    <li>Email us at <a href="mailto:info@sharpsidesports.com" className="text-red-600 hover:text-red-700 font-medium">info@sharpsidesports.com</a></li>
+                    <li>Request cancellation PRIOR to your renewal date</li>
+                    <li>We will cancel the subscription on your behalf</li>
+                    <li><strong>21-day notice required</strong> for monthly, season long, and annual subscriptions</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-green-900 mb-4">
+                  Subscribed AFTER 11/2/24
+                </h3>
+                <div className="space-y-3 text-green-800">
+                  <p className="font-medium">Self-Service Management:</p>
+                  <ul className="list-disc list-inside space-y-2 text-sm">
+                    <li>Manage your subscription through your account on Winible.com</li>
+                    <li>Access your payment processor dashboard directly</li>
+                    <li>Cancel, modify, or update your subscription anytime</li>
+                    <li>No email required - full self-service control</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gray-50 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                Important Reminders
+              </h3>
+              <div className="space-y-2 text-gray-700">
+                <p>• <strong>21-day notice required</strong> for cancellations on monthly, season long, and annual subscriptions</p>
+                <p>• Cancellations take effect at the end of your current billing period</p>
+                <p>• You'll continue to have access until your current period ends</p>
+                <p>• For urgent cancellations, contact support immediately</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="text-center">
           <a
             href="mailto:info@sharpsidesports.com"
