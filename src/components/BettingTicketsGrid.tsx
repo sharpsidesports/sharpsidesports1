@@ -26,14 +26,14 @@ const bettingTicketImages = [
 
 export default function BettingTicketsGrid() {
   return (
-    <div className="bg-white py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="bg-white py-8 md:py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Betting Tickets Masonry Layout */}
-        <div className="columns-1 md:columns-2 lg:columns-3 gap-6 max-w-6xl mx-auto">
+        <div className="columns-2 md:columns-2 lg:columns-3 gap-3 md:gap-3 max-w-4xl md:max-w-4xl mx-auto">
           {bettingTicketImages.map((imageUrl, index) => (
             <div
               key={index}
-              className="bg-gray-800 rounded-lg border-2 border-gray-700 hover:border-green-500 transition-all duration-200 hover:shadow-lg hover:shadow-green-500/20 overflow-hidden mb-6 break-inside-avoid transform hover:scale-105 hover:-translate-x-2"
+              className="bg-gray-800 rounded-lg border-2 border-gray-700 hover:border-green-500 transition-all duration-200 hover:shadow-lg hover:shadow-green-500/20 overflow-hidden mb-3 md:mb-3 break-inside-avoid transform hover:scale-105 hover:-translate-x-2"
             >
               <div className="relative">
                 <img
@@ -41,7 +41,7 @@ export default function BettingTicketsGrid() {
                   alt={`Betting Ticket ${index + 1}`}
                   className="w-full h-auto block"
                 />
-                <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
+                <div className="absolute top-2 right-2 bg-green-500 text-white text-base font-bold px-4 py-1 rounded">
                   Sharpside
                 </div>
               </div>

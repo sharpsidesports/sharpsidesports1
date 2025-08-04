@@ -21,13 +21,13 @@ export default function Subscription() {
   }, [location.hash]);
 
   return (
-    <div className="py-12">
+    <div className="py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
-          <h1 className="text-6xl font-bold tracking-tight mb-6">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
             YOU WILL <span className="text-sharpside-green">WIN</span> WITH US
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Premier handicapping, and tools service dedicated to helping you gain an edge and beat the book.
           </p>
         </div>
@@ -39,10 +39,10 @@ export default function Subscription() {
         </div>
 
         {/* How It Works Section */}
-        <div className="mt-16 bg-white p-8 rounded-lg">
+        <div className="mt-12 bg-white p-6 rounded-lg">
           <div className="text-center mb-8">
-            <h3 className="text-3xl font-bold text-gray-900 mb-2">How It Works</h3>
-            <p className="text-gray-600 text-lg">Simple steps to get started with your winning picks</p>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">How It Works</h3>
+            <p className="text-gray-600 text-base">Simple steps to get started with your winning picks</p>
           </div>
           <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

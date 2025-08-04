@@ -169,7 +169,7 @@ const PricingPlans = forwardRef<HTMLDivElement>((props, ref) => {
         {/* All Access Section */}
         <div className="mt-16">
           <div className="text-center mb-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">All Access</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">All Access</h3>
             <p className="text-gray-600">Complete access to all sports and tools</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
@@ -231,7 +231,7 @@ const PricingPlans = forwardRef<HTMLDivElement>((props, ref) => {
         {/* Football Season Section */}
         <div className="mt-16">
           <div className="text-center mb-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">Football Season</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Football Season</h3>
             <p className="text-gray-600">Complete NFL & CFB coverage for the entire season</p>
           </div>
           <div className="max-w-md mx-auto">
@@ -262,7 +262,7 @@ const PricingPlans = forwardRef<HTMLDivElement>((props, ref) => {
         {/* Golf Only Section */}
         <div className="mt-16">
           <div className="text-center mb-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">Golf Only</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Golf Only</h3>
             <p className="text-gray-600">Complete golf analytics and betting tools</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">

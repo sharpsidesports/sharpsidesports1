@@ -112,7 +112,7 @@ export default function TeamStatsLanding() {
     <div className="space-y-8 max-w-4xl mx-auto py-8">
       {/* SEO-optimized heading structure */}
       <header className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
           NFL Team Stats 2024 - Complete Team Statistics & Rankings
         </h1>
         <p className="text-lg text-gray-700 mb-4">

@@ -39,19 +39,19 @@ export default function TicketCarousel() {
   };
 
   return (
-    <div className="w-full flex flex-col items-center py-8">
-      <div className="w-full max-w-3xl">
+    <div className="w-full flex flex-col items-center py-6">
+      <div className="w-full max-w-xs md:max-w-xl">
         {/* @ts-ignore */}
         <Slider {...settings}>
           {ticketImages.map((src, idx) => (
-            <div key={idx} className="mx-4 w-64 flex justify-center items-center bg-white p-2">
-              <img src={src} alt={`Ticket ${idx + 1}`} className="object-contain h-48" />
+            <div key={idx} className="mx-1 w-20 md:w-40 flex justify-center items-center bg-white p-1 md:p-2">
+              <img src={src} alt={`Ticket ${idx + 1}`} className="object-contain h-12 md:h-28" />
             </div>
           ))}
         </Slider>
       </div>
       <div className="mt-6 text-center">
-        <span className="text-green-600 text-xl font-bold tracking-wide uppercase">
+        <span className="text-green-600 text-xs md:text-lg font-bold tracking-wide uppercase">
           THE BEST GOLF BETTORS ON THE PLANET
         </span>
       </div>
