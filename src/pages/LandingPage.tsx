@@ -167,7 +167,7 @@ export default function LandingPage() {
                   <p className="text-3xl font-bold text-gray-900 mb-1">$899.99</p>
                   <p className="text-gray-500 mb-4">for the entire season</p>
                   <button 
-                    onClick={() => window.location.href = 'https://www.winible.com/checkout/1378745735868076494?pid=1378745735876465103'}
+                    onClick={() => window.location.href = 'https://www.winible.com/checkout/1378745735868076494?pid=1378745735880659408'}
                     className="w-full py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-sm"
                   >
                     Get Season Pass
@@ -482,7 +482,7 @@ export default function LandingPage() {
                   <p className="text-4xl font-bold text-gray-900 mb-1">$899.99</p>
                   <p className="text-gray-500 mb-6">for the entire season</p>
                   <button 
-                    onClick={() => window.location.href = 'https://www.winible.com/checkout/1378745735868076494?pid=1378745735876465103'}
+                    onClick={() => window.location.href = 'https://www.winible.com/checkout/1378745735868076494?pid=1378745735880659408'}
                     className="w-full py-3 px-6 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
                   >
                     Get Season Pass
