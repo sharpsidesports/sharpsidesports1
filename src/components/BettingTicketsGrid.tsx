@@ -35,16 +35,11 @@ export default function BettingTicketsGrid() {
               key={index}
               className="bg-gray-800 rounded-lg border-2 border-gray-700 hover:border-green-500 transition-all duration-200 hover:shadow-lg hover:shadow-green-500/20 overflow-hidden mb-3 md:mb-3 break-inside-avoid transform hover:scale-105 hover:-translate-x-2"
             >
-              <div className="relative">
-                <img
-                  src={imageUrl}
-                  alt={`Betting Ticket ${index + 1}`}
-                  className="w-full h-auto block"
-                />
-                <div className="absolute top-2 right-2 bg-green-500 text-white text-base font-bold px-4 py-1 rounded">
-                  Sharpside
-                </div>
-              </div>
+              <img
+                src={imageUrl}
+                alt={`Betting Ticket ${index + 1}`}
+                className="w-full h-auto block"
+              />
             </div>
           ))}
         </div>
