@@ -1,5 +1,6 @@
 // This is the landing page component for the golf analytics platform.
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import PerformanceGraph from '../components/subscription/PerformanceGraph.js';
 import VideoShowcase from '../components/landing/VideoShowcase.js';
 import BettingTicketsGrid from '../components/BettingTicketsGrid.js';
@@ -7,6 +8,9 @@ import TicketCarousel from '../components/TicketCarousel.js';
 import NFLRecords from '../components/subscription/NFLRecords.js';
 
 export default function LandingPage() {
+  const [vipInterval, setVipInterval] = useState('monthly');
+  const [golfInterval, setGolfInterval] = useState('monthly');
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
@@ -367,126 +371,197 @@ export default function LandingPage() {
             </p>
           </div>
 
-          {/* Mobile Pricing - 3 Rows Layout */}
+          {/* Mobile Pricing - Toggle Layout */}
           <div className="space-y-8 mb-10">
-            {/* Row 1: VIP (All Access) Weekly, Monthly, Yearly */}
-            <div className="grid grid-cols-3 gap-4">
-              {/* VIP Weekly */}
-              <div className="bg-white rounded-lg shadow-lg border-2 border-gray-200 p-4">
-                <div className="text-center">
-                  <h4 className="text-base font-semibold text-gray-900 mb-1">Weekly</h4>
-                  <p className="text-2xl font-bold text-gray-900 mb-1">$99.99</p>
-                  <p className="text-gray-500 text-base mb-1">per week</p>
-                  <button 
-                    onClick={() => window.location.href = 'https://www.winible.com/checkout/1359269787951190914?store_url=/sharpsidesports&interval=week'}
-                    className="w-full py-3 px-3 bg-gray-900 text-white rounded text-base hover:bg-gray-800 transition-colors"
-                  >
-                    Start
-                  </button>
-                </div>
+            {/* VIP All Access with Toggle */}
+            <div className="bg-white rounded-lg shadow-lg border-2 border-gray-200 p-6">
+              <div className="text-center mb-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">All Access</h3>
+                <p className="text-gray-600 text-sm">Complete access to all sports and tools</p>
+              </div>
+              
+              {/* Toggle Buttons */}
+              <div className="flex bg-gray-100 rounded-lg p-1 mb-6">
+                <button 
+                  onClick={() => setVipInterval('weekly')}
+                  className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
+                    vipInterval === 'weekly' 
+                      ? 'bg-white text-gray-900 shadow-sm' 
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Weekly
+                </button>
+                <button 
+                  onClick={() => setVipInterval('monthly')}
+                  className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
+                    vipInterval === 'monthly' 
+                      ? 'bg-white text-gray-900 shadow-sm' 
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Monthly
+                </button>
+                <button 
+                  onClick={() => setVipInterval('yearly')}
+                  className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
+                    vipInterval === 'yearly' 
+                      ? 'bg-white text-gray-900 shadow-sm' 
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Yearly
+                </button>
               </div>
 
-              {/* VIP Monthly */}
-                                      <div className="bg-white rounded-lg shadow-lg border-2 border-green-500 p-4 relative">
-                          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                            <span className="bg-green-500 text-white px-0.5 py-0.5 rounded-full text-xs font-semibold">
-                              Popular
-                            </span>
-                          </div>
-                <div className="text-center">
-                  <h4 className="text-base font-semibold text-gray-900 mb-1">Monthly</h4>
-                  <p className="text-2xl font-bold text-gray-900 mb-1">$299.99</p>
-                  <p className="text-gray-500 text-base mb-1">per month</p>
-                  <button 
-                    onClick={() => window.location.href = 'https://www.winible.com/checkout/1359269787951190914?store_url=/sharpsidesports&interval=month'}
-                    className="w-full py-3 px-3 bg-green-500 text-white rounded text-base hover:bg-green-600 transition-colors"
-                  >
-                    Start
-                  </button>
-                </div>
-              </div>
-
-              {/* VIP Yearly */}
-              <div className="bg-white rounded-lg shadow-lg border-2 border-gray-200 p-4">
-                <div className="text-center">
-                  <h4 className="text-base font-semibold text-gray-900 mb-1">Yearly</h4>
-                  <p className="text-2xl font-bold text-gray-900 mb-1">$1,299</p>
-                  <p className="text-gray-500 text-base mb-1">per year</p>
-                  <button 
-                    onClick={() => window.location.href = 'https://www.winible.com/checkout/1359269787951190914?store_url=/sharpsidesports&interval=year'}
-                    className="w-full py-3 px-3 bg-gray-900 text-white rounded text-base hover:bg-gray-800 transition-colors"
-                  >
-                    Start
-                  </button>
-                </div>
+              {/* Dynamic Content Based on Selection */}
+              <div className="text-center">
+                {vipInterval === 'weekly' && (
+                  <>
+                    <p className="text-3xl font-bold text-gray-900 mb-1">$99.99</p>
+                    <p className="text-gray-500 text-base mb-4">per week</p>
+                    <button 
+                      onClick={() => window.location.href = 'https://www.winible.com/checkout/1359269787951190914?store_url=/sharpsidesports&interval=week'}
+                      className="w-full py-3 px-4 bg-gray-900 text-white rounded-lg text-base font-medium hover:bg-gray-800 transition-colors"
+                    >
+                      Start Weekly
+                    </button>
+                  </>
+                )}
+                {vipInterval === 'monthly' && (
+                  <>
+                    <div className="relative mb-4">
+                      <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                        Popular
+                      </span>
+                    </div>
+                    <p className="text-3xl font-bold text-gray-900 mb-1">$299.99</p>
+                    <p className="text-gray-500 text-base mb-4">per month</p>
+                    <button 
+                      onClick={() => window.location.href = 'https://www.winible.com/checkout/1359269787951190914?store_url=/sharpsidesports&interval=month'}
+                      className="w-full py-3 px-4 bg-green-500 text-white rounded-lg text-base font-medium hover:bg-green-600 transition-colors"
+                    >
+                      Start Monthly
+                    </button>
+                  </>
+                )}
+                {vipInterval === 'yearly' && (
+                  <>
+                    <p className="text-3xl font-bold text-gray-900 mb-1">$1,299</p>
+                    <p className="text-gray-500 text-base mb-1">per year</p>
+                    <p className="text-green-600 text-sm mb-4">Save $600/year</p>
+                    <button 
+                      onClick={() => window.location.href = 'https://www.winible.com/checkout/1359269787951190914?store_url=/sharpsidesports&interval=year'}
+                      className="w-full py-3 px-4 bg-gray-900 text-white rounded-lg text-base font-medium hover:bg-gray-800 transition-colors"
+                    >
+                      Start Yearly
+                    </button>
+                  </>
+                )}
               </div>
             </div>
 
-            {/* Row 2: Football Season */}
-            <div className="bg-white rounded-lg shadow-lg border-2 border-blue-500 p-5">
+            {/* Football Season */}
+            <div className="bg-white rounded-lg shadow-lg border-2 border-blue-500 p-6">
               <div className="text-center">
-                <h4 className="text-lg font-semibold text-gray-900 mb-1">Football Season</h4>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Football Season</h3>
+                <p className="text-gray-600 text-sm mb-4">Complete NFL & CFB coverage for the entire season</p>
                 <p className="text-3xl font-bold text-gray-900 mb-1">$899.99</p>
-                <p className="text-gray-500 text-base mb-2">for the entire season</p>
+                <p className="text-gray-500 text-base mb-4">for the entire season</p>
                 <button 
                   onClick={() => window.location.href = 'https://www.winible.com/checkout/1378745735868076494?pid=1378745735880659408'}
-                  className="w-full py-3 px-4 bg-blue-500 text-white rounded text-base hover:bg-blue-600 transition-colors"
+                  className="w-full py-3 px-4 bg-blue-500 text-white rounded-lg text-base font-medium hover:bg-blue-600 transition-colors"
                 >
                   Get Season Pass
                 </button>
               </div>
             </div>
 
-            {/* Row 3: Golf Weekly, Monthly, Yearly */}
-            <div className="grid grid-cols-3 gap-4">
-              {/* Golf Weekly */}
-              <div className="bg-white rounded-lg shadow-lg border-2 border-gray-200 p-4">
-                <div className="text-center">
-                  <h4 className="text-base font-semibold text-gray-900 mb-1">Weekly</h4>
-                  <p className="text-2xl font-bold text-gray-900 mb-1">$59.99</p>
-                  <p className="text-gray-500 text-base mb-1">per week</p>
-                  <button 
-                    onClick={() => window.location.href = 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=week'}
-                    className="w-full py-3 px-3 bg-gray-900 text-white rounded text-base hover:bg-gray-800 transition-colors"
-                  >
-                    Start
-                  </button>
-                </div>
+            {/* Golf Only with Toggle */}
+            <div className="bg-white rounded-lg shadow-lg border-2 border-gray-200 p-6">
+              <div className="text-center mb-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Golf Only</h3>
+                <p className="text-gray-600 text-sm">Complete golf analytics and betting tools</p>
+              </div>
+              
+              {/* Toggle Buttons */}
+              <div className="flex bg-gray-100 rounded-lg p-1 mb-6">
+                <button 
+                  onClick={() => setGolfInterval('weekly')}
+                  className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
+                    golfInterval === 'weekly' 
+                      ? 'bg-white text-gray-900 shadow-sm' 
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Weekly
+                </button>
+                <button 
+                  onClick={() => setGolfInterval('monthly')}
+                  className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
+                    golfInterval === 'monthly' 
+                      ? 'bg-white text-gray-900 shadow-sm' 
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Monthly
+                </button>
+                <button 
+                  onClick={() => setGolfInterval('yearly')}
+                  className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
+                    golfInterval === 'yearly' 
+                      ? 'bg-white text-gray-900 shadow-sm' 
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Yearly
+                </button>
               </div>
 
-              {/* Golf Monthly */}
-                                      <div className="bg-white rounded-lg shadow-lg border-2 border-green-500 p-4 relative">
-                          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                            <span className="bg-green-500 text-white px-0.5 py-0.5 rounded-full text-xs font-semibold">
-                              Best Value
-                            </span>
-                          </div>
-                <div className="text-center">
-                  <h4 className="text-base font-semibold text-gray-900 mb-1">Monthly</h4>
-                  <p className="text-2xl font-bold text-gray-900 mb-1">$239.99</p>
-                  <p className="text-gray-500 text-base mb-1">per month</p>
-                  <button 
-                    onClick={() => window.location.href = 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=month'}
-                    className="w-full py-3 px-3 bg-green-500 text-white rounded text-base hover:bg-green-600 transition-colors"
-                  >
-                    Start
-                  </button>
-                </div>
-              </div>
-
-              {/* Golf Yearly */}
-              <div className="bg-white rounded-lg shadow-lg border-2 border-gray-200 p-4">
-                <div className="text-center">
-                  <h4 className="text-base font-semibold text-gray-900 mb-1">Yearly</h4>
-                  <p className="text-2xl font-bold text-gray-900 mb-1">$599.99</p>
-                  <p className="text-gray-500 text-base mb-1">per year</p>
-                  <button 
-                    onClick={() => window.location.href = 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=year'}
-                    className="w-full py-3 px-3 bg-gray-900 text-white rounded text-base hover:bg-gray-800 transition-colors"
-                  >
-                    Start
-                  </button>
-                </div>
+              {/* Dynamic Content Based on Selection */}
+              <div className="text-center">
+                {golfInterval === 'weekly' && (
+                  <>
+                    <p className="text-3xl font-bold text-gray-900 mb-1">$59.99</p>
+                    <p className="text-gray-500 text-base mb-4">per week</p>
+                    <button 
+                      onClick={() => window.location.href = 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=week'}
+                      className="w-full py-3 px-4 bg-gray-900 text-white rounded-lg text-base font-medium hover:bg-gray-800 transition-colors"
+                    >
+                      Start Weekly
+                    </button>
+                  </>
+                )}
+                {golfInterval === 'monthly' && (
+                  <>
+                    <div className="relative mb-4">
+                      <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                        Best Value
+                      </span>
+                    </div>
+                    <p className="text-3xl font-bold text-gray-900 mb-1">$239.99</p>
+                    <p className="text-gray-500 text-base mb-4">per month</p>
+                    <button 
+                      onClick={() => window.location.href = 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=month'}
+                      className="w-full py-3 px-4 bg-green-500 text-white rounded-lg text-base font-medium hover:bg-green-600 transition-colors"
+                    >
+                      Start Monthly
+                    </button>
+                  </>
+                )}
+                {golfInterval === 'yearly' && (
+                  <>
+                    <p className="text-3xl font-bold text-gray-900 mb-1">$599.99</p>
+                    <p className="text-gray-500 text-base mb-1">per year</p>
+                    <p className="text-green-600 text-sm mb-4">Save $280/year</p>
+                    <button 
+                      onClick={() => window.location.href = 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=year'}
+                      className="w-full py-3 px-4 bg-gray-900 text-white rounded-lg text-base font-medium hover:bg-gray-800 transition-colors"
+                    >
+                      Start Yearly
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>
