@@ -17,7 +17,7 @@ export default function TermsOfService() {
               All purchases made on SharpsideGolf.com are for digital products delivered instantly upon payment. Due to the immediate nature of access, we do not offer refunds under normal circumstances. By completing your purchase, you understand and agree that you are receiving non-tangible digital content that cannot be returned.
             </p>
             <p className="text-gray-700 leading-relaxed mb-4">
-              In the rare event that a technical issue or billing error occurs due to a mistake on our part—such as duplicate charges, incorrect account access, or a failure to deliver the product—we will investigate the matter promptly and issue a refund if warranted. If you believe such an error has occurred, please contact us at <a href="mailto:sharpsidegolf@gmail.com" className="text-green-600 hover:text-green-700">sharpsidegolf@gmail.com</a> within seven (7) days of your purchase.
+              In the rare event that a technical issue or billing error occurs due to a mistake on our part—such as duplicate charges, incorrect account access, or a failure to deliver the product—we will investigate the matter promptly and issue a refund if warranted. If you believe such an error has occurred, please contact us at <a href="mailto:info@sharpsidesports.com" className="text-green-600 hover:text-green-700">info@sharpsidesports.com</a> within seven (7) days of your purchase.
             </p>
 
             <h2 className="text-2xl font-semibold text-gray-900 mt-8 mb-4">Informational Use Only</h2>
@@ -45,7 +45,7 @@ export default function TermsOfService() {
 
             <div className="mt-8 p-4 bg-gray-50 rounded-lg">
               <p className="text-gray-700 leading-relaxed">
-                If you have any questions regarding these terms or need support, please contact us at <a href="mailto:sharpsidegolf@gmail.com" className="text-green-600 hover:text-green-700">sharpsidegolf@gmail.com</a>.
+                If you have any questions regarding these terms or need support, please contact us at <a href="mailto:info@sharpsidesports.com" className="text-green-600 hover:text-green-700">info@sharpsidesports.com</a>.
               </p>
             </div>
           </div>

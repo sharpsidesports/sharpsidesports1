@@ -100,23 +100,30 @@ export default function Navigation() {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
+
             <Link
-              to="/articles/detroit-gc"
+              to="/articles/holdouts-performance"
               className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
             >
-              What to know about Detroit GC
+              Do Holdouts Actually Affect Performance?
             </Link>
             <Link
-              to="/articles/john-deere-classic"
+              to="/articles/best-nfl-betting-spot"
               className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
             >
-              John Deere Classic Things To Know
+              The Best NFL Betting Spot Of The Season
             </Link>
             <Link
-              to="/articles/john-deere-classic-betting-picks"
+              to="/articles/wr-highest-upside"
               className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
             >
-              John Deere Classic Betting Mega Preview
+              This WR Has THE Highest Upside
+            </Link>
+            <Link
+              to="/articles/nfl-player-massive-year"
+              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
+            >
+              This NFL Player Is Set For a Massive Year
             </Link>
           </div>,
           document.body
@@ -324,13 +331,13 @@ export default function Navigation() {
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1">
             {/* Pricing - First option */}
-            <NavLink
+              <NavLink
               to="/subscription"
-              className={mobileNavLinkClass}
+                className={mobileNavLinkClass}
               onClick={() => setIsMobileMenuOpen(false)}
-            >
+              >
               Pricing
-            </NavLink>
+              </NavLink>
             {navItems.map(item => (
               <NavLink
                 key={item.to}

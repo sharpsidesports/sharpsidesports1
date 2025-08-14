@@ -25,6 +25,10 @@ import { trackPageView } from './utils/metaPixel.js';
 import DetroitGCArticle from './pages/articles/detroit-gc.js';
 import JohnDeereClassicArticle from './pages/articles/john-deere-classic.js';
 import JohnDeereClassicBettingMegaPreview from './pages/articles/john-deere-classic-betting-picks.js';
+import HoldoutsPerformanceArticle from './pages/articles/holdouts-performance.js';
+import BestNFLBettingSpotArticle from './pages/articles/best-nfl-betting-spot.js';
+import WRHighestUpsideArticle from './pages/articles/wr-highest-upside.js';
+import NFLPlayerMassiveYearArticle from './pages/articles/nfl-player-massive-year.js';
 import ReceptionModel from './pages/ReceptionModel.js';
 import WRTargetProjections from './pages/cfb/WRTargetProjections.js';
 import WRRedzoneStats from './pages/redzone/WR.js';
@@ -206,6 +210,22 @@ function App() {
                 <Route 
                   path="/articles/john-deere-classic-betting-picks" 
                   element={<JohnDeereClassicBettingMegaPreview />} 
+                />
+                <Route 
+                  path="/articles/holdouts-performance" 
+                  element={<HoldoutsPerformanceArticle />} 
+                />
+                <Route 
+                  path="/articles/best-nfl-betting-spot" 
+                  element={<BestNFLBettingSpotArticle />} 
+                />
+                <Route 
+                  path="/articles/wr-highest-upside" 
+                  element={<WRHighestUpsideArticle />} 
+                />
+                <Route 
+                  path="/articles/nfl-player-massive-year" 
+                  element={<NFLPlayerMassiveYearArticle />} 
                 />
                 <Route path="/reception-model" element={<ReceptionModel />} />
                 <Route path="/cfb/wr-target-projections" element={<WRTargetProjections />} />
