@@ -29,6 +29,7 @@ import HoldoutsPerformanceArticle from './pages/articles/holdouts-performance.js
 import BestNFLBettingSpotArticle from './pages/articles/best-nfl-betting-spot.js';
 import WRHighestUpsideArticle from './pages/articles/wr-highest-upside.js';
 import NFLPlayerMassiveYearArticle from './pages/articles/nfl-player-massive-year.js';
+import Sitemap from './pages/sitemap.xml.js';
 import ReceptionModel from './pages/ReceptionModel.js';
 import WRTargetProjections from './pages/cfb/WRTargetProjections.js';
 import WRRedzoneStats from './pages/redzone/WR.js';
@@ -226,6 +227,10 @@ function App() {
                 <Route 
                   path="/articles/nfl-player-massive-year" 
                   element={<NFLPlayerMassiveYearArticle />} 
+                />
+                <Route 
+                  path="/sitemap.xml" 
+                  element={<Sitemap />} 
                 />
                 <Route path="/reception-model" element={<ReceptionModel />} />
                 <Route path="/cfb/wr-target-projections" element={<WRTargetProjections />} />
