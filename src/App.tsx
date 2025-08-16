@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/next';
 import { AuthProvider } from './context/AuthContext.js';
 import ProtectedRoute from './components/auth/ProtectedRoute.js';
 import Header from './components/Header.js';
@@ -271,6 +272,7 @@ function App() {
           </main>
           <Footer />
         </div>
+        <Analytics />
       </AuthProvider>
     </BrowserRouter>
   );
