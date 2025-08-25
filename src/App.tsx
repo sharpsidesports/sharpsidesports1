@@ -33,6 +33,7 @@ import NFLPlayerMassiveYearArticle from './pages/articles/nfl-player-massive-yea
 import Sitemap from './pages/sitemap.xml.js';
 import ReceptionModel from './pages/ReceptionModel.js';
 import WRTargetProjections from './pages/cfb/WRTargetProjections.js';
+import SPPlus from './pages/cfb/SPPlus.js';
 import WRRedzoneStats from './pages/redzone/WR.js';
 import TERedzoneStats from './pages/redzone/TE.js';
 import RBRedzoneStats from './pages/redzone/RB.js';
@@ -235,6 +236,7 @@ function App() {
                 />
                 <Route path="/reception-model" element={<ReceptionModel />} />
                 <Route path="/cfb/wr-target-projections" element={<WRTargetProjections />} />
+                <Route path="/cfb/sp-plus" element={<SPPlus />} />
                 <Route path="/nfl/offense" element={<NFLTeamOffenseStatsPage />} />
                 <Route path="/nfl/defense" element={<NFLTeamDefenseStatsPage />} />
                 <Route path="/nfl/pass-attempts-per-game" element={<PassAttemptsPerGame />} />
