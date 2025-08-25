@@ -1,35 +1,309 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import Papa from 'papaparse';
+
+const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/14PUFT76LIYnJxLKoWGs7GD9KDNuqIVY0HuqwfRPeYD0/gviz/tq?tqx=out:csv';
+
+interface WRData {
+  player: string;
+  position: string;
+  team: string;
+  games: number;
+  targets: number;
+  catchPercentage: number;
+  receptions: number;
+  yards: number;
+  yardsPerCatch: number;
+  firstDowns: number;
+  longest: number;
+  touchdowns: number;
+}
 
 export default function WRTargetProjections() {
+  const [data, setData] = useState<WRData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [sortConfig, setSortConfig] = useState<{
+    key: keyof WRData;
+    direction: 'asc' | 'desc';
+  }>({ key: 'targets', direction: 'desc' });
+  const [filterPosition, setFilterPosition] = useState<string>('all');
+
+  // SEO: Update document title and meta tags
+  useEffect(() => {
+    document.title = "College Football WR Target Projections 2025 - Receiving Statistics & Rankings | SharpSide Sports";
+    
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'College Football WR target projections for 2025 season. View receiving statistics, catch percentages, yards per catch, and target analysis for all college football wide receivers. Updated weekly.');
+    } else {
+      const newMetaDescription = document.createElement('meta');
+      newMetaDescription.name = 'description';
+      newMetaDescription.content = 'College Football WR target projections for 2025 season. View receiving statistics, catch percentages, yards per catch, and target analysis for all college football wide receivers. Updated weekly.';
+      document.head.appendChild(newMetaDescription);
+    }
+
+    // Add structured data for SEO
+    const structuredData = {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "College Football WR Target Projections 2025",
+      "description": "College Football WR target projections for 2025 season. View receiving statistics, catch percentages, yards per catch, and target analysis for all college football wide receivers.",
+      "url": "https://sharpsidesports.com/cfb/wr-target-projections",
+      "mainEntity": {
+        "@type": "Dataset",
+        "name": "College Football WR Target Projections 2025",
+        "description": "Comprehensive receiving statistics and target projections for college football wide receivers"
+      }
+    };
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.text = JSON.stringify(structuredData);
+    document.head.appendChild(script);
+
+    return () => {
+      const existingScript = document.querySelector('script[type="application/ld+json"]');
+      if (existingScript) {
+        existingScript.remove();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(SHEET_CSV_URL);
+        if (!response.ok) throw new Error('Failed to fetch data');
+        const text = await response.text();
+        const parsed = Papa.parse<string[]>(text, { skipEmptyLines: true });
+        
+        const dataRows = parsed.data.slice(1); // Skip header row
+        const formattedData: WRData[] = dataRows
+          .filter(row => row.length >= 12 && row[0] && row[0].trim() !== '')
+          .map(row => ({
+            player: row[0]?.trim() || '',
+            position: row[1]?.trim() || '',
+            team: row[2]?.trim() || '',
+            games: parseInt(row[3]) || 0,
+            targets: parseInt(row[4]) || 0,
+            catchPercentage: parseFloat(row[5]) || 0,
+            receptions: parseInt(row[6]) || 0,
+            yards: parseInt(row[7]) || 0,
+            yardsPerCatch: parseFloat(row[8]) || 0,
+            firstDowns: parseInt(row[9]) || 0,
+            longest: parseInt(row[10]) || 0,
+            touchdowns: parseInt(row[11]) || 0
+          }));
+
+        setData(formattedData);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleSort = (key: keyof WRData) => {
+    setSortConfig(prev => ({
+      key,
+      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
+    }));
+  };
+
+  const getSortIcon = (key: keyof WRData) => {
+    if (sortConfig.key !== key) return '↕️';
+    return sortConfig.direction === 'asc' ? '↑' : '↓';
+  };
+
+  const filteredData = data.filter(player => 
+    filterPosition === 'all' || player.position === filterPosition
+  );
+
+  const sortedData = [...filteredData].sort((a, b) => {
+    const aValue = a[sortConfig.key];
+    const bValue = b[sortConfig.key];
+    
+    if (typeof aValue === 'string' && typeof bValue === 'string') {
+      return sortConfig.direction === 'asc' 
+        ? aValue.localeCompare(bValue)
+        : bValue.localeCompare(aValue);
+    }
+    
+    if (typeof aValue === 'number' && typeof bValue === 'number') {
+      return sortConfig.direction === 'asc' ? aValue - bValue : bValue - aValue;
+    }
+    
+    return 0;
+  });
+
+  const positions = ['all', ...Array.from(new Set(data.map(player => player.position)))];
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-red-600">Error loading data: {error}</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="text-center">
-          <h1 className="text-4xl font-extrabold text-gray-900 mb-4">
-            WR Target Projections
-          </h1>
-          <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-            <div className="text-center">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
-                <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Coming Soon
-              </h2>
-              <p className="text-gray-600 mb-6">
-                Our advanced WR Target Projections model is currently in development. 
-                This feature will provide detailed target projections for college football wide receivers.
-              </p>
-              <div className="bg-green-50 border border-green-200 rounded-md p-4">
-                <p className="text-sm text-green-800">
-                  <strong>What to expect:</strong> Target share analysis, route-specific projections, 
-                  and matchup-based target predictions for college football WRs.
-                </p>
-              </div>
-            </div>
-          </div>
+    <div className="space-y-6">
+      <div className="bg-white rounded-lg shadow p-6">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">College Football WR Target Projections 2025</h1>
+        <p className="text-gray-600 mb-6">
+          Comprehensive receiving statistics and target analysis for college football wide receivers, tight ends, and running backs.
+        </p>
+        
+        {/* Position Filter */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Position:</label>
+          <select
+            value={filterPosition}
+            onChange={(e) => setFilterPosition(e.target.value)}
+            className="block w-full max-w-xs px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          >
+            {positions.map(pos => (
+              <option key={pos} value={pos}>
+                {pos === 'all' ? 'All Positions' : pos}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border border-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('player')}
+                >
+                  Player {getSortIcon('player')}
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('position')}
+                >
+                  Pos {getSortIcon('position')}
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('team')}
+                >
+                  Team {getSortIcon('team')}
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('games')}
+                >
+                  G {getSortIcon('games')}
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('targets')}
+                >
+                  TGTS {getSortIcon('targets')}
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('catchPercentage')}
+                >
+                  CATCH% {getSortIcon('catchPercentage')}
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('receptions')}
+                >
+                  REC {getSortIcon('receptions')}
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('yards')}
+                >
+                  YARDS {getSortIcon('yards')}
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('yardsPerCatch')}
+                >
+                  YPC {getSortIcon('yardsPerCatch')}
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('firstDowns')}
+                >
+                  1ST {getSortIcon('firstDowns')}
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('longest')}
+                >
+                  LONG {getSortIcon('longest')}
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('touchdowns')}
+                >
+                  TDs {getSortIcon('touchdowns')}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {sortedData.map((player, index) => (
+                <tr key={`${player.player}-${player.team}-${index}`} className="hover:bg-gray-50">
+                  <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {player.player}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                    {player.position}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                    {player.team}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                    {player.games}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                    {player.targets}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                    {player.catchPercentage.toFixed(1)}%
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                    {player.receptions}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                    {player.yards}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                    {player.yardsPerCatch.toFixed(1)}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                    {player.firstDowns}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                    {player.longest}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                    {player.touchdowns}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
