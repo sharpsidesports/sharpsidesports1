@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const VIP_PASSWORD = 'vip2024'; // Change this to your desired password
+const VIP_PASSWORDS = ['vip2024', 'cfbweek1']; // Array of valid VIP passwords
 
 const teams = [
   {
@@ -108,7 +108,7 @@ export default function WRRedzoneStats() {
 
   const handleVIPSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (pwInput === VIP_PASSWORD) {
+            if (VIP_PASSWORDS.includes(pwInput)) {
       setShowVIP(true);
       setShowPrompt(false);
       setPwInput('');

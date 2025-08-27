@@ -22,7 +22,7 @@ export default function BlurredPreview({ children, requiredSubscription = 'free'
   const [pwInput, setPwInput] = useState('');
   const [pwError, setPwError] = useState('');
   const [showVIP, setShowVIP] = useState(false);
-  const VIP_PASSWORD = 'vip2024'; // Keep in sync with ExpertInsightContent
+  const VIP_PASSWORDS = ['vip2024', 'cfbweek1']; // Array of valid VIP passwords
 
   // If blur is disabled OR user has sufficient subscription level, show content normally
   if (DISABLE_BLUR || (user && subscriptionLevels[userTier] >= subscriptionLevels[requiredSubscription]) || showVIP) {
@@ -32,7 +32,7 @@ export default function BlurredPreview({ children, requiredSubscription = 'free'
   // Password submit handler
   const handleVIPSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (pwInput === VIP_PASSWORD) {
+          if (VIP_PASSWORDS.includes(pwInput)) {
       setShowVIP(true);
       setShowPrompt(false);
       setPwInput('');
