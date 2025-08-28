@@ -348,13 +348,7 @@ export default function Navigation() {
                 {item.label}
               </NavLink>
             ))}
-            <NavLink
-              to="/reception-model"
-              className={mobileNavLinkClass}
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              NFL Reception Model
-            </NavLink>
+
             <div className="relative">
               <NavLink
                 to="/nfl/redzone-stats"
@@ -409,6 +403,20 @@ export default function Navigation() {
                 </NavLink>
                 <NavLink to="/nfl/team-stats" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
                   Team Overview
+                </NavLink>
+              </div>
+            </div>
+            {/* CFB Section */}
+            <div className="relative">
+              <div className="px-3 py-2 text-sm font-medium text-gray-500 uppercase tracking-wider">
+                College Football
+              </div>
+              <div className="pl-4">
+                <NavLink to="/cfb/sp-plus" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
+                  SP+ Rankings
+                </NavLink>
+                <NavLink to="/cfb/wr-target-projections" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
+                  WR Target Projections
                 </NavLink>
               </div>
             </div>
