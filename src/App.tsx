@@ -33,7 +33,7 @@ import NFLPlayerMassiveYearArticle from './pages/articles/nfl-player-massive-yea
 import Sitemap from './pages/sitemap.xml.js';
 import ReceptionModel from './pages/ReceptionModel.js';
 import WRTargetProjections from './pages/cfb/WRTargetProjections.js';
-import SPPlus from './pages/cfb/SPPlus.js';
+import SPPlus from './pages/cfb/SPPlus';
 import WRRedzoneStats from './pages/redzone/WR.js';
 import TERedzoneStats from './pages/redzone/TE.js';
 import RBRedzoneStats from './pages/redzone/RB.js';

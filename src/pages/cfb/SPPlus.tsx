@@ -6,6 +6,7 @@ const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/14zPJpGCtqn04vyF4I
 interface SPPlusData {
   team: string;
   spPlusRank: number;
+  spPlusRating: number;
   spPlusOff: number;
   spPlusOffRank: number;
   spPlusDef: number;
@@ -78,26 +79,28 @@ export default function SPPlus() {
         
         const dataRows = parsed.data.slice(1); // Skip header row
         const formattedData: SPPlusData[] = dataRows
-          .filter(row => row.length >= 7 && row[0] && row[0].trim() !== '')
+          .filter(row => row.length >= 6 && row[0] && row[0].trim() !== '')
           .map(row => {
-            // Extract rank from team name (e.g., "2. Alabama" -> rank: 1, team: "Alabama")
-            const teamMatch = row[0]?.match(/^(\d+)\.\s*(.+)$/);
-            const spPlusRank = teamMatch ? Math.max(1, parseInt(teamMatch[1]) - 1) : 0;
+            // Extract rank from team name (e.g., "1. Georgia (1-0)" -> rank: 1, team: "Georgia")
+            const teamMatch = row[0]?.match(/^(\d+)\.\s*([^(]+)/);
+            const spPlusRank = teamMatch ? parseInt(teamMatch[1]) : 0;
             const team = teamMatch ? teamMatch[2].trim() : row[0]?.trim() || '';
             
             // Parse SP+ values and their ranks
-            const spPlusOff = parseFloat(row[1]) || 0;
-            const spPlusOffRank = parseInt(row[1]?.match(/\((\d+)\)/)?.[1] || '0') || 0;
-            const spPlusDef = parseFloat(row[2]) || 0;
-            const spPlusDefRank = parseInt(row[2]?.match(/\((\d+)\)/)?.[1] || '0') || 0;
-            const spPlusST = parseFloat(row[3]) || 0;
-            const spPlusSTRank = parseInt(row[3]?.match(/\((\d+)\)/)?.[1] || '0') || 0;
-            const avgW = parseFloat(row[4]) || 0;
-            const sosRank = parseInt(row[5]) || 0;
+            const spPlusRating = parseFloat(row[1]) || 0;
+            const spPlusOff = parseFloat(row[2]) || 0;
+            const spPlusOffRank = parseInt(row[2]?.match(/\((\d+)\)/)?.[1] || '0') || 0;
+            const spPlusDef = parseFloat(row[3]) || 0;
+            const spPlusDefRank = parseInt(row[3]?.match(/\((\d+)\)/)?.[1] || '0') || 0;
+            const spPlusST = parseFloat(row[4]) || 0;
+            const spPlusSTRank = parseInt(row[4]?.match(/\((\d+)\)/)?.[1] || '0') || 0;
+            const avgW = 0; // Not available in current CSV
+            const sosRank = 0; // Not available in current CSV
 
             return {
               team,
               spPlusRank,
+              spPlusRating,
               spPlusOff,
               spPlusOffRank,
               spPlusDef,
@@ -177,15 +180,19 @@ export default function SPPlus() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <div className="bg-blue-50 p-4 rounded-lg">
             <h3 className="font-semibold text-blue-900">SP+ Rating</h3>
+            <p className="text-sm text-blue-700">Overall efficiency rating</p>
           </div>
           <div className="bg-green-50 p-4 rounded-lg">
             <h3 className="font-semibold text-green-900">Offensive SP+</h3>
+            <p className="text-sm text-green-700">Offensive efficiency</p>
           </div>
           <div className="bg-red-50 p-4 rounded-lg">
             <h3 className="font-semibold text-red-900">Defensive SP+</h3>
+            <p className="text-sm text-red-700">Defensive efficiency</p>
           </div>
           <div className="bg-purple-50 p-4 rounded-lg">
             <h3 className="font-semibold text-purple-900">Special Teams</h3>
+            <p className="text-sm text-purple-700">Special teams efficiency</p>
           </div>
         </div>
 
@@ -207,6 +214,12 @@ export default function SPPlus() {
                 </th>
                 <th 
                   className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('spPlusRating')}
+                >
+                  SP+ Rating {getSortIcon('spPlusRating')}
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => handleSort('spPlusOff')}
                 >
                   Off. SP+ {getSortIcon('spPlusOff')}
@@ -223,18 +236,7 @@ export default function SPPlus() {
                 >
                   ST SP+ {getSortIcon('spPlusST')}
                 </th>
-                <th 
-                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleSort('avgW')}
-                >
-                  Avg. Wins {getSortIcon('avgW')}
-                </th>
-                <th 
-                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleSort('sosRank')}
-                >
-                  SOS Rank {getSortIcon('sosRank')}
-                </th>
+
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -245,6 +247,9 @@ export default function SPPlus() {
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
                     {team.team}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                    <span className="font-medium">{team.spPlusRating.toFixed(1)}</span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                     <div>
@@ -264,12 +269,7 @@ export default function SPPlus() {
                       <span className="text-gray-500 ml-1">({team.spPlusSTRank})</span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                    {team.avgW.toFixed(1)}
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                    {team.sosRank}
-                  </td>
+
                 </tr>
               ))}
             </tbody>
