@@ -125,6 +125,18 @@ export default function Navigation() {
             >
               This NFL Player Is Set For a Massive Year
             </Link>
+            <Link
+              to="/articles/nfl-win-totals-first-time-coaches"
+              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
+            >
+              Target These NFL Teams To Go Over Their Win Total
+            </Link>
+            <Link
+              to="/articles/nfl-bets-before-week-1"
+              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
+            >
+              The NFL Bets You Need to Make Before Week 1
+            </Link>
           </div>,
           document.body
         )}

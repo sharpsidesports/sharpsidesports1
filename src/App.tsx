@@ -30,10 +30,12 @@ import HoldoutsPerformanceArticle from './pages/articles/holdouts-performance.js
 import BestNFLBettingSpotArticle from './pages/articles/best-nfl-betting-spot.js';
 import WRHighestUpsideArticle from './pages/articles/wr-highest-upside.js';
 import NFLPlayerMassiveYearArticle from './pages/articles/nfl-player-massive-year.js';
+import NFLWinTotalsFirstTimeCoaches from './pages/articles/nfl-win-totals-first-time-coaches.js';
+import NFLBetsBeforeWeek1 from './pages/articles/nfl-bets-before-week-1.js';
 import Sitemap from './pages/sitemap.xml.js';
 import ReceptionModel from './pages/ReceptionModel.js';
 import WRTargetProjections from './pages/cfb/WRTargetProjections.js';
-import SPPlus from './pages/cfb/SPPlus';
+import SPPlus from './pages/cfb/SPPlus.js';
 import WRRedzoneStats from './pages/redzone/WR.js';
 import TERedzoneStats from './pages/redzone/TE.js';
 import RBRedzoneStats from './pages/redzone/RB.js';
@@ -229,6 +231,14 @@ function App() {
                 <Route 
                   path="/articles/nfl-player-massive-year" 
                   element={<NFLPlayerMassiveYearArticle />} 
+                />
+                <Route 
+                  path="/articles/nfl-win-totals-first-time-coaches" 
+                  element={<NFLWinTotalsFirstTimeCoaches />} 
+                />
+                <Route 
+                  path="/articles/nfl-bets-before-week-1" 
+                  element={<NFLBetsBeforeWeek1 />} 
                 />
                 <Route 
                   path="/sitemap.xml" 
