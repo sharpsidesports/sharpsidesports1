@@ -62,6 +62,20 @@ const Sitemap: React.FC = () => {
     <priority>0.9</priority>
   </url>
 
+  <url>
+    <loc>https://ssgolf-vercel-3-17fd4xi5y-john-abbeys-projects.vercel.app/articles/nfl-win-totals-first-time-coaches</loc>
+    <lastmod>2025-09-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://ssgolf-vercel-3-17fd4xi5y-john-abbeys-projects.vercel.app/articles/nfl-bets-before-week-1</loc>
+    <lastmod>2025-09-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
   <!-- NFL Stats Pages -->
   <url>
     <loc>https://ssgolf-vercel-3-17fd4xi5y-john-abbeys-projects.vercel.app/nfl/team-stats</loc>
@@ -162,6 +176,14 @@ const Sitemap: React.FC = () => {
     <lastmod>2024-08-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
+  </url>
+
+  <!-- College Football Pages -->
+  <url>
+    <loc>https://ssgolf-vercel-3-17fd4xi5y-john-abbeys-projects.vercel.app/cfb/sp-plus</loc>
+    <lastmod>2025-09-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
 
   <!-- Account Pages -->
