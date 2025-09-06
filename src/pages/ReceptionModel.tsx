@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const VIP_PASSWORDS = ['cfbweek1', 'brodie25', 'ssports25', 'chris25']; // Array of valid VIP passwords
+const VIP_PASSWORDS = ['cfbweek1', 'brodie25', 'ssports25', 'chris25', 'josh25']; // Array of valid VIP passwords
 
 const teams = [
   {

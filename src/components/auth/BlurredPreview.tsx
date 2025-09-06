@@ -22,7 +22,7 @@ export default function BlurredPreview({ children, requiredSubscription = 'free'
   const [pwInput, setPwInput] = useState('');
   const [pwError, setPwError] = useState('');
   const [showVIP, setShowVIP] = useState(false);
-  const VIP_PASSWORDS = ['cfbweek1', 'brodie25', 'ssports25', 'chris25']; // Array of valid VIP passwords
+  const VIP_PASSWORDS = ['cfbweek1', 'brodie25', 'ssports25', 'chris25', 'josh25']; // Array of valid VIP passwords
 
   // If blur is disabled OR user has sufficient subscription level, show content normally
   if (DISABLE_BLUR || (user && subscriptionLevels[userTier] >= subscriptionLevels[requiredSubscription]) || showVIP) {
