@@ -18,14 +18,17 @@ export default function NFLBetsBeforeWeek1() {
     // Add structured data for SEO
     const structuredData = {
       "@context": "https://schema.org",
-      "@type": "Article",
+      "@type": "NewsArticle",
       "headline": "The NFL Bets You Need to Make Before Week 1",
       "description": "Discover the NFL bets you need to make before Week 1. Learn why alternate win total markets are the easiest futures to beat, with 40% of teams missing by 3.5+ games.",
-      "image": "https://files.constantcontact.com/f381eaf7701/e7023280-437f-4bff-a508-09415b6feb79.jpg",
-      "author": {
-        "@type": "Organization",
-        "name": "SharpSide Sports"
-      },
+      "image": [
+        "https://www.ajc.com/resizer/v2/ZDTEQZT3OFNDHLH26YNVB7U62I.jpg?auth=813f3f3f9a144279cc8d49dae1e3865356b2b494b74f67874a11d4768c9298bf&width=790&height=440&smart=true"
+      ],
+      "author": [{
+        "@type": "Person",
+        "name": "SharpSide Sports",
+        "url": "https://sharpsidesports.com"
+      }],
       "publisher": {
         "@type": "Organization",
         "name": "SharpSide Sports",
@@ -34,7 +37,8 @@ export default function NFLBetsBeforeWeek1() {
           "url": "https://sharpsidesports.com/sharpside-logo.svg"
         }
       },
-      "datePublished": "2025-09-02",
+      "datePublished": "2025-09-02T12:00:00-04:00",
+      "dateModified": "2025-09-02T12:00:00-04:00",
       "mainEntity": {
         "@type": "WebPage",
         "name": "NFL Week 1 Betting Guide - Futures Market Analysis"

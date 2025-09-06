@@ -15,17 +15,21 @@ export default function NFLWinTotalsFirstTimeCoaches() {
       document.head.appendChild(newMetaDescription);
     }
 
-    // Add structured data for SEO
+    // Add structured data for SEO and Google News
     const structuredData = {
       "@context": "https://schema.org",
-      "@type": "Article",
+      "@type": "NewsArticle",
       "headline": "Target These NFL Teams To Go Over Their Win Total",
-      "description": "Discover which NFL teams to target for going over their win totals. First-time head coaches with offensive backgrounds have a 54% success rate.",
-      "image": "https://files.constantcontact.com/f381eaf7701/21bf6110-5660-4eaf-93e7-8dc73b6384a2.jpg",
-      "author": {
-        "@type": "Organization",
-        "name": "SharpSide Sports"
-      },
+      "image": [
+        "https://files.constantcontact.com/f381eaf7701/21bf6110-5660-4eaf-93e7-8dc73b6384a2.jpg"
+      ],
+      "datePublished": "2025-09-02T12:00:00-04:00",
+      "dateModified": "2025-09-02T12:00:00-04:00",
+      "author": [{
+        "@type": "Person",
+        "name": "SharpSide Sports",
+        "url": "https://sharpsidesports.com"
+      }],
       "publisher": {
         "@type": "Organization",
         "name": "SharpSide Sports",
@@ -34,7 +38,6 @@ export default function NFLWinTotalsFirstTimeCoaches() {
           "url": "https://sharpsidesports.com/sharpside-logo.svg"
         }
       },
-      "datePublished": "2025-09-02",
       "mainEntity": {
         "@type": "WebPage",
         "name": "NFL Win Totals - First Time Head Coaches Analysis"
