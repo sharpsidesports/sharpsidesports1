@@ -32,6 +32,7 @@ import WRHighestUpsideArticle from './pages/articles/wr-highest-upside.js';
 import NFLPlayerMassiveYearArticle from './pages/articles/nfl-player-massive-year.js';
 import NFLWinTotalsFirstTimeCoaches from './pages/articles/nfl-win-totals-first-time-coaches.js';
 import NFLBetsBeforeWeek1 from './pages/articles/nfl-bets-before-week-1.js';
+import RecappingBetsWeekGoodBadUnlucky from './pages/articles/recapping-bets-week-good-bad-unlucky.js';
 import Sitemap from './pages/sitemap.xml.js';
 import ReceptionModel from './pages/ReceptionModel.js';
 import WRTargetProjections from './pages/cfb/WRTargetProjections.js';
@@ -238,6 +239,10 @@ function App() {
                 />
                 <Route 
                   path="/articles/nfl-bets-before-week-1" 
+                <Route 
+                  path="/articles/recapping-bets-week-good-bad-unlucky" 
+                  element={<RecappingBetsWeekGoodBadUnlucky />} 
+                />
                   element={<NFLBetsBeforeWeek1 />} 
                 />
                 <Route 
