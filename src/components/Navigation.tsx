@@ -132,15 +132,18 @@ export default function Navigation() {
               Target These NFL Teams To Go Over Their Win Total
             </Link>
             <Link
+            <Link
               to="/articles/nfl-bets-before-week-1"
               className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
             >
               The NFL Bets You Need to Make Before Week 1
             </Link>
-          </div>,
-          document.body
-        )}
-      </div>
+            <Link
+              to="/articles/recapping-bets-week-good-bad-unlucky"
+              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
+            >
+              Recapping the Bets for Our Week: The Good, the Bad, and the Unlucky
+            </Link>      </div>
     );
   }
 
