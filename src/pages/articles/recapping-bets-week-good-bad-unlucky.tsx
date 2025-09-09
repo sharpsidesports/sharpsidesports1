@@ -21,7 +21,7 @@ export default function RecappingBetsWeekGoodBadUnlucky() {
       "@type": "NewsArticle",
       "headline": "Recapping the Bets for Our Week: The Good, the Bad, and the Unlucky",
       "image": [
-        "https://sharpsidesports.com/sharpside-logo.svg"
+        "https://files.constantcontact.com/f381eaf7701/21bf6110-5660-4eaf-93e7-8dc73b6384a2.jpg"
       ],
       "datePublished": "2025-09-06T12:00:00-04:00",
       "dateModified": "2025-09-06T12:00:00-04:00",
@@ -35,7 +35,7 @@ export default function RecappingBetsWeekGoodBadUnlucky() {
         "name": "SharpSide Sports",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://sharpsidesports.com/sharpside-logo.svg"
+          "url": "https://files.constantcontact.com/f381eaf7701/21bf6110-5660-4eaf-93e7-8dc73b6384a2.jpg"
         }
       },
       "mainEntity": {
@@ -72,9 +72,9 @@ export default function RecappingBetsWeekGoodBadUnlucky() {
           <span>NFL & CFB</span>
         </div>
         <img 
-          src="https://sharpsidesports.com/sharpside-logo.svg" 
-          alt="SharpSide Sports weekly betting recap"
-          className="w-full h-64 md:h-96 object-contain rounded-lg shadow-lg bg-gray-100"
+          src="https://files.constantcontact.com/f381eaf7701/21bf6110-5660-4eaf-93e7-8dc73b6384a2.jpg" 
+          alt="Weekly betting recap - The good, the bad, and the unlucky"
+          className="w-full h-64 md:h-96 object-cover rounded-lg shadow-lg "
         />
       </div>
 
