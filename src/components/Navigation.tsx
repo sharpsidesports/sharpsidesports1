@@ -73,14 +73,13 @@ export default function Navigation() {
         clearTimeout(closeTimeout.current);
         closeTimeout.current = null;
       }
-      // No-op: useDropdownPosition handles coords
       setOpen(true);
     };
 
     const handleMouseLeave = () => {
       closeTimeout.current = setTimeout(() => {
         setOpen(false);
-      }, 500); // 500ms delay
+      }, 500);
     };
 
     return (
@@ -96,57 +95,60 @@ export default function Navigation() {
         {open && ReactDOM.createPortal(
           <div
             className="bg-white border border-gray-200 rounded shadow-lg z-50 pt-2"
-            style={{ position: 'fixed', left: coords.left, top: coords.top, minWidth: coords.width, pointerEvents: 'auto' }}
+            style={{ position: "fixed", left: coords.left, top: coords.top, minWidth: coords.width, pointerEvents: "auto" }}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
-
-            <Link
-              to="/articles/holdouts-performance"
-              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
-            >
-              Do Holdouts Actually Affect Performance?
-            </Link>
-            <Link
-              to="/articles/best-nfl-betting-spot"
-              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
-            >
-              The Best NFL Betting Spot Of The Season
-            </Link>
-            <Link
-              to="/articles/wr-highest-upside"
-              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
-            >
-              This WR Has THE Highest Upside
-            </Link>
-            <Link
-              to="/articles/nfl-player-massive-year"
-              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
-            >
-              This NFL Player Is Set For a Massive Year
-            </Link>
-            <Link
-              to="/articles/nfl-win-totals-first-time-coaches"
-              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
-            >
-              Target These NFL Teams To Go Over Their Win Total
-            </Link>
-            <Link
-              to="/articles/nfl-bets-before-week-1"
-              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
-            >
-              The NFL Bets You Need to Make Before Week 1
-            </Link>
-            <Link
-              to="/articles/recapping-bets-week-good-bad-unlucky"
-              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
-            >
-              Recapping the Bets for Our Week: The Good, the Bad, and the Unlucky
-            </Link>
-          </div>
+            <div className="py-1">
+              <Link
+                to="/articles/holdouts-performance"
+                className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
+              >
+                Do Holdouts Actually Affect Performance?
+              </Link>
+              <Link
+                to="/articles/best-nfl-betting-spot"
+                className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
+              >
+                The Best NFL Betting Spot Of The Season
+              </Link>
+              <Link
+                to="/articles/wr-highest-upside"
+                className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
+              >
+                This WR Has THE Highest Upside
+              </Link>
+              <Link
+                to="/articles/nfl-player-massive-year"
+                className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
+              >
+                This NFL Player Is Set For a Massive Year
+              </Link>
+              <Link
+                to="/articles/nfl-win-totals-first-time-coaches"
+                className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
+              >
+                Target These NFL Teams To Go Over Their Win Total
+              </Link>
+              <Link
+                to="/articles/nfl-bets-before-week-1"
+                className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
+              >
+                The NFL Bets You Need to Make Before Week 1
+              </Link>
+              <Link
+                to="/articles/recapping-bets-week-good-bad-unlucky"
+                className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
+              >
+                Recapping the Bets for Our Week: The Good, the Bad, and the Unlucky
+              </Link>
+            </div>
+          </div>,
+          document.body
+        )}
+      </div>
     );
   }
-
   function NFLDropdown() {
     const [open, setOpen] = useState(false);
     const closeTimeout = React.useRef<NodeJS.Timeout | null>(null);
