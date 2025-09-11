@@ -100,55 +100,47 @@ export default function Navigation() {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
-            <div className="py-1">
 
             <Link
               to="/articles/holdouts-performance"
               className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
             >
-            <div className="py-1">
               Do Holdouts Actually Affect Performance?
             </Link>
             <Link
               to="/articles/best-nfl-betting-spot"
               className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
             >
-            <div className="py-1">
               The Best NFL Betting Spot Of The Season
             </Link>
             <Link
               to="/articles/wr-highest-upside"
               className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
             >
-            <div className="py-1">
               This WR Has THE Highest Upside
             </Link>
             <Link
               to="/articles/nfl-player-massive-year"
               className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
             >
-            <div className="py-1">
               This NFL Player Is Set For a Massive Year
             </Link>
             <Link
               to="/articles/nfl-win-totals-first-time-coaches"
               className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
             >
-            <div className="py-1">
               Target These NFL Teams To Go Over Their Win Total
             </Link>
             <Link
               to="/articles/nfl-bets-before-week-1"
               className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
             >
-            <div className="py-1">
               The NFL Bets You Need to Make Before Week 1
             </Link>
             <Link
               to="/articles/recapping-bets-week-good-bad-unlucky"
               className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
             >
-            <div className="py-1">
               Recapping the Bets for Our Week: The Good, the Bad, and the Unlucky
             </Link>
           </div>
@@ -330,7 +322,6 @@ export default function Navigation() {
             className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
-            <div className="py-1">
             <span className="sr-only">Open main menu</span>
             {/* Hamburger Icon */}
             <svg
@@ -340,7 +331,6 @@ export default function Navigation() {
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-            <div className="py-1">
               {isMobileMenuOpen ? (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               ) : (
@@ -361,7 +351,6 @@ export default function Navigation() {
                 className={mobileNavLinkClass}
               onClick={() => setIsMobileMenuOpen(false)}
               >
-            <div className="py-1">
               Pricing
               </NavLink>
             {navItems.map(item => (
@@ -371,7 +360,6 @@ export default function Navigation() {
                 className={mobileNavLinkClass}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-            <div className="py-1">
                 {item.label}
               </NavLink>
             ))}
@@ -382,7 +370,6 @@ export default function Navigation() {
                 className={mobileNavLinkClass}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-            <div className="py-1">
                 Redzone Stats
               </NavLink>
               <div className="pl-4">
@@ -403,7 +390,6 @@ export default function Navigation() {
                 className={mobileNavLinkClass}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-            <div className="py-1">
                 Fantasy Projections
               </NavLink>
               <div className="pl-4">
@@ -421,7 +407,6 @@ export default function Navigation() {
                 className={mobileNavLinkClass}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-            <div className="py-1">
                 Team Stats
               </NavLink>
               <div className="pl-4">
