@@ -4,27 +4,161 @@ const VIP_PASSWORDS = ['cfbweek1', 'brodie25', 'ssports25', 'chris25', 'josh25']
 
 const teams = [
   {
-    teamName: "Commanders",
+    teamName: "Cowboys",
     headers: [
       "Player",
       "AVG. TGTS/GM",
       "Proj. Targets",
       "Proj. Team Target Share",
-      "2024 Target Share/Post.",
-      "2024 Post. Targets",
+      "2025 Target Share/Post.",
+      "2025 Post. Targets",
       "Proj. Catch %",
       "Opp Man %",
       "Opp Zone %",
       "Proj. Rec",
     ],
     players: [
-      ["Deebo Samuel", "10", "8.69", "25.96%", "69.00%", "20", "63.15%", "13%", "87%", "5.48"],
-      ["Noah Brown", "3", "4.7", "14.03%", "69.00%", "20", "63.19%", "13%", "87%", "2.96"],
-      ["Terry McLaurin", "4", "8.08", "24.12%", "69.00%", "20", "61.01%", "13%", "87%", "4.92"],
+      ["CeeDee Lamb", "13", "10.19", "30.89%", "63.60%", "21", "68.42%", "34.00%", "66.00%", "6.97"],
+      ["George Picken", "4", "7.96", "24.15%", "63.60%", "21", "63.60%", "34.00%", "66.00%", "5.06"],
+      ["Jake Ferguson", "6", "7.29", "22.10%", "24.20%", "8", "73.15%", "34.00%", "66.00%", "5.33"],
     ],
   },
   {
-    teamName: "Packers",
+    teamName: "Giants",
+    headers: [
+      "Player",
+      "AVG. TGTS/GM",
+      "Proj. Targets",
+      "Proj. Team Target Share",
+      "2025 Target Share/Post.",
+      "2025 Post. Targets",
+      "Proj. Catch %",
+      "Opp Man %",
+      "Opp Zone %",
+      "Proj. Rec",
+    ],
+    players: [
+      ["Malik Nabers", "12", "9.14", "30.47%", "65.60%", "21", "69.80%", "5.00%", "95.00%", "6.37"],
+      ["Wan'Dale Robinson", "8", "7.43", "24.77%", "65.60%", "21", "71.32%", "5.00%", "95.00%", "5.29"],
+    ],
+  },
+  {
+    teamName: "Rams",
+    headers: [
+      "Player",
+      "AVG. TGTS/GM",
+      "Proj. Targets",
+      "Proj. Team Target Share",
+      "2025 Target Share/Post.",
+      "2025 Post. Targets",
+      "Proj. Catch %",
+      "Opp Man %",
+      "Opp Zone %",
+      "Proj. Rec",
+    ],
+    players: [
+      ["Puka Nakua", "11", "9.63", "30.12%", "75.00%", "21", "71.58%", "11.00%", "89.00%", "6.89"],
+      ["Davante Adams", "9", "8.31", "25.55%", "75.00%", "21", "64.83%", "11.00%", "89.00%", "5.38"],
+    ],
+  },
+  {
+    teamName: "Titans",
+    headers: [
+      "Player",
+      "AVG. TGTS/GM",
+      "Proj. Targets",
+      "Proj. Team Target Share",
+      "2025 Target Share/Post.",
+      "2025 Post. Targets",
+      "Proj. Catch %",
+      "Opp Man %",
+      "Opp Zone %",
+      "Proj. Rec",
+    ],
+    players: [
+      ["Calvin Ridley", "8", "8.8", "27.94%", "65.00%", "19", "62.11%", "35.00%", "65.00%", "5.46"],
+    ],
+  },
+  {
+    teamName: "Bengals",
+    headers: [
+      "Player",
+      "AVG. TGTS/GM",
+      "Proj. Targets",
+      "Proj. Team Target Share",
+      "2025 Target Share/Post.",
+      "2025 Post. Targets",
+      "Proj. Catch %",
+      "Opp Man %",
+      "Opp Zone %",
+      "Proj. Rec",
+    ],
+    players: [
+      ["Ja'mar Chase", "5", "11.29", "30.12%", "39.10%", "9", "63.77%", "14.00%", "76.00%", "7.19"],
+      ["Tee Higgins", "4", "8.91", "23.95%", "39.10%", "9", "64.01%", "14.00%", "76.00%", "5.7"],
+      ["Chase Brown", "3", "4.22", "11.27%", "21.70%", "5", "88.95%", "14.00%", "76.00%", "3.75"],
+    ],
+  },
+  {
+    teamName: "Jaguars",
+    headers: [
+      "Player",
+      "AVG. TGTS/GM",
+      "Proj. Targets",
+      "Proj. Team Target Share",
+      "2025 Target Share/Post.",
+      "2025 Post. Targets",
+      "Proj. Catch %",
+      "Opp Man %",
+      "Opp Zone %",
+      "Proj. Rec",
+    ],
+    players: [
+      ["Brian Thomas Jr", "7", "9.94", "28.41%", "65.50%", "19", "62.83%", "0.37%", "63.00%", "9.94"],
+      ["Travis Hunter", "8", "8.69", "24.83%", "65.50%", "19", "67.20%", "37.00%", "63.00%", "5.83"],
+    ],
+  },
+  {
+    teamName: "Seahawks",
+    headers: [
+      "Player",
+      "AVG. TGTS/GM",
+      "Proj. Targets",
+      "Proj. Team Target Share",
+      "2025 Target Share/Post.",
+      "2024 Post. Targets",
+      "Proj. Catch %",
+      "Opp Man %",
+      "Opp Zone %",
+      "Proj. Rec",
+    ],
+    players: [
+      ["Jaxon Smith-Njigba", "13", "9.23", "31.86%", "72.70%", "16", "70.85%", "28.00%", "72.00%", "6.53"],
+      ["Cooper Kupp", "3", "6.53", "22.55%", "72.70%", "16", "66.77%", "28.00%", "72.00%", "4.36"],
+    ],
+  },
+  {
+    teamName: "Steelers",
+    headers: [
+      "Player",
+      "AVG. TGTS/GM",
+      "Proj. Targets",
+      "Proj. Team Target Share",
+      "2025 Target Share/Post.",
+      "2025 Post. Targets",
+      "Proj. Catch %",
+      "Opp Man %",
+      "Opp Zone %",
+      "Proj. Rec",
+    ],
+    players: [
+      ["DK Metcalf", "7", "8.69", "27.16%", "48.30%", "14", "62.14%", "16.00%", "74.00%", "5.39"],
+      ["Jonnu Smith", "6", "7.68", "24.03%", "31.00%", "9", "69.50%", "16.00%", "74.00%", "5.33"],
+      ["Jaylen Warren", "2", "2.79", "8.74%", "20.70%", "6", "76.85%", "16.00%", "74.00%", "2.14"],
+    ],
+  },
+  {
+    teamName: "Lions",
     headers: [
       "Player",
       "AVG. TGTS/GM",
@@ -38,12 +172,71 @@ const teams = [
       "Proj. Rec",
     ],
     players: [
-      ["Jayden Reed", "5", "6.74", "21.40%", "63.60%", "14", "63.80%", "36%", "64%", "4.3"],
-      ["Romeo Doubs", "4", "6.01", "19.07%", "63.60%", "14.00", "64.25%", "36%", "64%", "3.86"],
-      ["Matthew Golden", "2", "6.91", "21.95%", "63.60%", "14.00", "67.55%", "36%", "64%", "4.66"],
+      ["Amon-Ra St. Brown", "6", "9.21", "27.10%", "36.8%", "14", "70.84%", "51.00%", "49.00%", "6.52"],
+      ["Jahmyr Gibbs", "10", "5.62", "16.55%", "39.50%", "15", "81.78%", "51.00%", "49.00%", "4.59"],
+      ["Jameson Williams", "5", "7.17", "21.09%", "39.50%", "15", "59.61%", "51.00%", "49.00%", "4.27"],
+    ],
+  },
+  {
+    teamName: "Bears",
+    headers: [
+      "Player",
+      "AVG. TGTS/GM",
+      "Proj. Targets",
+      "Proj. Team Target Share",
+      "2025 Target Share/Post.",
+      "2025 Post. Targets",
+      "Proj. Catch %",
+      "Opp Man %",
+      "Opp Zone %",
+      "Proj. Rec",
+    ],
+    players: [
+      ["DJ Moore", "5", "7.96", "23.77%", "64.70%", "22", "61.05%", "53.00%", "47.00%", "4.85"],
+      ["Rome Odunze", "9", "9.03", "28.69%", "64.70%", "22", "67.81%", "53.00%", "47.00%", "6.12"],
+    ],
+  },
+  {
+    teamName: "Browns",
+    headers: [
+      "Player",
+      "AVG. TGTS/GM",
+      "Proj. Targets",
+      "Proj. Team Target Share",
+      "2025 Target Share/Post.",
+      "2025 Post. Targets",
+      "Proj. Catch %",
+      "Opp Man %",
+      "Opp Zone %",
+      "Proj. Rec",
+    ],
+    players: [
+      ["Jerry Jeudy", "8", "9.62", "24.36%", "42.90%", "18", "58.67%", "41.00%", "59.00%", "5.64"],
+      ["David Njoku", "6", "8.75", "22.16%", "39.10%", "15", "61.00%", "41.00%", "59.00%", "5.33"],
+      ["Harold Fannin Jr", "9", "9.36", "23.71%", "39.10%", "15", "62.23%", "41.00%", "59.00%", "5.84"],
+    ],
+  },
+  {
+    teamName: "Ravens",
+    headers: [
+      "Player",
+      "AVG. TGTS/GM",
+      "Proj. Targets",
+      "Proj. Team Target Share",
+      "2025 Target Share/Post.",
+      "2025 Post. Targets",
+      "Proj. Catch %",
+      "Opp Man %",
+      "Opp Zone %",
+      "Proj. Rec",
+    ],
+    players: [
+      ["Zay Flowers", "9", "8.63", "31.05%", "78.90%", "15", "68.11%", "29.00%", "71.00%", "5.87"],
+      ["Rashod Bateman", "4", "4.99", "17.53%", "78.90%", "15", "57.97%", "29.00%", "71.00%", "2.89"],
     ],
   },
 ];
+
 export default function ReceptionModel() {
   const [showVIP, setShowVIP] = useState(false);
   const [pwInput, setPwInput] = useState('');
@@ -186,4 +379,4 @@ export default function ReceptionModel() {
       )}
     </div>
   );
-} 
+}
