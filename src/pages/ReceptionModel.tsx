@@ -248,6 +248,11 @@ export default function ReceptionModel() {
     return headers.findIndex((h: string) => h.toLowerCase().includes('proj. rec'));
   };
 
+  // Find the index of the 'Proj. Targets' column
+  const getProjTargetsIndex = (headers: string[]): number => {
+    return headers.findIndex((h: string) => h.toLowerCase().includes('proj. targets'));
+  };
+
   const handleVIPClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setShowPrompt(true);
@@ -273,6 +278,7 @@ export default function ReceptionModel() {
       <div className="space-y-8">
         {teams.map((team, idx) => {
           const projRecIdx = getProjRecIndex(team.headers);
+          const projTargetsIdx = getProjTargetsIndex(team.headers);
           const midRow = Math.floor(team.players.length / 2);
           return (
             <div key={idx} className="bg-white shadow rounded-lg overflow-hidden">
@@ -294,7 +300,7 @@ export default function ReceptionModel() {
                     {team.players.map((row, idx2) => (
                       <tr key={idx2} className={idx2 % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                         {row.map((cell, j) => {
-                          if (j === projRecIdx && !showVIP) {
+                          if ((j === projRecIdx || j === projTargetsIdx) && !showVIP) {
                             // Show blurred numbers with button overlay
                               return (
                                 <td
