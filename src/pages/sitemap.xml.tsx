@@ -71,6 +71,12 @@ const Sitemap: React.FC = () => {
 
   <url>
     <loc>https://ssgolf-vercel-3-17fd4xi5y-john-abbeys-projects.vercel.app/articles/nfl-bets-before-week-1</loc>
+  <url>
+    <loc>https://ssgolf-vercel-3-17fd4xi5y-john-abbeys-projects.vercel.app/articles/recapping-nfl-bets-week-2</loc>
+    <lastmod>2025-09-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
     <lastmod>2025-09-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>

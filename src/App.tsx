@@ -33,6 +33,7 @@ import NFLPlayerMassiveYearArticle from './pages/articles/nfl-player-massive-yea
 import NFLWinTotalsFirstTimeCoaches from './pages/articles/nfl-win-totals-first-time-coaches.js';
 import NFLBetsBeforeWeek1 from './pages/articles/nfl-bets-before-week-1.js';
 import RecappingBetsWeekGoodBadUnlucky from './pages/articles/recapping-bets-week-good-bad-unlucky.js';
+import RecappingNFLBetsWeek2 from './pages/articles/recapping-nfl-bets-week-2.js';
 import Sitemap from './pages/sitemap.xml.js';
 import ReceptionModel from './pages/ReceptionModel.js';
 import WRTargetProjections from './pages/cfb/WRTargetProjections.js';
@@ -244,6 +245,10 @@ function App() {
                 <Route 
                   path="/articles/recapping-bets-week-good-bad-unlucky" 
                   element={<RecappingBetsWeekGoodBadUnlucky />} 
+                />
+                <Route 
+                  path="/articles/recapping-nfl-bets-week-2" 
+                  element={<RecappingNFLBetsWeek2 />} 
                 />
                 <Route 
                   path="/reception-model" 

@@ -136,6 +136,12 @@ export default function Navigation() {
               className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
             >
               The NFL Bets You Need to Make Before Week 1
+            <Link
+              to="/articles/recapping-nfl-bets-week-2"
+              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium"
+            >
+              Recapping Our NFL Bets for Week 2: The Good, Bad and Ugly
+            </Link>
             </Link>
           </div>,
           document.body
