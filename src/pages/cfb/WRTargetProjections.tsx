@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Papa from 'papaparse';
 
-const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/14PUFT76LIYnJxLKoWGs7GD9KDNuqIVY0HuqwfRPeYD0/gviz/tq?tqx=out:csv';
+const SHEET_CSV_URL = 'https://corsproxy.io/?https://docs.google.com/spreadsheets/d/14PUFT76LIYnJxLKoWGs7GD9KDNuqIVY0HuqwfRPeYD0/gviz/tq?tqx=out:csv';
 
 interface WRData {
   player: string;
@@ -74,10 +74,21 @@ export default function WRTargetProjections() {
       setLoading(true);
       setError(null);
       try {
+        console.log("Fetching data from:", SHEET_CSV_URL);
         const response = await fetch(SHEET_CSV_URL);
-        if (!response.ok) throw new Error('Failed to fetch data');
+        console.log("Response status:", response.status, response.statusText);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const text = await response.text();
+        console.log("Response text length:", text.length);
+        console.log("First 500 chars:", text.substring(0, 500));
+        
         const parsed = Papa.parse<string[]>(text, { skipEmptyLines: true });
+        console.log("Parsed data rows:", parsed.data.length);
+        console.log("First few rows:", parsed.data.slice(0, 3));
         
         const dataRows = parsed.data.slice(1); // Skip header row
         const formattedData: WRData[] = dataRows
@@ -97,8 +108,11 @@ export default function WRTargetProjections() {
             touchdowns: parseInt(row[11]) || 0
           }));
 
+        console.log("Formatted data count:", formattedData.length);
+        console.log("Sample formatted data:", formattedData.slice(0, 2));
         setData(formattedData);
       } catch (err) {
+        console.error("Error fetching data:", err);
         setError(err instanceof Error ? err.message : 'Failed to load data');
       } finally {
         setLoading(false);
@@ -135,18 +149,21 @@ export default function WRTargetProjections() {
     }
     
     if (typeof aValue === 'number' && typeof bValue === 'number') {
-      return sortConfig.direction === 'asc' ? aValue - bValue : bValue - aValue;
+      return sortConfig.direction === 'asc' 
+        ? aValue - bValue
+        : bValue - aValue;
     }
     
     return 0;
   });
 
-  const positions = ['all', ...Array.from(new Set(data.map(player => player.position)))];
+  const positions = ['all', 'WR', 'TE', 'HB'];
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <span className="ml-2">Loading CFB data...</span>
       </div>
     );
   }
@@ -155,6 +172,7 @@ export default function WRTargetProjections() {
     return (
       <div className="text-center py-8">
         <p className="text-red-600">Error loading data: {error}</p>
+        <p className="text-gray-500 mt-2">Please check the browser console for more details.</p>
       </div>
     );
   }
@@ -209,31 +227,31 @@ export default function WRTargetProjections() {
                   className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => handleSort('games')}
                 >
-                  G {getSortIcon('games')}
+                  Games {getSortIcon('games')}
                 </th>
                 <th 
                   className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => handleSort('targets')}
                 >
-                  TGTS {getSortIcon('targets')}
+                  Targets {getSortIcon('targets')}
                 </th>
                 <th 
                   className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => handleSort('catchPercentage')}
                 >
-                  CATCH% {getSortIcon('catchPercentage')}
+                  Catch % {getSortIcon('catchPercentage')}
                 </th>
                 <th 
                   className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => handleSort('receptions')}
                 >
-                  REC {getSortIcon('receptions')}
+                  Receptions {getSortIcon('receptions')}
                 </th>
                 <th 
                   className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => handleSort('yards')}
                 >
-                  YARDS {getSortIcon('yards')}
+                  Yards {getSortIcon('yards')}
                 </th>
                 <th 
                   className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
@@ -245,13 +263,13 @@ export default function WRTargetProjections() {
                   className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => handleSort('firstDowns')}
                 >
-                  1ST {getSortIcon('firstDowns')}
+                  1st Downs {getSortIcon('firstDowns')}
                 </th>
                 <th 
                   className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => handleSort('longest')}
                 >
-                  LONG {getSortIcon('longest')}
+                  Long {getSortIcon('longest')}
                 </th>
                 <th 
                   className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
@@ -264,40 +282,40 @@ export default function WRTargetProjections() {
             <tbody className="bg-white divide-y divide-gray-200">
               {sortedData.map((player, index) => (
                 <tr key={`${player.player}-${player.team}-${index}`} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {player.player}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                     {player.position}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                     {player.team}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                     {player.games}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                     {player.targets}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                    {player.catchPercentage.toFixed(1)}%
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {player.catchPercentage}%
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                     {player.receptions}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                     {player.yards}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                    {player.yardsPerCatch.toFixed(1)}
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {player.yardsPerCatch}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                     {player.firstDowns}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                     {player.longest}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                     {player.touchdowns}
                   </td>
                 </tr>
@@ -305,7 +323,13 @@ export default function WRTargetProjections() {
             </tbody>
           </table>
         </div>
+        
+        {sortedData.length === 0 && (
+          <div className="text-center py-8">
+            <p className="text-gray-500">No data available for the selected position.</p>
+          </div>
+        )}
       </div>
     </div>
   );
-} 
+}
