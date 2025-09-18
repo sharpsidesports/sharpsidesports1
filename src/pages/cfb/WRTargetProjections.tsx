@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Papa from 'papaparse';
 
-const SHEET_CSV_URL = 'https://corsproxy.io/?https://docs.google.com/spreadsheets/d/14PUFT76LIYnJxLKoWGs7GD9KDNuqIVY0HuqwfRPeYD0/gviz/tq?tqx=out:csv';
+const SHEET_CSV_URL = 'https://api.allorigins.win/raw?url=https://docs.google.com/spreadsheets/d/14PUFT76LIYnJxLKoWGs7GD9KDNuqIVY0HuqwfRPeYD0/gviz/tq?tqx=out:csv';
 
 interface WRData {
   player: string;
