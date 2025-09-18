@@ -257,7 +257,8 @@ function App() {
                 <Route 
                   path="/sitemap.xml" 
                   element={<Sitemap />} 
-                />                <Route path="/cfb/sp-plus" element={<SPPlus />} />
+                />
+                <Route path="/cfb/sp-plus" element={<SPPlus />} />
                 <Route path="/cfb/wr-target-projections" element={<WRTargetProjections />} />
                 <Route path="/nfl/offense" element={<NFLTeamOffenseStatsPage />} />
                 <Route path="/nfl/defense" element={<NFLTeamDefenseStatsPage />} />
