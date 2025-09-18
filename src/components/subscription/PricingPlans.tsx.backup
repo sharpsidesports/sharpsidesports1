@@ -10,7 +10,7 @@ import { trackEvent } from '../../utils/metaPixel.js';
 // Initialize Stripe with the environment variable
 // Ensure that the publishable key is present in the environment variables
 // and is not empty before initializing the Stripe instance. ALSO, VITE_ prefix is REQUIRED because it is a client-side call!
-const stripePromise = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ? loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY) : null;
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
 
 // Log Stripe initialization
 console.log('Stripe publishable key exists:', !!import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);

@@ -7,7 +7,7 @@ import { supabase } from '../../lib/supabase.js'; // Added .js extension
 import { trackEvent } from '../../utils/metaPixel.js';
 
 // Initialize Stripe with the environment variable
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
+const stripePromise = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ? loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY) : null;
 
 interface PricingFeature {
   name: string;
