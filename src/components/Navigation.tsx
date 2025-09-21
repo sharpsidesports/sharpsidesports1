@@ -208,20 +208,6 @@ export default function Navigation() {
                 document.body
               )}
             </div>
-            <div className="relative" onMouseEnter={handleTeamStatsEnter} onMouseLeave={handleTeamStatsLeave}>
-              <Link to="/nfl/team-stats" className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium flex items-center justify-between">
-                Team Stats
-                <svg className="ml-1 h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
-              </Link>
-              {teamStatsOpen && ReactDOM.createPortal(
-                <div className="absolute left-full top-0 min-w-[200px] bg-white border border-gray-200 rounded shadow-lg z-50 pt-2" style={{ marginLeft: '-1px', pointerEvents: 'auto' }}>
-                  <Link to="/nfl/offense" className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium">Offensive Stats</Link>
-                  <Link to="/nfl/defense" className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium">Defensive Stats</Link>
-                  <Link to="/nfl/team-stats" className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium">Team Overview</Link>
-                </div>,
-                document.body
-              )}
-            </div>
           </div>,
           document.body
         )}
