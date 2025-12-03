@@ -39,7 +39,7 @@ export default function Navigation() {
     // Pro Tier Features (Betting Picks first)
     { to: '/expert-insights', label: 'Betting Picks', requiredTier: 'pro' },
     // Free Tier Features
-    { to: '/reception-model', label: 'Reception Model', requiredTier: 'free' },
+    // { to: '/reception-model', label: 'Reception Model', requiredTier: 'free' },
     // Basic Tier Features
     // { to: '/dashboard', label: 'Betting Model', requiredTier: 'basic' },
     // { to: '/matchups', label: 'Matchup Tool', requiredTier: 'basic' },
@@ -296,9 +296,6 @@ export default function Navigation() {
         <div className="hidden md:flex space-x-8 h-16 justify-center">
           <NavLink to="/expert-insights" className={navLinkClass}>Betting Picks</NavLink>
           <GolfDropdown />
-          <NFLDropdown />
-          <NavLink to="/reception-model" className={navLinkClass}>NFL Reception Model</NavLink>
-          <CFBDropdown />
           <CBBDropdown />
           <NavLink to="/subscription" className={navLinkClass}>Pricing</NavLink>
           <ArticlesDropdown />
@@ -352,78 +349,6 @@ export default function Navigation() {
                 {item.label}
               </NavLink>
             ))}
-
-            <div className="relative">
-              <NavLink
-                to="/nfl/redzone-stats"
-                className={mobileNavLinkClass}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Redzone Stats
-              </NavLink>
-              <div className="pl-4">
-                <NavLink to="/redzone/rb" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
-                  RB Redzone Stats
-                </NavLink>
-                <NavLink to="/redzone/wr" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
-                  WR Redzone Stats
-                </NavLink>
-                <NavLink to="/redzone/te" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
-                  TE Redzone Stats
-                </NavLink>
-              </div>
-            </div>
-            <div className="relative">
-              <NavLink
-                to="/nfl/fantasy-projections"
-                className={mobileNavLinkClass}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Fantasy Projections
-              </NavLink>
-              <div className="pl-4">
-                <NavLink to="/fantasy/qb-projections" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
-                  QB Projections
-                </NavLink>
-                <NavLink to="/fantasy/wr-projections" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
-                  WR Projections
-                </NavLink>
-              </div>
-            </div>
-            <div className="relative">
-              <NavLink
-                to="/nfl/team-stats"
-                className={mobileNavLinkClass}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Team Stats
-              </NavLink>
-              <div className="pl-4">
-                <NavLink to="/nfl/offense" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
-                  Offensive Stats
-                </NavLink>
-                <NavLink to="/nfl/defense" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
-                  Defensive Stats
-                </NavLink>
-                <NavLink to="/nfl/team-stats" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
-                  Team Overview
-                </NavLink>
-              </div>
-            </div>
-            {/* CFB Section */}
-            <div className="relative">
-              <div className="px-3 py-2 text-sm font-medium text-gray-500 uppercase tracking-wider">
-                College Football
-              </div>
-              <div className="pl-4">
-                <NavLink to="/cfb/sp-plus" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
-                  SP+ Rankings
-                </NavLink>
-                <NavLink to="/cfb/wr-target-projections" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
-                  WR Target Projections
-                </NavLink>
-              </div>
-            </div>
             {/* Move ArticlesDropdown to the very end of the mobile menu */}
           </div>
           <ArticlesDropdown />
