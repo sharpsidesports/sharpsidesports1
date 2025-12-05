@@ -349,6 +349,45 @@ export default function Navigation() {
                 {item.label}
               </NavLink>
             ))}
+            {/* Golf */}
+            <button
+              className={mobileNavLinkClass({ isActive: false })}
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                window.location.href = 'https://sharpsidegolf.com/dashboard';
+              }}
+            >
+              Golf
+            </button>
+            {/* CBB Section */}
+            <div className="relative">
+              <div className="px-3 py-2 text-sm font-medium text-gray-500 uppercase tracking-wider">
+                CBB
+              </div>
+              <div className="pl-4">
+                <NavLink to="/cbb/player-ratings" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
+                  Player Ratings
+                </NavLink>
+                <NavLink to="/cbb/lineup-ratings" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
+                  Lineup Ratings
+                </NavLink>
+                <NavLink to="/cbb/pick-and-roll" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
+                  Pick & Roll
+                </NavLink>
+                <NavLink to="/cbb/spot-up-shooting" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
+                  Spot Up Shooting
+                </NavLink>
+                <NavLink to="/cbb/spot-up-defense" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
+                  Spot Up Defense
+                </NavLink>
+                <NavLink to="/cbb/pick-and-roll-defense" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
+                  Pick & Roll Defense
+                </NavLink>
+                <NavLink to="/cbb/team-ratings" className={mobileNavLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
+                  Team Ratings
+                </NavLink>
+              </div>
+            </div>
             {/* Move ArticlesDropdown to the very end of the mobile menu */}
           </div>
           <ArticlesDropdown />
