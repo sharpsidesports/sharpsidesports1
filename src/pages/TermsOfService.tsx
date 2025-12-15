@@ -25,6 +25,11 @@ export default function TermsOfService() {
               All subscriptions are managed by winible.com and your account on winible.com. All subscription management, including but not limited to subscription activation, cancellation, modification, billing, and payment processing, is handled exclusively through winible.com's platform. sharpside sports does not handle subscription management directly. For any subscription-related inquiries, changes, or support, please contact winible.com or access your account through their website.
             </p>
 
+            <h2 className="text-2xl font-semibold text-gray-900 mt-8 mb-4">Membership Guarantee</h2>
+            <p className="text-gray-700 leading-relaxed mb-4">
+              Any membership guarantee will be determined by the company's discretion and based on Sharpside Sports tracking via third party apps such as, but not limited to, pikkit. All tracking and verification of membership guarantees are at the sole discretion of Sharpside Sports and may be determined using various third-party tracking applications and services.
+            </p>
+
             <h2 className="text-2xl font-semibold text-gray-900 mt-8 mb-4">Informational Use Only</h2>
             <p className="text-gray-700 leading-relaxed mb-4">
               The information, models, tools, and opinions presented on sharpside sports are provided solely for informational and entertainment purposes. Nothing contained on this site constitutes financial, investment, legal, or gambling advice. We are not a licensed financial advisor, investment firm, or sportsbook. Any betting or wagering decisions made using information from this platform are done at your own discretion and risk.
