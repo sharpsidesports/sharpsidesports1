@@ -259,13 +259,13 @@ function App() {
                     </ProtectedRoute>
                   } 
                 />
-                <Route 
-                  path="/expert-insights" 
+                <Route
+                  path="/expert-insights"
                   element={
                     <ProtectedRoute requiredSubscription="pro" showPreview={true}>
                       <ExpertInsights />
                     </ProtectedRoute>
-                  } 
+                  }
                 />
                 <Route 
                   path="/stats-model" 
