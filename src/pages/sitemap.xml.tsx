@@ -82,6 +82,63 @@ const Sitemap: React.FC = () => {
     <priority>0.9</priority>
   </url>
 
+  <!-- Football Betting Guide (High Priority for SEO) -->
+  <url>
+    <loc>https://ssgolf-vercel-3-17fd4xi5y-john-abbeys-projects.vercel.app/articles/football-betting-guide</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://ssgolf-vercel-3-17fd4xi5y-john-abbeys-projects.vercel.app/articles/football-betting-basic-strategy</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://ssgolf-vercel-3-17fd4xi5y-john-abbeys-projects.vercel.app/articles/profitable-football-betting-trends</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://ssgolf-vercel-3-17fd4xi5y-john-abbeys-projects.vercel.app/articles/football-betting-advanced-metrics</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://ssgolf-vercel-3-17fd4xi5y-john-abbeys-projects.vercel.app/articles/sports-betting-bankroll-management</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://ssgolf-vercel-3-17fd4xi5y-john-abbeys-projects.vercel.app/articles/how-sportsbook-lines-move</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://ssgolf-vercel-3-17fd4xi5y-john-abbeys-projects.vercel.app/articles/uncorrelated-parlays-nfl-betting-edge</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://ssgolf-vercel-3-17fd4xi5y-john-abbeys-projects.vercel.app/articles/live-in-play-betting-strategy</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
   <!-- NFL Stats Pages -->
   <url>
     <loc>https://ssgolf-vercel-3-17fd4xi5y-john-abbeys-projects.vercel.app/nfl/team-stats</loc>

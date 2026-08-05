@@ -15,7 +15,7 @@ const stripePromise = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ? loadStripe(i
 // Log Stripe initialization
 console.log('Stripe publishable key exists:', !!import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
-const billingIntervals = [
+export const billingIntervals = [
   { id: 'weekly', name: 'Weekly' },
   { id: 'monthly', name: 'Monthly' },
   { id: 'yearly', name: 'Yearly' },
@@ -35,14 +35,19 @@ const footballFeatures = [
   'Season-long access',
 ];
 
-const golfFeatures = [
-  'Golf betting picks',
-  'All golf tools',
-  'Course fit analysis',
-  'Priority support',
-];
+// Real checkout URLs — shared with any other page that links straight to
+// checkout (e.g. the picks-preview marketing page) so there's one source of
+// truth for pricing and checkout links.
+export const ALL_ACCESS_CHECKOUT_URLS = {
+  weekly: 'https://www.winible.com/checkout/1359269787951190914?store_url=/sharpsidesports&interval=week',
+  monthly: 'https://www.winible.com/checkout/1359269787951190914?store_url=/sharpsidesports&interval=month',
+  yearly: 'https://www.winible.com/checkout/1359269787951190914?store_url=/sharpsidesports&interval=year',
+};
 
-const tiers = [
+export const FOOTBALL_SEASON_CHECKOUT_URL =
+  'https://www.winible.com/checkout/1378745735868076494?pid=1378745735880659408';
+
+export const tiers = [
   {
     id: 'all-access',
     name: 'All Access',
@@ -67,19 +72,6 @@ const tiers = [
     cta: 'Get Season Subscription',
     mostPopular: false,
     isSeasonPass: true,
-  },
-  {
-    id: 'golf-only',
-    name: 'Golf Only',
-    description: 'Complete golf analytics and betting tools',
-    price: {
-      weekly: '59.99',
-      monthly: '239.99',
-      yearly: '599.99',
-    },
-    features: golfFeatures,
-    cta: 'Start Golf Plan',
-    mostPopular: false,
   },
 ];
 
@@ -161,11 +153,39 @@ const PricingPlans = forwardRef<HTMLDivElement>((props, ref) => {
             <p className="text-red-700 text-sm">{error}</p>
           </div>
         )}
-        <BettingTicketsGrid />
-        {/* Removed headline and subheadline to avoid duplication with the hero section */}
-
         <div id="plans" className="h-0 scroll-mt-24" />
-        
+
+        {/* Football Season Section */}
+        <div>
+          <div className="text-center mb-8">
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Football Season</h3>
+            <p className="text-gray-600">Complete NFL & CFB coverage for the entire season</p>
+          </div>
+          <div className="max-w-md mx-auto">
+            <div className="bg-white rounded-lg shadow-lg border-2 border-blue-500 p-6">
+                              <div className="text-center">
+                  <h4 className="text-xl font-semibold text-gray-900 mb-2">Season Pass</h4>
+                  <p className="text-4xl font-bold text-gray-900 mb-1">$899.99</p>
+                  <p className="text-gray-500 mb-6">for the entire season</p>
+                  <button
+                    onClick={() => window.location.href = FOOTBALL_SEASON_CHECKOUT_URL}
+                    className="w-full py-3 px-6 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                  >
+                    Get Season Subscription
+                  </button>
+              </div>
+              <ul className="mt-6 space-y-3 text-sm text-gray-600">
+                {footballFeatures.map((feature) => (
+                  <li key={feature} className="flex items-center">
+                    <CheckIcon className="h-4 w-4 text-green-500 mr-2" />
+                      {feature}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+
         {/* All Access Section */}
         <div className="mt-16">
           <div className="text-center mb-8">
@@ -177,7 +197,7 @@ const PricingPlans = forwardRef<HTMLDivElement>((props, ref) => {
               const allAccessTier = tiers.find(t => t.id === 'all-access');
               const allAccessPrice = allAccessTier?.price[interval.id as keyof typeof allAccessTier.price] || '0';
               const isPopular = interval.id === 'monthly';
-              
+
               return (
                 <div
                   key={interval.id}
@@ -198,16 +218,11 @@ const PricingPlans = forwardRef<HTMLDivElement>((props, ref) => {
                     <p className="text-gray-500 mb-6">per {interval.id}</p>
               <button
                       onClick={() => {
-                        const urls = {
-                          weekly: 'https://www.winible.com/checkout/1359269787951190914?store_url=/sharpsidesports&interval=week',
-                          monthly: 'https://www.winible.com/checkout/1359269787951190914?store_url=/sharpsidesports&interval=month',
-                          yearly: 'https://www.winible.com/checkout/1359269787951190914?store_url=/sharpsidesports&interval=year'
-                        };
-                        window.location.href = urls[interval.id as keyof typeof urls];
+                        window.location.href = ALL_ACCESS_CHECKOUT_URLS[interval.id as keyof typeof ALL_ACCESS_CHECKOUT_URLS];
                       }}
                       className={`w-full py-3 px-6 rounded-md transition-colors ${
-                        isPopular 
-                          ? 'bg-green-500 hover:bg-green-600 text-white' 
+                        isPopular
+                          ? 'bg-green-500 hover:bg-green-600 text-white'
                           : 'bg-gray-900 hover:bg-gray-800 text-white'
                       }`}
               >
@@ -228,97 +243,8 @@ const PricingPlans = forwardRef<HTMLDivElement>((props, ref) => {
           </div>
         </div>
 
-        {/* Football Season Section */}
         <div className="mt-16">
-          <div className="text-center mb-8">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Football Season</h3>
-            <p className="text-gray-600">Complete NFL & CFB coverage for the entire season</p>
-          </div>
-          <div className="max-w-md mx-auto">
-            <div className="bg-white rounded-lg shadow-lg border-2 border-blue-500 p-6">
-                              <div className="text-center">
-                  <h4 className="text-xl font-semibold text-gray-900 mb-2">Season Pass</h4>
-                  <p className="text-4xl font-bold text-gray-900 mb-1">$899.99</p>
-                  <p className="text-gray-500 mb-6">for the entire season</p>
-                  <button 
-                    onClick={() => window.location.href = 'https://www.winible.com/checkout/1378745735868076494?pid=1378745735880659408'}
-                    className="w-full py-3 px-6 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                  >
-                    Get Season Subscription
-                  </button>
-              </div>
-              <ul className="mt-6 space-y-3 text-sm text-gray-600">
-                {footballFeatures.map((feature) => (
-                  <li key={feature} className="flex items-center">
-                    <CheckIcon className="h-4 w-4 text-green-500 mr-2" />
-                      {feature}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        {/* Golf Only Section */}
-        <div className="mt-16">
-          <div className="text-center mb-8">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Golf Only</h3>
-            <p className="text-gray-600">Complete golf analytics and betting tools</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {billingIntervals.map((interval) => {
-              const golfTier = tiers.find(t => t.id === 'golf-only');
-              const golfPrice = golfTier?.price[interval.id as keyof typeof golfTier.price] || '0';
-              const isPopular = interval.id === 'yearly';
-              
-              return (
-                <div
-                  key={interval.id}
-                  className={`rounded-lg shadow-lg border-2 p-6 relative ${
-                    isPopular ? 'border-green-500 bg-white' : 'border-gray-200 bg-white'
-                  }`}
-                >
-                  {isPopular && (
-                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                      <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                        Best Value
-                      </span>
-                    </div>
-                  )}
-                  <div className="text-center">
-                    <h4 className="text-xl font-semibold text-gray-900 mb-2">{interval.name}</h4>
-                    <p className="text-4xl font-bold text-gray-900 mb-1">${golfPrice}</p>
-                    <p className="text-gray-500 mb-6">per {interval.id}</p>
-                    <button 
-                      onClick={() => {
-                        const urls = {
-                          weekly: 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=week',
-                          monthly: 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=month',
-                          yearly: 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=year'
-                        };
-                        window.location.href = urls[interval.id as keyof typeof urls];
-                      }}
-                      className={`w-full py-3 px-6 rounded-md transition-colors ${
-                        isPopular 
-                          ? 'bg-green-500 hover:bg-green-600 text-white' 
-                          : 'bg-gray-900 hover:bg-gray-800 text-white'
-                      }`}
-                    >
-                      {`Start ${interval.name}`}
-                    </button>
-                  </div>
-                  <ul className="mt-6 space-y-3 text-sm text-gray-600">
-                    {golfFeatures.map((feature) => (
-                      <li key={feature} className="flex items-center">
-                        <CheckIcon className="h-4 w-4 text-green-500 mr-2" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              );
-            })}
-          </div>
+          <BettingTicketsGrid />
         </div>
       </div>
     </div>

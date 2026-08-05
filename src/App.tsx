@@ -1,9 +1,11 @@
+import type { ReactNode } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
 import { AuthProvider } from './context/AuthContext.js';
 import ProtectedRoute from './components/auth/ProtectedRoute.js';
 import Header from './components/Header.js';
 import Navigation from './components/Navigation.js';
+import PGAChampionshipPromoPopup from './components/PGAChampionshipPromoPopup.js';
 import Footer from './components/Footer.js';
 import Dashboard from './pages/Dashboard.js';
 import MatchupTool from './pages/MatchupTool.js';
@@ -16,7 +18,6 @@ import AuthCallback from './pages/AuthCallback.js';
 import Subscription from './pages/Subscription.js';
 import ExpertInsights from './pages/ExpertInsights.js';
 import StrokesGainedStats from './pages/StrokesGainedStats.js';
-import LandingPage from './pages/LandingPage.js';
 import { useAuthContext } from './context/AuthContext.js';
 import Account from './pages/Account.js';
 import CheckoutSuccess from './pages/CheckoutSuccess.js';
@@ -77,6 +78,18 @@ import CBBSpotUpDefense from './pages/cbb/spot-up-defense.js';
 import CBBPickAndRollDefense from './pages/cbb/pick-and-roll-defense.js';
 import SubscriptionManagement from './pages/SubscriptionManagement.js';
 import TermsOfService from './pages/TermsOfService.js';
+import PicksHomePreview from './pages/PicksHomePreview.js';
+import PicksPricing from './pages/picksHome/PicksPricing.js';
+import PicksArticles from './pages/picksHome/PicksArticles.js';
+import NFLModelComingSoon from './pages/picksHome/NFLModelComingSoon.js';
+import FootballBettingGuide from './pages/articles/football-betting-guide.js';
+import FootballBettingBasicStrategy from './pages/articles/football-betting-basic-strategy.js';
+import ProfitableFootballBettingTrends from './pages/articles/profitable-football-betting-trends.js';
+import FootballBettingAdvancedMetrics from './pages/articles/football-betting-advanced-metrics.js';
+import SportsBettingBankrollManagement from './pages/articles/sports-betting-bankroll-management.js';
+import HowSportsbookLinesMove from './pages/articles/how-sportsbook-lines-move.js';
+import UncorrelatedParlaysNflBettingEdge from './pages/articles/uncorrelated-parlays-nfl-betting-edge.js';
+import LiveInPlayBettingStrategy from './pages/articles/live-in-play-betting-strategy.js';
 
 // Component to track page views on route changes
 function PageViewTracker() {
@@ -93,7 +106,40 @@ function PageViewTracker() {
 // Separate component for handling the landing page redirect
 function LandingRedirect() {
   const { user } = useAuthContext();
-  return user ? <Navigate to="/dashboard" replace /> : <LandingPage />;
+  return user ? <Navigate to="/dashboard" replace /> : <PicksHomePreview />;
+}
+
+// Route prefixes that render as standalone, full-bleed pages (their own
+// nav, hero, and footer) and must not be wrapped in the site's
+// Header/Navigation/Footer chrome — doing so double-stacks navigation and
+// footer content. Every page under /picks-preview provides its own nav via
+// PicksLayout/PicksNavigation. "/" is included as an exact match (not a
+// prefix, since every route starts with "/") because it now renders
+// PicksHomePreview via LandingRedirect.
+const STANDALONE_ROUTE_PREFIXES = ['/picks-preview'];
+const STANDALONE_EXACT_ROUTES = ['/'];
+
+function AppShell({ children }: { children: ReactNode }) {
+  const location = useLocation();
+
+  const isStandalone =
+    STANDALONE_EXACT_ROUTES.includes(location.pathname) ||
+    STANDALONE_ROUTE_PREFIXES.some((prefix) => location.pathname.startsWith(prefix));
+
+  if (isStandalone) {
+    return <>{children}</>;
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <Header />
+      <Navigation />
+      <main className="relative max-w-7xl mx-auto py-4 sm:py-6 px-2 sm:px-4 md:px-6 lg:px-8 flex-grow">
+        <div className="w-full overflow-x-hidden">{children}</div>
+      </main>
+      <Footer />
+    </div>
+  );
 }
 
 function App() {
@@ -101,20 +147,39 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <PageViewTracker />
-        {/* <div className="min-h-screen bg-blue-50"> */}
-        <div className="min-h-screen bg-gray-50 flex flex-col">
-          <Header />
-          <Navigation />
-          <main className="relative max-w-7xl mx-auto py-4 sm:py-6 px-2 sm:px-4 md:px-6 lg:px-8 flex-grow">
-            <div className="w-full overflow-x-hidden">
-              <Routes>
-                {/* Public Routes */}
+        <PGAChampionshipPromoPopup />
+        <AppShell>
+          <Routes>
+            {/* Public Routes */}
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/auth/callback" element={<AuthCallback />} />
                 <Route path="/subscription" element={<Subscription />} />
                 <Route path="/subscription/success" element={<CheckoutSuccess />} />
                 <Route path="/subscription-management" element={<SubscriptionManagement />} />
                 <Route path="/terms" element={<TermsOfService />} />
+                <Route path="/picks-preview" element={<PicksHomePreview />} />
+                <Route path="/picks-preview/pricing" element={<PicksPricing />} />
+                <Route path="/picks-preview/articles" element={<PicksArticles />} />
+                <Route
+                  path="/picks-preview/nfl-models/touchdown-model"
+                  element={<NFLModelComingSoon modelName="Touchdown Model" />}
+                />
+                <Route
+                  path="/picks-preview/nfl-models/receiving-model"
+                  element={<NFLModelComingSoon modelName="Receiving Model" />}
+                />
+                <Route
+                  path="/picks-preview/nfl-models/passing-model"
+                  element={<NFLModelComingSoon modelName="Passing Model" />}
+                />
+                <Route path="/articles/football-betting-guide" element={<FootballBettingGuide />} />
+                <Route path="/articles/football-betting-basic-strategy" element={<FootballBettingBasicStrategy />} />
+                <Route path="/articles/profitable-football-betting-trends" element={<ProfitableFootballBettingTrends />} />
+                <Route path="/articles/football-betting-advanced-metrics" element={<FootballBettingAdvancedMetrics />} />
+                <Route path="/articles/sports-betting-bankroll-management" element={<SportsBettingBankrollManagement />} />
+                <Route path="/articles/how-sportsbook-lines-move" element={<HowSportsbookLinesMove />} />
+                <Route path="/articles/uncorrelated-parlays-nfl-betting-edge" element={<UncorrelatedParlaysNflBettingEdge />} />
+                <Route path="/articles/live-in-play-betting-strategy" element={<LiveInPlayBettingStrategy />} />
                 
                 {/* Account Management - Protected but available to all tiers */}
                 <Route path="/account" element={
@@ -292,11 +357,8 @@ function App() {
                 <Route path="/nfl/defense/passing-yards-per-game" element={<DefensePassingYardsPerGame />} />
                 <Route path="/nfl/defense/yards-per-pass-attempt" element={<DefenseYardsPerPassAttempt />} />
                 <Route path="/nfl/defense/yards-per-completion" element={<DefenseYardsPerCompletion />} />
-              </Routes>
-            </div>
-          </main>
-          <Footer />
-        </div>
+          </Routes>
+        </AppShell>
         <Analytics />
       </AuthProvider>
     </BrowserRouter>

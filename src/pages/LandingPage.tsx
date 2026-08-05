@@ -6,6 +6,7 @@ import VideoShowcase from '../components/landing/VideoShowcase.js';
 import BettingTicketsGrid from '../components/BettingTicketsGrid.js';
 import TicketCarousel from '../components/TicketCarousel.js';
 import NFLRecords from '../components/subscription/NFLRecords.js';
+import LatestArticles from '../components/landing/LatestArticles.js';
 
 export default function LandingPage() {
   const [vipInterval, setVipInterval] = useState('monthly');
@@ -31,6 +32,9 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Latest Articles Section */}
+      <LatestArticles />
+
       {/* Desktop-Only Pricing Section */}
       <section className="hidden md:block py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -39,6 +43,143 @@ export default function LandingPage() {
             <p className="mt-4 text-lg text-gray-500">
               Select the plan that best fits your betting strategy
             </p>
+          </div>
+
+          {/* Sharpside Golf Membership Section */}
+          <div className="mb-12">
+            <div className="text-center mb-6">
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Sharpside Golf Membership</h3>
+              <p className="text-gray-600">Complete golf analytics and betting tools</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+              {/* Weekly */}
+              <div className="bg-white rounded-lg shadow-lg border-2 border-gray-200 p-6">
+                <div className="text-center">
+                  <h4 className="text-xl font-semibold text-gray-900 mb-2">Weekly</h4>
+                  <p className="text-4xl font-bold text-gray-900 mb-1">$59.99</p>
+                  <p className="text-gray-500 mb-6">per week</p>
+                  <button 
+                    onClick={() => window.location.href = 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=week'}
+                    className="w-full py-3 px-6 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors"
+                  >
+                    Start Weekly
+                  </button>
+                </div>
+                <ul className="mt-6 space-y-3 text-sm text-gray-600">
+                  <li className="flex items-center">
+                    <svg className="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    Golf betting picks
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    All golf tools
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    Course fit analysis
+                  </li>
+                </ul>
+              </div>
+
+              {/* Monthly */}
+              <div className="bg-white rounded-lg shadow-lg border-2 border-green-500 p-6 relative">
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                  <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                    Best Value
+                  </span>
+                </div>
+                <div className="text-center">
+                  <h4 className="text-xl font-semibold text-gray-900 mb-2">Monthly</h4>
+                  <p className="text-4xl font-bold text-gray-900 mb-1">$239.99</p>
+                  <p className="text-gray-500 mb-6">per month</p>
+                  <button 
+                    onClick={() => window.location.href = 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=month'}
+                    className="w-full py-3 px-6 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
+                  >
+                    Start Monthly
+                  </button>
+                </div>
+                <ul className="mt-6 space-y-3 text-sm text-gray-600">
+                  <li className="flex items-center">
+                    <svg className="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    Golf betting picks
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    All golf tools
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    Course fit analysis
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    Priority support
+                  </li>
+                </ul>
+              </div>
+
+              {/* Yearly */}
+              <div className="bg-white rounded-lg shadow-lg border-2 border-green-500 p-6 relative">
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                  <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                    Best Value
+                  </span>
+                </div>
+                <div className="text-center">
+                  <h4 className="text-xl font-semibold text-gray-900 mb-2">Yearly</h4>
+                  <p className="text-4xl font-bold text-gray-900 mb-1">$599.99</p>
+                  <p className="text-gray-500 mb-2">per year</p>
+                  <p className="text-green-600 text-sm mb-6">Save $280/year</p>
+                  <button 
+                    onClick={() => window.location.href = 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=year'}
+                    className="w-full py-3 px-6 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors"
+                  >
+                    Start Yearly
+                  </button>
+                </div>
+                <ul className="mt-6 space-y-3 text-sm text-gray-600">
+                  <li className="flex items-center">
+                    <svg className="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    Golf betting picks
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    All golf tools
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    Course fit analysis
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    Priority support
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
 
           {/* All Access Section */}
@@ -222,142 +363,6 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Golf Only Section */}
-          <div>
-            <div className="text-center mb-6">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Golf Only</h3>
-              <p className="text-gray-600">Complete golf analytics and betting tools</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-              {/* Weekly */}
-              <div className="bg-white rounded-lg shadow-lg border-2 border-gray-200 p-6">
-                <div className="text-center">
-                  <h4 className="text-xl font-semibold text-gray-900 mb-2">Weekly</h4>
-                  <p className="text-4xl font-bold text-gray-900 mb-1">$59.99</p>
-                  <p className="text-gray-500 mb-6">per week</p>
-                  <button 
-                    onClick={() => window.location.href = 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=week'}
-                    className="w-full py-3 px-6 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors"
-                  >
-                    Start Weekly
-                  </button>
-                </div>
-                <ul className="mt-6 space-y-3 text-sm text-gray-600">
-                  <li className="flex items-center">
-                    <svg className="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    Golf betting picks
-                  </li>
-                  <li className="flex items-center">
-                    <svg className="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    All golf tools
-                  </li>
-                  <li className="flex items-center">
-                    <svg className="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    Course fit analysis
-                  </li>
-                </ul>
-              </div>
-
-              {/* Monthly */}
-              <div className="bg-white rounded-lg shadow-lg border-2 border-green-500 p-6 relative">
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                    Best Value
-                  </span>
-                </div>
-                <div className="text-center">
-                  <h4 className="text-xl font-semibold text-gray-900 mb-2">Monthly</h4>
-                  <p className="text-4xl font-bold text-gray-900 mb-1">$239.99</p>
-                  <p className="text-gray-500 mb-6">per month</p>
-                  <button 
-                    onClick={() => window.location.href = 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=month'}
-                    className="w-full py-3 px-6 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
-                  >
-                    Start Monthly
-                  </button>
-                </div>
-                <ul className="mt-6 space-y-3 text-sm text-gray-600">
-                  <li className="flex items-center">
-                    <svg className="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    Golf betting picks
-                  </li>
-                  <li className="flex items-center">
-                    <svg className="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    All golf tools
-                  </li>
-                  <li className="flex items-center">
-                    <svg className="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    Course fit analysis
-                  </li>
-                  <li className="flex items-center">
-                    <svg className="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    Priority support
-                  </li>
-                </ul>
-              </div>
-
-              {/* Yearly */}
-              <div className="bg-white rounded-lg shadow-lg border-2 border-green-500 p-6 relative">
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                    Best Value
-                  </span>
-                </div>
-                <div className="text-center">
-                  <h4 className="text-xl font-semibold text-gray-900 mb-2">Yearly</h4>
-                  <p className="text-4xl font-bold text-gray-900 mb-1">$599.99</p>
-                  <p className="text-gray-500 mb-2">per year</p>
-                  <p className="text-green-600 text-sm mb-6">Save $280/year</p>
-                  <button 
-                    onClick={() => window.location.href = 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=year'}
-                    className="w-full py-3 px-6 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors"
-                  >
-                    Start Yearly
-                  </button>
-                </div>
-                <ul className="mt-6 space-y-3 text-sm text-gray-600">
-                  <li className="flex items-center">
-                    <svg className="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    Golf betting picks
-                  </li>
-                  <li className="flex items-center">
-                    <svg className="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    All golf tools
-                  </li>
-                  <li className="flex items-center">
-                    <svg className="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    Course fit analysis
-                  </li>
-                  <li className="flex items-center">
-                    <svg className="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    Priority support
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -373,6 +378,92 @@ export default function LandingPage() {
 
           {/* Mobile Pricing - Toggle Layout */}
           <div className="space-y-8 mb-10">
+            {/* Sharpside Golf Membership with Toggle */}
+            <div className="bg-white rounded-lg shadow-lg border-2 border-gray-200 p-6">
+              <div className="text-center mb-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Sharpside Golf Membership</h3>
+                <p className="text-gray-600 text-sm">Complete golf analytics and betting tools</p>
+              </div>
+
+              <div className="flex bg-gray-100 rounded-lg p-1 mb-6">
+                <button
+                  onClick={() => setGolfInterval('weekly')}
+                  className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
+                    golfInterval === 'weekly'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Weekly
+                </button>
+                <button
+                  onClick={() => setGolfInterval('monthly')}
+                  className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
+                    golfInterval === 'monthly'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Monthly
+                </button>
+                <button
+                  onClick={() => setGolfInterval('yearly')}
+                  className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
+                    golfInterval === 'yearly'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Yearly
+                </button>
+              </div>
+
+              <div className="text-center">
+                {golfInterval === 'weekly' && (
+                  <>
+                    <p className="text-3xl font-bold text-gray-900 mb-1">$59.99</p>
+                    <p className="text-gray-500 text-base mb-4">per week</p>
+                    <button
+                      onClick={() => window.location.href = 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=week'}
+                      className="w-full py-3 px-4 bg-gray-900 text-white rounded-lg text-base font-medium hover:bg-gray-800 transition-colors"
+                    >
+                      Start Weekly
+                    </button>
+                  </>
+                )}
+                {golfInterval === 'monthly' && (
+                  <>
+                    <div className="relative mb-4">
+                      <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                        Best Value
+                      </span>
+                    </div>
+                    <p className="text-3xl font-bold text-gray-900 mb-1">$239.99</p>
+                    <p className="text-gray-500 text-base mb-4">per month</p>
+                    <button
+                      onClick={() => window.location.href = 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=month'}
+                      className="w-full py-3 px-4 bg-green-500 text-white rounded-lg text-base font-medium hover:bg-green-600 transition-colors"
+                    >
+                      Start Monthly
+                    </button>
+                  </>
+                )}
+                {golfInterval === 'yearly' && (
+                  <>
+                    <p className="text-3xl font-bold text-gray-900 mb-1">$599.99</p>
+                    <p className="text-gray-500 text-base mb-1">per year</p>
+                    <p className="text-green-600 text-sm mb-4">Save $280/year</p>
+                    <button
+                      onClick={() => window.location.href = 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=year'}
+                      className="w-full py-3 px-4 bg-gray-900 text-white rounded-lg text-base font-medium hover:bg-gray-800 transition-colors"
+                    >
+                      Start Yearly
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+
             {/* VIP All Access with Toggle */}
             <div className="bg-white rounded-lg shadow-lg border-2 border-gray-200 p-6">
               <div className="text-center mb-6">
@@ -474,94 +565,6 @@ export default function LandingPage() {
                 >
                   Get Season Pass
                 </button>
-              </div>
-            </div>
-
-            {/* Golf Only with Toggle */}
-            <div className="bg-white rounded-lg shadow-lg border-2 border-gray-200 p-6">
-              <div className="text-center mb-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Golf Only</h3>
-                <p className="text-gray-600 text-sm">Complete golf analytics and betting tools</p>
-              </div>
-              
-              {/* Toggle Buttons */}
-              <div className="flex bg-gray-100 rounded-lg p-1 mb-6">
-                <button 
-                  onClick={() => setGolfInterval('weekly')}
-                  className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
-                    golfInterval === 'weekly' 
-                      ? 'bg-white text-gray-900 shadow-sm' 
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  Weekly
-                </button>
-                <button 
-                  onClick={() => setGolfInterval('monthly')}
-                  className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
-                    golfInterval === 'monthly' 
-                      ? 'bg-white text-gray-900 shadow-sm' 
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  Monthly
-                </button>
-                <button 
-                  onClick={() => setGolfInterval('yearly')}
-                  className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
-                    golfInterval === 'yearly' 
-                      ? 'bg-white text-gray-900 shadow-sm' 
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  Yearly
-                </button>
-              </div>
-
-              {/* Dynamic Content Based on Selection */}
-              <div className="text-center">
-                {golfInterval === 'weekly' && (
-                  <>
-                    <p className="text-3xl font-bold text-gray-900 mb-1">$59.99</p>
-                    <p className="text-gray-500 text-base mb-4">per week</p>
-                    <button 
-                      onClick={() => window.location.href = 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=week'}
-                      className="w-full py-3 px-4 bg-gray-900 text-white rounded-lg text-base font-medium hover:bg-gray-800 transition-colors"
-                    >
-                      Start Weekly
-                    </button>
-                  </>
-                )}
-                {golfInterval === 'monthly' && (
-                  <>
-                    <div className="relative mb-4">
-                      <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
-                        Best Value
-                      </span>
-                    </div>
-                    <p className="text-3xl font-bold text-gray-900 mb-1">$239.99</p>
-                    <p className="text-gray-500 text-base mb-4">per month</p>
-                    <button 
-                      onClick={() => window.location.href = 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=month'}
-                      className="w-full py-3 px-4 bg-green-500 text-white rounded-lg text-base font-medium hover:bg-green-600 transition-colors"
-                    >
-                      Start Monthly
-                    </button>
-                  </>
-                )}
-                {golfInterval === 'yearly' && (
-                  <>
-                    <p className="text-3xl font-bold text-gray-900 mb-1">$599.99</p>
-                    <p className="text-gray-500 text-base mb-1">per year</p>
-                    <p className="text-green-600 text-sm mb-4">Save $280/year</p>
-                    <button 
-                      onClick={() => window.location.href = 'https://www.winible.com/checkout/1378395472007287051?store_url=/sharpsidesports&interval=year'}
-                      className="w-full py-3 px-4 bg-gray-900 text-white rounded-lg text-base font-medium hover:bg-gray-800 transition-colors"
-                    >
-                      Start Yearly
-                    </button>
-                  </>
-                )}
               </div>
             </div>
           </div>

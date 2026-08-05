@@ -34,6 +34,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link to="/articles/football-betting-guide" className="text-gray-300 hover:text-white transition-colors">
+                  Football Betting Guide
+                </Link>
+              </li>
+              <li>
                 <Link to="/reception-model" className="text-gray-300 hover:text-white transition-colors">
                   NFL Reception Model
                 </Link>

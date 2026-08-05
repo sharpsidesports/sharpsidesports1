@@ -1,7 +1,6 @@
 import PricingPlans from '../components/subscription/PricingPlans.js';
 import AICaddiePerformance from '../components/subscription/AICaddiePerformance.js';
 import Testimonials from '../components/subscription/Testimonials.js';
-import NFLRecords from '../components/subscription/NFLRecords.js';
 
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -31,8 +30,6 @@ export default function Subscription() {
             Premier handicapping, and tools service dedicated to helping you gain an edge and beat the book.
           </p>
         </div>
-
-        <NFLRecords />
 
         <div id="plans" className="mt-4 scroll-mt-24">
           <PricingPlans ref={plansRef} />
