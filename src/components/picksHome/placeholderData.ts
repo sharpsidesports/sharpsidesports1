@@ -78,38 +78,6 @@ export const FEATURES: FeatureItem[] = [
   },
 ];
 
-export interface Testimonial {
-  name: string;
-  result: string;
-  quote: string;
-}
-
-// PLACEHOLDER — testimonials, not real users
-export const TESTIMONIALS: Testimonial[] = [
-  {
-    name: 'Marcus T.', // PLACEHOLDER
-    result: '+41.2 units over 3 months', // PLACEHOLDER
-    quote: 'The reasoning behind every pick is what sold me — I can actually see why a bet is +EV instead of just trusting it blindly.',
-  },
-  {
-    name: 'Dana R.', // PLACEHOLDER
-    result: '68% win rate on straight bets, 6 weeks', // PLACEHOLDER
-    quote: 'Switched from guessing lines myself to following the model’s straight bets. Slower, steadier, and it’s actually working.',
-  },
-  {
-    name: 'Ivan P.', // PLACEHOLDER
-    result: '+18.9 units, first month', // PLACEHOLDER
-    quote: 'Exposure limits alone are worth the subscription. Kept me from blowing up a slate during a cold stretch.',
-  },
-];
-
-// PLACEHOLDER — rating badge
-export const RATING_BADGE = {
-  score: 4.8, // PLACEHOLDER
-  outOf: 5,
-  reviewCount: 214, // PLACEHOLDER
-};
-
 // Real pricing lives in `../subscription/PricingPlans.tsx` (shared with the
 // live Subscription page) and is consumed directly by Pricing.tsx.
 

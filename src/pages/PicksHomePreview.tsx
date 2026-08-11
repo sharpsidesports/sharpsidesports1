@@ -8,7 +8,6 @@ import TrackRecord from '../components/picksHome/TrackRecord.js';
 import Articles from '../components/picksHome/Articles.js';
 import HowItWorks from '../components/picksHome/HowItWorks.js';
 import Features from '../components/picksHome/Features.js';
-import Testimonials from '../components/picksHome/Testimonials.js';
 import Pricing from '../components/picksHome/Pricing.js';
 import FAQ from '../components/picksHome/FAQ.js';
 import FinalCTA from '../components/picksHome/FinalCTA.js';
@@ -88,10 +87,6 @@ export default function PicksHomePreview() {
 
       <FadeInSection>
         <Features />
-      </FadeInSection>
-
-      <FadeInSection>
-        <Testimonials />
       </FadeInSection>
 
       <FadeInSection>
