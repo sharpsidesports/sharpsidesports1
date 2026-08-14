@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
-const PROMO_SEEN_KEY = 'pgaChampionshipPromoSeen';
-const GOLF_SUBSCRIPTIONS_URL = '/subscription#plans';
+const PROMO_SEEN_KEY = 'footballSeasonPromoSeen';
+const FOOTBALL_SUBSCRIPTIONS_URL = '/subscription#plans';
 
 export default function PGAChampionshipPromoPopup() {
   const [show, setShow] = useState(false);
@@ -20,7 +20,7 @@ export default function PGAChampionshipPromoPopup() {
 
   const handleViewSubscriptions = () => {
     sessionStorage.setItem(PROMO_SEEN_KEY, 'true');
-    window.location.href = GOLF_SUBSCRIPTIONS_URL;
+    window.location.href = FOOTBALL_SUBSCRIPTIONS_URL;
   };
 
   if (!show) return null;
@@ -34,11 +34,14 @@ export default function PGAChampionshipPromoPopup() {
       />
       <div className="relative w-full max-w-md rounded-xl border-2 border-green-500 bg-white p-8 text-center shadow-2xl">
         <p className="mb-3 text-lg font-bold uppercase tracking-wide text-gray-900">
-          IT'S PGA CHAMPIONSHIP WEEK
+          FOOTBALL SEASON PACKAGE
         </p>
-        <p className="mb-6 text-base text-gray-700">
-          Use promo <span className="font-semibold text-gray-900">PGA25</span> for{' '}
-          <span className="font-semibold text-gray-900">25% off any golf subscription</span>.
+        <p className="mb-2 text-base text-gray-700">
+          Get every NFL and CFB pick all season long with our{' '}
+          <span className="font-semibold text-gray-900">Football Season package</span>.
+        </p>
+        <p className="mb-6 text-sm font-semibold uppercase tracking-wide text-red-600">
+          Only 20 spots left
         </p>
         <div className="flex flex-col justify-center gap-3 sm:flex-row">
           <button
@@ -46,7 +49,7 @@ export default function PGAChampionshipPromoPopup() {
             onClick={handleViewSubscriptions}
             className="rounded-md bg-green-500 px-6 py-3 font-semibold uppercase text-white transition-colors hover:bg-green-600"
           >
-            View golf subscriptions
+            Get the Football Season package
           </button>
           <button
             type="button"
