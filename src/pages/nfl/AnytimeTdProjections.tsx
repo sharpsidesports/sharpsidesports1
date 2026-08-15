@@ -144,8 +144,8 @@ export default function AnytimeTdProjections() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 mb-1">NFL Week 1 Anytime TD Projections vs. Sportsbook Odds</h1>
           <p className="text-gray-600 text-sm">
-            ESPN's Week 1 projections compared against the sportsbook consensus Anytime TD Scorer price. Edge = ESPN TD
-            probability minus the sportsbook consensus probability.
+            Sharpside's Week 1 projections compared against the sportsbook consensus Anytime TD Scorer price. Edge =
+            Sharpside TD probability minus the sportsbook consensus probability.
           </p>
         </div>
         <button
@@ -166,13 +166,13 @@ export default function AnytimeTdProjections() {
         <div className="p-6 text-center text-red-600">{error}</div>
       ) : !data?.espnAvailable ? (
         <div className="p-6 text-center text-gray-700 bg-yellow-50 border border-yellow-200 rounded-lg">
-          ESPN has not published Week 1 {data?.season ?? ''} projections yet. Check back closer to the season.
+          Sharpside has not published Week 1 {data?.season ?? ''} projections yet. Check back closer to the season.
         </div>
       ) : (
         <>
           {!data.oddsApiConfigured && (
             <div className="p-4 text-sm text-gray-700 bg-yellow-50 border border-yellow-200 rounded-lg">
-              Sportsbook odds aren't configured yet (no <code>ODDS_API_KEY</code>) — showing ESPN projections only.
+              Sportsbook odds aren't configured yet (no <code>ODDS_API_KEY</code>) — showing Sharpside projections only.
               Consensus and edge will appear once the key is added.
             </div>
           )}
@@ -216,8 +216,8 @@ export default function AnytimeTdProjections() {
                   <th className="px-4 py-3 text-center uppercase tracking-wider font-semibold whitespace-nowrap">Team</th>
                   <th className="px-4 py-3 text-center uppercase tracking-wider font-semibold whitespace-nowrap">Pos</th>
                   <th className="px-4 py-3 text-center uppercase tracking-wider font-semibold whitespace-nowrap">Opp</th>
-                  {sortHeader('ESPN Projected TD', 'projected')}
-                  {sortHeader('ESPN TD %', 'espnProb')}
+                  {sortHeader('Sharpside Projected TD', 'projected')}
+                  {sortHeader('Sharpside TD %', 'espnProb')}
                   {sortHeader('Consensus Odds', 'consensusOdds')}
                   {sortHeader('Consensus TD %', 'consensusProb')}
                   {sortHeader('Edge', 'edge')}
