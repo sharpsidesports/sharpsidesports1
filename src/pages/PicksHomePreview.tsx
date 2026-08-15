@@ -7,7 +7,6 @@ import ProfitCalculator from '../components/picksHome/ProfitCalculator.js';
 import TrackRecord from '../components/picksHome/TrackRecord.js';
 import Articles from '../components/picksHome/Articles.js';
 import HowItWorks from '../components/picksHome/HowItWorks.js';
-import Features from '../components/picksHome/Features.js';
 import Pricing from '../components/picksHome/Pricing.js';
 import FAQ from '../components/picksHome/FAQ.js';
 import FinalCTA from '../components/picksHome/FinalCTA.js';
@@ -83,10 +82,6 @@ export default function PicksHomePreview() {
 
       <FadeInSection>
         <HowItWorks />
-      </FadeInSection>
-
-      <FadeInSection>
-        <Features />
       </FadeInSection>
 
       <FadeInSection>
