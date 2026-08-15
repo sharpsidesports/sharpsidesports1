@@ -4,10 +4,10 @@
 // Compiled from season-tracking sheets maintained since 2020. Every row below
 // is a real, dated, publicly-logged record — not a placeholder.
 //
-// Currently covers: CFB 2020-2023, NFL 2020-2024 (9 season/league rows).
-// CFB 2024, CFB 2025, and NFL 2025 are pending and will be appended here once
-// compiled — every headline number below derives from SEASON_RECORDS, so
-// adding a row updates the whole site automatically.
+// Currently covers: CFB 2020-2023 & 2025, NFL 2020-2025 (11 season/league
+// rows). CFB 2024 is pending and will be appended here once compiled — every
+// headline number below derives from SEASON_RECORDS, so adding a row updates
+// the whole site automatically.
 //
 // Win rate = wins / (wins + losses); pushes are excluded, matching how each
 // season sheet's own WINS/LOSSES summary box is computed.
@@ -34,6 +34,8 @@ export const SEASON_RECORDS: SeasonRecord[] = [
   { season: 2023, league: 'CFB', wins: 51, losses: 35, units: 14 },
   { season: 2023, league: 'NFL', wins: 82, losses: 44, units: 29.6 },
   { season: 2024, league: 'NFL', wins: 77, losses: 60, units: 37 },
+  { season: 2025, league: 'NFL', wins: 99, losses: 61, units: 31.9 },
+  { season: 2025, league: 'CFB', wins: 75, losses: 53, units: 16.7 },
 ];
 
 function winRate(wins: number, losses: number): number {
