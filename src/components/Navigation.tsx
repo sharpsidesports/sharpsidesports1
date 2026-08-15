@@ -214,6 +214,9 @@ export default function Navigation() {
                 document.body
               )}
             </div>
+            <Link to="/nfl/anytime-td-projections" className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm font-medium">
+              Anytime TD Projections
+            </Link>
           </div>,
           document.body
         )}
