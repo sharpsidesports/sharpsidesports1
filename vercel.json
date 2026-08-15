@@ -14,5 +14,12 @@
       "source": "/(.*)",
       "destination": "/index.html"
     }
+  ],
+
+  "crons": [
+    {
+      "path": "/api/nfl-odds?season=2026&week=1&refresh=1",
+      "schedule": "0 13 */2 * *"
+    }
   ]
 }

@@ -143,9 +143,13 @@ async function buildCombinedData(season: number, week: number): Promise<Combined
 }
 
 // In-memory cache — persists across warm invocations of this function
-// instance. Keeps us well under The Odds API's request quota; ?refresh=1
-// bypasses it for a manual update.
-const CACHE_TTL_MS = 30 * 60 * 1000;
+// instance. The cron job (vercel.json) forces a fresh pull every other day
+// via ?refresh=1, so this TTL just needs to comfortably outlast that
+// interval — it exists as a safety net (e.g. if a cron run is ever missed)
+// rather than as the primary refresh mechanism. Keeps us well under The Odds
+// API's request quota; ?refresh=1 bypasses it for a manual update.
+const CACHE_TTL_MS = 47 * 60 * 60 * 1000; // 47 hours
+
 let cache: { key: string; data: CombinedResult; fetchedAt: number } | null = null;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
