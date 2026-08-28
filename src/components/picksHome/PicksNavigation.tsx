@@ -29,9 +29,9 @@ export default function PicksNavigation() {
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
-          <NavLink to="/picks-preview" end className={navLinkClass}>
+          <a href="https://sharpsidesports.com/expert-insights" className="text-sm font-semibold text-gray-700 transition-colors hover:text-sharpside-green">
             Betting Picks
-          </NavLink>
+          </a>
 
           <div
             className="relative"
@@ -95,9 +95,9 @@ export default function PicksNavigation() {
       {mobileOpen && (
         <nav className="border-t border-gray-100 bg-white px-4 py-4 md:hidden">
           <div className="flex flex-col gap-4">
-            <NavLink to="/picks-preview" end className={navLinkClass} onClick={() => setMobileOpen(false)}>
+            <a href="https://sharpsidesports.com/expert-insights" className="text-sm font-semibold text-gray-700 transition-colors hover:text-sharpside-green" onClick={() => setMobileOpen(false)}>
               Betting Picks
-            </NavLink>
+            </a>
 
             <div>
               <span className="text-sm font-semibold text-gray-900">NFL Models</span>
