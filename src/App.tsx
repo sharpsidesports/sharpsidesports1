@@ -116,9 +116,11 @@ function LandingRedirect() {
 // footer content. Every page under /picks-preview provides its own nav via
 // PicksLayout/PicksNavigation. "/" is included as an exact match (not a
 // prefix, since every route starts with "/") because it now renders
-// PicksHomePreview via LandingRedirect.
+// PicksHomePreview via LandingRedirect. "/expert-insights" is also exact
+// so the Betting Picks page keeps the same PicksNavigation as the rest of
+// the picks-preview flow instead of switching to the app's Navigation.
 const STANDALONE_ROUTE_PREFIXES = ['/picks-preview'];
-const STANDALONE_EXACT_ROUTES = ['/'];
+const STANDALONE_EXACT_ROUTES = ['/', '/expert-insights'];
 
 function AppShell({ children }: { children: ReactNode }) {
   const location = useLocation();
