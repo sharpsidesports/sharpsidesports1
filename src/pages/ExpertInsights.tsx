@@ -1,18 +1,15 @@
 // This component serves as a page for displaying expert insights.
-import PicksLayout from '../components/picksHome/PicksLayout.js';
 import ExpertInsightContent from '../components/insights/ExpertInsightContent.js';
 
 export default function ExpertInsights() {
   return (
-    <PicksLayout>
-      <div className="bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-            Betting Picks
-          </h1>
-          <ExpertInsightContent />
-        </div>
+    <div className="bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+          Betting Picks
+        </h1>
+        <ExpertInsightContent />
       </div>
-    </PicksLayout>
+    </div>
   );
 } 

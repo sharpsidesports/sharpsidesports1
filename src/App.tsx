@@ -83,6 +83,7 @@ import PicksHomePreview from './pages/PicksHomePreview.js';
 import PicksPricing from './pages/picksHome/PicksPricing.js';
 import PicksArticles from './pages/picksHome/PicksArticles.js';
 import NFLModelComingSoon from './pages/picksHome/NFLModelComingSoon.js';
+import PicksLayout from './components/picksHome/PicksLayout.js';
 import FootballBettingGuide from './pages/articles/football-betting-guide.js';
 import FootballBettingBasicStrategy from './pages/articles/football-betting-basic-strategy.js';
 import ProfitableFootballBettingTrends from './pages/articles/profitable-football-betting-trends.js';
@@ -265,9 +266,11 @@ function App() {
                 <Route
                   path="/expert-insights"
                   element={
-                    <ProtectedRoute requiredSubscription="pro" showPreview={true}>
-                      <ExpertInsights />
-                    </ProtectedRoute>
+                    <PicksLayout>
+                      <ProtectedRoute requiredSubscription="pro" showPreview={true}>
+                        <ExpertInsights />
+                      </ProtectedRoute>
+                    </PicksLayout>
                   }
                 />
                 <Route 
