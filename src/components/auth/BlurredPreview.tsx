@@ -78,7 +78,7 @@ export default function BlurredPreview({ children, requiredSubscription = 'free'
       )}
       {/* VIP Button replaces upgrade prompt for Betting Picks only */}
       {requiredSubscription === 'pro' ? (
-        <div className="sticky top-0 z-50 pt-4 pb-6">
+        <div className="sticky top-16 z-30 pt-4 pb-6">
           <div className="text-center max-w-md mx-auto p-4 bg-white/95 rounded-lg shadow-lg backdrop-blur-sm">
             <button
               className="w-full bg-green-600 text-white py-2 rounded font-semibold text-lg hover:bg-green-700 shadow"
@@ -91,7 +91,7 @@ export default function BlurredPreview({ children, requiredSubscription = 'free'
         </div>
       ) : (
         // Default upgrade/sign in prompt for other pages
-        <div className="sticky top-0 z-50 pt-4 pb-6">
+        <div className="sticky top-16 z-30 pt-4 pb-6">
           <div className="text-center max-w-md mx-auto p-4 bg-white/95 rounded-lg shadow-lg backdrop-blur-sm">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
               {user ? 'Upgrade to Access Premium Features' : 'Get Access to Premium Features'}

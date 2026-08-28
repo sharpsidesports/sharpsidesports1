@@ -21,8 +21,8 @@ export default function PicksNavigation() {
   const [modelsOpen, setModelsOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-gray-100 bg-white/90 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 h-16 border-b border-gray-100 bg-white/90 backdrop-blur">
+      <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link to="/picks-preview" className="text-2xl font-bold tracking-tight">
           <span className="text-sharpside-black">Sharpside</span>
           <span className="text-sharpside-green"> Sports</span>
