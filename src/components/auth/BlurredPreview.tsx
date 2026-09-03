@@ -1,7 +1,7 @@
 // This component is used to show a blurred preview of content that requires a subscription level to access.
 import { Link } from 'react-router-dom';
 import { useAuthContext } from '../../context/AuthContext.js';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface BlurredPreviewProps {
   children: React.ReactNode;
@@ -24,8 +24,17 @@ export default function BlurredPreview({ children, requiredSubscription = 'free'
   const [showVIP, setShowVIP] = useState(false);
   const VIP_PASSWORDS = ['cfbweek1', 'brodie25', 'ssports25', 'chris25', 'josh25']; // Array of valid VIP passwords
 
+  // Auto-open the VIP password modal for pro-gated pages instead of requiring a button click first
+  const hasSufficientAccess = DISABLE_BLUR || (user != null && subscriptionLevels[userTier] >= subscriptionLevels[requiredSubscription]) || showVIP;
+  useEffect(() => {
+    if (requiredSubscription === 'pro' && !hasSufficientAccess) {
+      setShowPrompt(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [requiredSubscription, hasSufficientAccess]);
+
   // If blur is disabled OR user has sufficient subscription level, show content normally
-  if (DISABLE_BLUR || (user && subscriptionLevels[userTier] >= subscriptionLevels[requiredSubscription]) || showVIP) {
+  if (hasSufficientAccess) {
     return <>{children}</>;
   }
 
