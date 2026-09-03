@@ -1,16 +1,27 @@
 import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import PicksLayout from '../../components/picksHome/PicksLayout.js';
 import PricingPlans from '../../components/subscription/PricingPlans.js';
 
 const PAGE_TITLE = 'Pricing | SharpSide Sports';
 
 export default function PicksPricing() {
+  const location = useLocation();
+
   useEffect(() => {
     document.title = PAGE_TITLE;
     return () => {
       document.title = 'sharpside golf';
     };
   }, []);
+
+  useEffect(() => {
+    if (location.hash === '#all-access') {
+      setTimeout(() => {
+        document.getElementById('all-access')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [location.hash]);
 
   return (
     <PicksLayout>

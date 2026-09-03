@@ -84,7 +84,7 @@ export default function BlurredPreview({ children, requiredSubscription = 'free'
             </form>
             <div className="text-center mt-4">
               <Link
-                to="/subscription#all-access"
+                to="/picks-preview/pricing#all-access"
                 className="text-sm text-green-700 hover:text-green-800 underline"
                 onClick={() => setShowPrompt(false)}
               >
