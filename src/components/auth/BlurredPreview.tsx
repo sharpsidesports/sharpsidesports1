@@ -73,6 +73,15 @@ export default function BlurredPreview({ children, requiredSubscription = 'free'
                 Unlock
               </button>
             </form>
+            <div className="text-center mt-4">
+              <Link
+                to="/subscription#all-access"
+                className="text-sm text-green-700 hover:text-green-800 underline"
+                onClick={() => setShowPrompt(false)}
+              >
+                Don't have a password? Click here
+              </Link>
+            </div>
           </div>
         </div>
       )}

@@ -16,6 +16,10 @@ export default function Subscription() {
       setTimeout(() => {
         plansRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 100);
+    } else if (location.hash === '#all-access') {
+      setTimeout(() => {
+        document.getElementById('all-access')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
     }
   }, [location.hash]);
 

@@ -187,7 +187,7 @@ const PricingPlans = forwardRef<HTMLDivElement>((props, ref) => {
         </div>
 
         {/* All Access Section */}
-        <div className="mt-16">
+        <div id="all-access" className="mt-16 scroll-mt-24">
           <div className="text-center mb-8">
             <h3 className="text-xl font-bold text-gray-900 mb-2">All Access</h3>
             <p className="text-gray-600">Complete access to all sports and tools</p>
