@@ -37,6 +37,7 @@ import RecappingBetsWeekGoodBadUnlucky from './pages/articles/recapping-bets-wee
 import RecappingNFLBetsWeek2 from './pages/articles/recapping-nfl-bets-week-2.js';
 import Sitemap from './pages/sitemap.xml.js';
 import ReceptionModel from './pages/ReceptionModel.js';
+import PassingModel from './pages/PassingModel.js';
 import WRTargetProjections from './pages/cfb/WRTargetProjections.js';
 import SPPlus from './pages/cfb/SPPlus.js';
 import WRRedzoneStats from './pages/redzone/WR.js';
@@ -170,11 +171,11 @@ function App() {
                 />
                 <Route
                   path="/picks-preview/nfl-models/receiving-model"
-                  element={<NFLModelComingSoon modelName="Receiving Model" />}
+                  element={<PicksLayout><div className="px-4 py-6 sm:px-6 lg:px-8"><ReceptionModel /></div></PicksLayout>}
                 />
                 <Route
                   path="/picks-preview/nfl-models/passing-model"
-                  element={<NFLModelComingSoon modelName="Passing Model" />}
+                  element={<PicksLayout><div className="px-4 py-6 sm:px-6 lg:px-8"><PassingModel /></div></PicksLayout>}
                 />
                 <Route path="/articles/football-betting-guide" element={<FootballBettingGuide />} />
                 <Route path="/articles/football-betting-basic-strategy" element={<FootballBettingBasicStrategy />} />

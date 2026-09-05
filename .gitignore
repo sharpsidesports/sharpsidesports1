@@ -33,3 +33,4 @@ dev/pga/data/scoring_stats.csv
 scoring_stats.csv
 .venv
 venv
+.env*

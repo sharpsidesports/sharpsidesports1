@@ -24,6 +24,12 @@ const SKILL_SLOT_IDS = [0, 2, 4, 6];
 const STAT_ID_PASS_TD = '4';
 const STAT_ID_RUSH_TD = '25';
 const STAT_ID_REC_TD = '43';
+const STAT_ID_RECEPTIONS = '53';
+// Confirmed live against real QB projections (Josh Allen, Jayden Daniels):
+// id '2' (incompletions) = attempts - completions exactly, cross-validating
+// this mapping.
+const STAT_ID_PASS_ATTEMPTS = '0';
+const STAT_ID_PASS_YARDS = '3';
 
 export interface EspnPlayerProjection {
   player_id: string;
@@ -46,6 +52,29 @@ export interface EspnWeekProjectionsResult {
   available: boolean;
   playerCount: number;
   players: EspnPlayerProjection[];
+}
+
+// Baseline prior for the WR reception model (src/lib/receptionModel). ESPN's
+// own weekly projected-stat block (stat id 53) already includes a fractional
+// projected-receptions figure — this is a separate, additive extraction from
+// the same feed and does not alter getEspnWeekAnytimeTdProjections above,
+// which remains independently callable exactly as before.
+export interface EspnPlayerReceptionProjection {
+  espn_id: string;
+  player_name: string;
+  team: string;
+  position: 'QB' | 'RB' | 'WR' | 'TE';
+  opponent: string;
+  projectedReceptions: number;
+}
+
+export interface EspnWeekReceptionProjectionsResult {
+  season: number;
+  week: number;
+  generatedAt: string;
+  available: boolean;
+  playerCount: number;
+  players: EspnPlayerReceptionProjection[];
 }
 
 function round3(n: number): number {
@@ -189,6 +218,129 @@ export async function getEspnWeekAnytimeTdProjections(
   }
 
   players.sort((a, b) => b.projected_anytime_td - a.projected_anytime_td);
+
+  return {
+    season,
+    week,
+    generatedAt: new Date().toISOString(),
+    available: players.length > 0,
+    playerCount: players.length,
+    players,
+  };
+}
+
+// Reusable pull: fetches ESPN's real per-week projected receptions for
+// every relevant QB/RB/WR/TE. This is the baseline prior for the WR
+// reception model — additive only, does not touch anything above.
+export async function getEspnWeekReceptionProjections(
+  season: number,
+  week: number
+): Promise<EspnWeekReceptionProjectionsResult> {
+  const weekStatId = weeklyProjectedStatId(season, week);
+
+  const [teamMap, rawPlayers] = await Promise.all([
+    fetchProTeamOpponents(season, week),
+    fetchProjectedPlayers(season, week),
+  ]);
+
+  const players: EspnPlayerReceptionProjection[] = [];
+
+  for (const entry of rawPlayers) {
+    const p = entry?.player;
+    if (!p) continue;
+    const position = POSITION_MAP[p.defaultPositionId];
+    if (!position) continue;
+
+    const weekStat = (p.stats ?? []).find((s: any) => s.id === weekStatId);
+    if (!weekStat) continue; // ESPN has not projected this player for this week yet
+
+    const stats = weekStat.stats ?? {};
+    const projectedReceptions = stats[STAT_ID_RECEPTIONS];
+    if (projectedReceptions === undefined) continue; // no reception projection for this player
+
+    const teamInfo = teamMap.get(p.proTeamId);
+
+    players.push({
+      espn_id: String(p.id),
+      player_name: p.fullName,
+      team: teamInfo?.abbrev ?? 'FA',
+      position,
+      opponent: teamInfo?.opponent ?? 'TBD',
+      projectedReceptions: round3(Number(projectedReceptions)),
+    });
+  }
+
+  players.sort((a, b) => b.projectedReceptions - a.projectedReceptions);
+
+  return {
+    season,
+    week,
+    generatedAt: new Date().toISOString(),
+    available: players.length > 0,
+    playerCount: players.length,
+    players,
+  };
+}
+
+// Baseline prior for the QB passing model (src/lib/passingModel) — additive
+// only, same pattern as getEspnWeekReceptionProjections above.
+export interface EspnQbPassingProjection {
+  espn_id: string;
+  player_name: string;
+  team: string;
+  opponent: string;
+  projectedAttempts: number;
+  projectedPassingYards: number;
+}
+
+export interface EspnWeekPassingProjectionsResult {
+  season: number;
+  week: number;
+  generatedAt: string;
+  available: boolean;
+  playerCount: number;
+  players: EspnQbPassingProjection[];
+}
+
+export async function getEspnWeekPassingProjections(
+  season: number,
+  week: number
+): Promise<EspnWeekPassingProjectionsResult> {
+  const weekStatId = weeklyProjectedStatId(season, week);
+
+  const [teamMap, rawPlayers] = await Promise.all([
+    fetchProTeamOpponents(season, week),
+    fetchProjectedPlayers(season, week),
+  ]);
+
+  const players: EspnQbPassingProjection[] = [];
+
+  for (const entry of rawPlayers) {
+    const p = entry?.player;
+    if (!p) continue;
+    if (POSITION_MAP[p.defaultPositionId] !== 'QB') continue;
+
+    const weekStat = (p.stats ?? []).find((s: any) => s.id === weekStatId);
+    if (!weekStat) continue; // ESPN has not projected this player for this week yet
+
+    const stats = weekStat.stats ?? {};
+    const projectedAttempts = stats[STAT_ID_PASS_ATTEMPTS];
+    const projectedPassingYards = stats[STAT_ID_PASS_YARDS];
+    if (projectedAttempts === undefined || projectedPassingYards === undefined) continue;
+
+    const teamInfo = teamMap.get(p.proTeamId);
+
+    players.push({
+      espn_id: String(p.id),
+      player_name: p.fullName,
+      team: teamInfo?.abbrev ?? 'FA',
+      opponent: teamInfo?.opponent ?? 'TBD',
+      projectedAttempts: round3(Number(projectedAttempts)),
+      projectedPassingYards: round3(Number(projectedPassingYards)),
+    });
+  }
+
+  players.sort((a, b) => b.projectedPassingYards - a.projectedPassingYards);
 
   return {
     season,
