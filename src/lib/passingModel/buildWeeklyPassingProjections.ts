@@ -88,9 +88,22 @@ export function buildWeeklyPassingProjections(input: BuildPassingProjectionsInpu
       : null
   );
 
+  // ESPN's projection feed includes a backup QB for every team with a
+  // negligible placeholder projection (~1.2-1.5 attempts, seen live for
+  // every single team) alongside the real starter — keep only the
+  // highest-projected-attempts QB per team so each team shows once.
+  const starterByTeam = new Map<string, EspnQbPassingProjection>();
+  for (const p of input.espnProjections) {
+    const existing = starterByTeam.get(p.team);
+    if (!existing || p.projectedAttempts > existing.projectedAttempts) {
+      starterByTeam.set(p.team, p);
+    }
+  }
+  const starters = [...starterByTeam.values()];
+
   const assembled: { model: QbModelInput; unmatched: boolean }[] = [];
 
-  for (const espnPlayer of input.espnProjections) {
+  for (const espnPlayer of starters) {
     const team = toNflverseTeamCode(espnPlayer.team);
     const isOnBye = espnPlayer.opponent === 'BYE';
     const opponentTeam = isOnBye || espnPlayer.opponent === 'TBD' ? null : toNflverseTeamCode(espnPlayer.opponent);
