@@ -167,7 +167,7 @@ function App() {
                 <Route path="/picks-preview/articles" element={<PicksArticles />} />
                 <Route
                   path="/picks-preview/nfl-models/touchdown-model"
-                  element={<NFLModelComingSoon modelName="Touchdown Model" />}
+                  element={<PicksLayout><AnytimeTdProjections /></PicksLayout>}
                 />
                 <Route
                   path="/picks-preview/nfl-models/receiving-model"

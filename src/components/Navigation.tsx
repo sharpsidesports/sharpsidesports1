@@ -41,6 +41,7 @@ export default function Navigation() {
     // Free Tier Features
     { to: '/picks-preview/nfl-models/receiving-model', label: 'Reception Model', requiredTier: 'free' },
     { to: '/picks-preview/nfl-models/passing-model', label: 'Passing Model', requiredTier: 'free' },
+    { to: '/picks-preview/nfl-models/touchdown-model', label: 'Touchdown Model', requiredTier: 'free' },
     // Basic Tier Features
     // { to: '/dashboard', label: 'Betting Model', requiredTier: 'basic' },
     // { to: '/matchups', label: 'Matchup Tool', requiredTier: 'basic' },
