@@ -22,7 +22,7 @@ export default function BlurredPreview({ children, requiredSubscription = 'free'
   const [pwInput, setPwInput] = useState('');
   const [pwError, setPwError] = useState('');
   const [showVIP, setShowVIP] = useState(false);
-  const VIP_PASSWORDS = ['cfbweek1', 'brodie25', 'ssports25', 'chris25', 'josh25']; // Array of valid VIP passwords
+  const VIP_PASSWORDS = ['cfbweek1', 'brodie25', 'ssports25', 'chris25', 'josh25', 'NFL2026', 'nfl0101']; // Array of valid VIP passwords
 
   // Auto-open the VIP password modal for pro-gated pages instead of requiring a button click first
   const hasSufficientAccess = DISABLE_BLUR || (user != null && subscriptionLevels[userTier] >= subscriptionLevels[requiredSubscription]) || showVIP;
