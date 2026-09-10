@@ -31,13 +31,31 @@ const CONFIDENCE_STYLES: Record<string, string> = {
 };
 
 // projectionDifference is FinalProjectedReceptions - EspnProjectedReceptions
-// (see calculateProjectionDifference.ts) — expressed here as a percentage
-// of the ESPN baseline rather than a raw reception count.
+// (see calculateProjectionDifference.ts) — expressed as a percentage of the
+// ESPN baseline. Below MIN_BASELINE_FOR_PCT, "percent of ESPN's number"
+// isn't a meaningful stat (ESPN barely projects these players at all, so a
+// noise-level absolute difference reads as a triple-digit swing — e.g.
+// 0.88 -> 1.53 projected receptions is a real difference of 0.7 receptions,
+// not a "+79%" edge) — show the absolute reception difference instead. A
+// hard ceiling is also applied above the threshold as a guardrail against
+// any future data glitch (stale ESPN pull, bad crosswalk match, etc.)
+// producing a nonsense triple-digit edge.
+const MIN_BASELINE_FOR_PCT = 3;
+const MAX_DISPLAYED_PCT = 60;
+
 function formatDiffPct(diff: number | null, espnProjectedReceptions: number | null): string {
-  if (diff === null || espnProjectedReceptions === null || espnProjectedReceptions === 0) return '—';
+  if (diff === null || espnProjectedReceptions === null) return '—';
+
+  if (espnProjectedReceptions < MIN_BASELINE_FOR_PCT) {
+    if (diff === 0) return '—';
+    const sign = diff > 0 ? '+' : '';
+    return `${sign}${diff.toFixed(1)}`;
+  }
+
   const pct = (diff / espnProjectedReceptions) * 100;
-  const sign = pct > 0 ? '+' : '';
-  return `${sign}${pct.toFixed(1)}%`;
+  const clamped = Math.max(-MAX_DISPLAYED_PCT, Math.min(MAX_DISPLAYED_PCT, pct));
+  const sign = clamped > 0 ? '+' : '';
+  return `${sign}${clamped.toFixed(1)}%`;
 }
 
 function DetailRow({ row }: { row: ReceptionProjectionRow }) {
