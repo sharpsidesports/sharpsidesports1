@@ -1,6 +1,14 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getEspnWeekAnytimeTdProjections } from '../src/lib/espnProjections.js';
-import { fetchAnytimeTdOdds, pairKey, type SportsbookOutcome } from '../src/lib/oddsApi.js';
+import { pairKey, type SportsbookOutcome } from '../src/lib/oddsApi.js';
+// TEMPORARY (revert by Monday 2026-09-14): The Odds API key ran out of
+// quota the day before Week 1 kickoff. Using SportsGameOdds' free tier as a
+// drop-in stand-in for fetchAnytimeTdOdds — same return shape, so nothing
+// else in this file changes. REVERT: swap this back to
+// `import { fetchAnytimeTdOdds } from '../src/lib/oddsApi.js';` once The
+// Odds API quota resets or the plan is upgraded, then delete
+// src/lib/sportsGameOddsApi.ts.
+import { fetchAnytimeTdOddsFromSportsGameOdds as fetchAnytimeTdOdds } from '../src/lib/sportsGameOddsApi.js';
 import { normalizePlayerName } from '../src/lib/nameMatch.js';
 import { americanOddsToImpliedProbability, probabilityToFairAmericanOdds } from '../src/lib/odds.js';
 
@@ -55,7 +63,9 @@ async function buildCombinedData(season: number, week: number): Promise<Combined
     }
   }
 
-  const apiKeyConfigured = !!process.env.ODDS_API_KEY;
+  // TEMPORARY: checks the currently-active provider's key (see the import
+  // swap above) — revert this to ODDS_API_KEY alongside that import swap.
+  const apiKeyConfigured = !!process.env.SPORTSGAMEODDS_API_KEY;
   let oddsResult: { outcomes: SportsbookOutcome[]; eventsChecked: number; eventsWithOdds: number } | null = null;
   let oddsError: string | null = null;
 
@@ -66,7 +76,7 @@ async function buildCombinedData(season: number, week: number): Promise<Combined
       oddsError = err instanceof Error ? err.message : 'Unknown error fetching sportsbook odds';
     }
   } else {
-    oddsError = 'ODDS_API_KEY is not set';
+    oddsError = 'SPORTSGAMEODDS_API_KEY is not set';
   }
 
   // Index ESPN players by normalized name for matching.

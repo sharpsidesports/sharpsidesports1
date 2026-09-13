@@ -1,0 +1,118 @@
+// server-only helper
+// TEMPORARY STAND-IN — The Odds API key is out of quota for this billing
+// cycle (see oddsApi.ts's OddsApiQuotaExhaustedError, hit 2026-09-12, one
+// day before Week 1 kickoff). This provides the exact same SportsbookOutcome
+// shape from SportsGameOdds' free "Amateur" tier (sportsgameodds.com) as a
+// drop-in replacement for fetchAnytimeTdOdds, so api/nfl-odds.ts's matching
+// logic downstream needs zero changes.
+//
+// REVERT PLAN (do this once The Odds API quota resets or the plan is
+// upgraded — expected Monday): in api/nfl-odds.ts, change the import back
+// to `fetchAnytimeTdOdds` from './oddsApi.js', then delete this file.
+
+import { normalizePlayerName } from './nameMatch.js';
+import { BOOKMAKERS, pairKey, type BookmakerKey, type SportsbookOutcome, type AnytimeTdOddsResult } from './oddsApi.js';
+
+const SPORTSGAMEODDS_BASE = 'https://api.sportsgameodds.com/v2';
+
+// SportsGameOdds uses nflverse-style codes (LA, WAS) — the opposite mismatch
+// from The Odds API's ESPN-style codes (LAR, WSH). api/nfl-odds.ts's
+// matching logic operates entirely in ESPN-abbreviation space, so convert
+// here rather than touching that shared logic.
+const SGO_TO_ESPN: Record<string, string> = {
+  LA: 'LAR',
+  WAS: 'WSH',
+};
+function toEspnTeamCode(sgoAbbrev: string): string {
+  return SGO_TO_ESPN[sgoAbbrev] ?? sgoAbbrev;
+}
+
+export async function fetchAnytimeTdOddsFromSportsGameOdds(validPairKeys: Set<string>): Promise<AnytimeTdOddsResult> {
+  const apiKey = process.env.SPORTSGAMEODDS_API_KEY;
+  if (!apiKey) {
+    throw new Error('SPORTSGAMEODDS_API_KEY environment variable is not set');
+  }
+
+  const now = new Date();
+  // Wide enough to catch a Thursday-night game already underway and a
+  // following Monday-nighter, without pulling next week's slate. Not
+  // filtering by oddsAvailable=true here — that flag was observed false on
+  // a real game (LAR@SF) that still had 1400+ populated odds keys, so it's
+  // stricter than what's actually usable. Per-market/per-bookmaker
+  // `available` checks below do the real filtering instead.
+  const startsAfter = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const startsBefore = new Date(now.getTime() + 6 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+  const events: any[] = [];
+  let cursor: string | undefined;
+  for (let page = 0; page < 10; page++) {
+    // The free tier paginates ~10 events/page — a full NFL week (16 games)
+    // needs at least 2 pages. Following nextCursor until it's absent is the
+    // difference between finding 10 of 16 real games and finding all of them.
+    const url =
+      `${SPORTSGAMEODDS_BASE}/events/?leagueID=NFL&startsAfter=${startsAfter}&startsBefore=${startsBefore}` +
+      (cursor ? `&cursor=${encodeURIComponent(cursor)}` : '');
+    const res = await fetch(url, { headers: { 'X-Api-Key': apiKey } });
+    if (!res.ok) {
+      throw new Error(`SportsGameOdds events request failed: ${res.status}`);
+    }
+    const json = await res.json();
+    events.push(...(json?.data ?? []));
+    cursor = json?.nextCursor;
+    if (!cursor) break;
+  }
+
+  const relevantEvents = events.filter((e) => {
+    const homeAbbrev = toEspnTeamCode(e.teams?.home?.names?.short);
+    const awayAbbrev = toEspnTeamCode(e.teams?.away?.names?.short);
+    if (!homeAbbrev || !awayAbbrev) return false;
+    return validPairKeys.has(pairKey(homeAbbrev, awayAbbrev));
+  });
+
+  const outcomes: SportsbookOutcome[] = [];
+  let eventsWithOdds = 0;
+
+  for (const event of relevantEvents) {
+    const homeAbbrev = toEspnTeamCode(event.teams.home.names.short);
+    const awayAbbrev = toEspnTeamCode(event.teams.away.names.short);
+
+    const odds = event.odds ?? {};
+    const players = event.players ?? {};
+    // The anytime-TD "yes" market has statID "touchdowns" and oddID shape
+    // `touchdowns-{playerID}-game-yn-yes` — distinct from
+    // passing_touchdowns/rushing_touchdowns/receiving_touchdowns over-under
+    // markets, which have different statID prefixes and don't match
+    // startsWith('touchdowns-').
+    const anytimeTdKeys = Object.keys(odds).filter((k) => k.startsWith('touchdowns-') && k.endsWith('-game-yn-yes'));
+
+    let eventHadOdds = false;
+
+    for (const key of anytimeTdKeys) {
+      const market = odds[key];
+      const byBookmaker = market?.byBookmaker ?? {};
+      const player = players[market?.playerID];
+      const rawName: string | undefined = player?.name;
+      if (!rawName) continue;
+
+      for (const bookmaker of BOOKMAKERS) {
+        const bm = byBookmaker[bookmaker];
+        if (!bm?.available || typeof bm.odds !== 'string') continue;
+        const price = Number(bm.odds);
+        if (!Number.isFinite(price)) continue;
+
+        eventHadOdds = true;
+        outcomes.push({
+          normalizedName: normalizePlayerName(rawName),
+          rawName,
+          bookmaker: bookmaker as BookmakerKey,
+          price,
+          eventTeams: [homeAbbrev, awayAbbrev],
+        });
+      }
+    }
+
+    if (eventHadOdds) eventsWithOdds++;
+  }
+
+  return { outcomes, eventsChecked: relevantEvents.length, eventsWithOdds };
+}
