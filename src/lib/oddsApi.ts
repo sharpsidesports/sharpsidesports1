@@ -9,6 +9,26 @@ const ODDS_API_BASE = 'https://api.the-odds-api.com/v4';
 const SPORT_KEY = 'americanfootball_nfl';
 const MARKET_KEY = 'player_anytime_td';
 
+// The Odds API returns 401 for both "bad key" and "plan quota exhausted" —
+// the response body's error_code distinguishes them. Surfacing this
+// specifically matters: a quota outage previously looked identical to "no
+// sportsbook has posted these lines yet" (both showed eventsWithOdds: 0),
+// which is a materially different situation for someone reading the page.
+export class OddsApiQuotaExhaustedError extends Error {
+  constructor() {
+    super('The Odds API quota has been exhausted for this billing period — no live odds available until it resets or the plan is upgraded.');
+    this.name = 'OddsApiQuotaExhaustedError';
+  }
+}
+
+async function checkQuotaExhausted(res: Response): Promise<void> {
+  if (res.status !== 401) return;
+  const body = await res.clone().json().catch(() => null);
+  if (body?.error_code === 'OUT_OF_USAGE_CREDITS') {
+    throw new OddsApiQuotaExhaustedError();
+  }
+}
+
 export const BOOKMAKERS = ['fanduel', 'draftkings', 'betmgm', 'caesars'] as const;
 export type BookmakerKey = (typeof BOOKMAKERS)[number];
 
@@ -77,6 +97,7 @@ export async function fetchAnytimeTdOdds(validPairKeys: Set<string>): Promise<An
   }
 
   const eventsRes = await fetch(`${ODDS_API_BASE}/sports/${SPORT_KEY}/events?apiKey=${apiKey}`);
+  await checkQuotaExhausted(eventsRes);
   if (!eventsRes.ok) {
     throw new Error(`Odds API events request failed: ${eventsRes.status}`);
   }
@@ -101,6 +122,7 @@ export async function fetchAnytimeTdOdds(validPairKeys: Set<string>): Promise<An
       `?apiKey=${apiKey}&regions=us&markets=${MARKET_KEY}&oddsFormat=american&bookmakers=${BOOKMAKERS.join(',')}`;
 
     const res = await fetch(url);
+    await checkQuotaExhausted(res); // quota exhaustion applies to every remaining call too — fail fast instead of burning round-trips on calls that will all 401
     if (!res.ok) {
       // One bad/unavailable event shouldn't kill the whole refresh.
       continue;
@@ -160,6 +182,7 @@ export async function fetchGameLines(validPairKeys: Set<string>): Promise<GameLi
   }
 
   const eventsRes = await fetch(`${ODDS_API_BASE}/sports/${SPORT_KEY}/events?apiKey=${apiKey}`);
+  await checkQuotaExhausted(eventsRes);
   if (!eventsRes.ok) {
     throw new Error(`Odds API events request failed: ${eventsRes.status}`);
   }
@@ -184,6 +207,7 @@ export async function fetchGameLines(validPairKeys: Set<string>): Promise<GameLi
       `?apiKey=${apiKey}&regions=us&markets=spreads,totals&oddsFormat=american&bookmakers=${BOOKMAKERS.join(',')}`;
 
     const res = await fetch(url);
+    await checkQuotaExhausted(res); // fail fast — every remaining call this run will also 401
     if (!res.ok) {
       // One bad/unavailable event shouldn't kill the whole refresh.
       continue;

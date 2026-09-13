@@ -176,7 +176,12 @@ export default function AnytimeTdProjections() {
               Consensus and edge will appear once the key is added.
             </div>
           )}
-          {data.oddsApiConfigured && data.matchedPlayerCount === 0 && (
+          {data.oddsApiConfigured && data.oddsError && (
+            <div className="p-4 text-sm text-red-800 bg-red-50 border border-red-200 rounded-lg">
+              Sportsbook odds are temporarily unavailable: {data.oddsError}
+            </div>
+          )}
+          {data.oddsApiConfigured && !data.oddsError && data.matchedPlayerCount === 0 && (
             <div className="p-4 text-sm text-gray-700 bg-yellow-50 border border-yellow-200 rounded-lg">
               No sportsbook has posted Anytime TD Scorer lines for Week 1 yet ({data.eventsChecked} games checked).
               This table will fill in with consensus odds and edge as books open those markets closer to kickoff.
