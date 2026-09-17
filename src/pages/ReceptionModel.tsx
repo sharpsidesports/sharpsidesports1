@@ -172,7 +172,7 @@ export default function ReceptionModel() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [season] = useState(2026);
-  const [week] = useState(1);
+  const [week] = useState(2);
 
   useEffect(() => {
     let cancelled = false;
