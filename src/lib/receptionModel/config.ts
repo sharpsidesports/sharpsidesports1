@@ -21,9 +21,9 @@ export const MODEL_WEIGHTS = {
 
   // Part 2 — Reception Edge Score component weights (applied to min-max
   // normalized values within the current WR pool).
-  EDGE_ESPN_WEIGHT: 0.7,
-  EDGE_TARGET_VOLUME_WEIGHT: 0.2,
-  EDGE_TARGET_SHARE_WEIGHT: 0.1,
+  EDGE_ESPN_WEIGHT: 0.3,
+  EDGE_TARGET_VOLUME_WEIGHT: 0.35,
+  EDGE_TARGET_SHARE_WEIGHT: 0.35,
 } as const;
 
 export type ModelWeights = typeof MODEL_WEIGHTS;

@@ -200,6 +200,12 @@ export function buildWeeklyReceptionProjections(input: BuildProjectionsInput): R
   // Run Part 1 for every active player first (Edge Score needs the whole pool).
   const perPlayer = active.map(({ model, unmatched }) => {
     const targetShare = calculateExpectedTargetShare(model);
+    // ONE-OFF OVERRIDE — Week 2, 2026 only: manual +10 percentage point bump
+    // to Amon-Ra St. Brown's target share per user request. Remove this
+    // block after Week 2 2026.
+    if (input.season === 2026 && input.week === 2 && model.gsisId === '00-0036963' && targetShare.value !== null) {
+      targetShare.value += 0.1;
+    }
     const catchRate = calculateExpectedCatchRate(model);
     const passAttempts = calculateProjectedTeamPassAttempts(
       model.currentTeamGames,
