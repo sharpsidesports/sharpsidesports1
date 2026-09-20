@@ -49,6 +49,16 @@ export interface BuildProjectionsInput {
   latestAvailableNflverseWeek: { season: number; week: number } | null;
 }
 
+// ONE-OFF OVERRIDES — Week 2, 2026 only: manual target share bumps
+// (percentage points) per request. Remove after Week 2 2026.
+const WEEK_2_2026_TARGET_SHARE_OVERRIDES: Record<string, number> = {
+  '00-0036963': 0.1, // Amon-Ra St. Brown
+  '00-0036900': 0.1, // Ja'Marr Chase
+  '00-0036358': 0.1, // CeeDee Lamb
+  '00-0039915': 0.1, // Ladd McConkey
+  '00-0038606': 0.1, // Parker Washington
+};
+
 function round(n: number | null, decimals: number): number | null {
   if (n === null) return null;
   const f = 10 ** decimals;
@@ -200,11 +210,11 @@ export function buildWeeklyReceptionProjections(input: BuildProjectionsInput): R
   // Run Part 1 for every active player first (Edge Score needs the whole pool).
   const perPlayer = active.map(({ model, unmatched }) => {
     const targetShare = calculateExpectedTargetShare(model);
-    // ONE-OFF OVERRIDE — Week 2, 2026 only: manual +10 percentage point bump
-    // to Amon-Ra St. Brown's target share per user request. Remove this
-    // block after Week 2 2026.
-    if (input.season === 2026 && input.week === 2 && model.gsisId === '00-0036963' && targetShare.value !== null) {
-      targetShare.value += 0.1;
+    // ONE-OFF OVERRIDES — Week 2, 2026 only: manual target share bumps per
+    // request. Remove this block after Week 2 2026.
+    if (input.season === 2026 && input.week === 2 && targetShare.value !== null) {
+      const delta = WEEK_2_2026_TARGET_SHARE_OVERRIDES[model.gsisId ?? ''];
+      if (delta) targetShare.value += delta;
     }
     const catchRate = calculateExpectedCatchRate(model);
     const passAttempts = calculateProjectedTeamPassAttempts(
