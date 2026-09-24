@@ -6,7 +6,13 @@
 
 import { receptionModelSupabaseAdmin as supabaseAdmin } from './supabaseAdmin.js';
 import { getEspnWeekReceptionProjections } from '../espnProjections.js';
-import type { NflversePlayerWeekRow, NflverseTeamWeekRow, NflverseInjuryRow, PlayerCrosswalkRow } from '../nflverse/types.js';
+import type {
+  NflversePlayerWeekRow,
+  NflverseTeamWeekRow,
+  NflverseGameLineRow,
+  NflverseInjuryRow,
+  PlayerCrosswalkRow,
+} from '../nflverse/types.js';
 import type { BuildProjectionsInput } from './buildWeeklyReceptionProjections.js';
 
 // PostgREST caps a single select() response at 1000 rows regardless of
@@ -34,21 +40,33 @@ export async function loadSupabaseProjectionsInput(
   week: number,
   priorSeason: number = season - 1
 ): Promise<BuildProjectionsInput> {
-  const [espn, crosswalkRows, playerWeekRows, teamWeekRows, injuriesRows] = await Promise.all([
-    getEspnWeekReceptionProjections(season, week),
-    fetchAllRows('player_crosswalk', (from, to) =>
-      supabaseAdmin.from('player_crosswalk').select('*').range(from, to)
-    ),
-    fetchAllRows('nflverse_player_week_stats', (from, to) =>
-      supabaseAdmin.from('nflverse_player_week_stats').select('*').in('season', [season, priorSeason]).range(from, to)
-    ),
-    fetchAllRows('nflverse_team_week_stats', (from, to) =>
-      supabaseAdmin.from('nflverse_team_week_stats').select('*').in('season', [season, priorSeason]).range(from, to)
-    ),
-    fetchAllRows('nflverse_injuries', (from, to) =>
-      supabaseAdmin.from('nflverse_injuries').select('*').eq('season', season).eq('week', week).range(from, to)
-    ),
-  ]);
+  const [espn, crosswalkRows, playerWeekRows, teamWeekRows, injuriesRows, gameLineRows, receptionHistoryRows] =
+    await Promise.all([
+      getEspnWeekReceptionProjections(season, week),
+      fetchAllRows('player_crosswalk', (from, to) =>
+        supabaseAdmin.from('player_crosswalk').select('*').range(from, to)
+      ),
+      fetchAllRows('nflverse_player_week_stats', (from, to) =>
+        supabaseAdmin.from('nflverse_player_week_stats').select('*').in('season', [season, priorSeason]).range(from, to)
+      ),
+      fetchAllRows('nflverse_team_week_stats', (from, to) =>
+        supabaseAdmin.from('nflverse_team_week_stats').select('*').in('season', [season, priorSeason]).range(from, to)
+      ),
+      fetchAllRows('nflverse_injuries', (from, to) =>
+        supabaseAdmin.from('nflverse_injuries').select('*').eq('season', season).eq('week', week).range(from, to)
+      ),
+      fetchAllRows('nflverse_game_lines', (from, to) =>
+        supabaseAdmin.from('nflverse_game_lines').select('*').eq('season', season).eq('week', week).range(from, to)
+      ),
+      fetchAllRows('reception_projections', (from, to) =>
+        supabaseAdmin
+          .from('reception_projections')
+          .select('gsis_id, week, projected_receptions')
+          .eq('season', season)
+          .lt('week', week)
+          .range(from, to)
+      ),
+    ]);
 
   const crosswalk: PlayerCrosswalkRow[] = crosswalkRows.map((r) => ({
     gsisId: r.gsis_id,
@@ -97,7 +115,28 @@ export async function loadSupabaseProjectionsInput(
     passingAirYards: r.passing_air_yards,
     carries: r.carries,
     rushingYards: r.rushing_yards,
+    rushingTds: r.rushing_tds,
   }));
+
+  const gameLines: NflverseGameLineRow[] = gameLineRows.map((r) => ({
+    season: r.season,
+    week: r.week,
+    team: r.team,
+    opponentTeam: r.opponent_team,
+    isHome: r.is_home,
+    spread: r.spread,
+    total: r.total,
+    impliedTeamTotal: r.implied_team_total,
+    bookmaker: r.bookmaker,
+  }));
+
+  const receptionProjectionHistory = receptionHistoryRows
+    .filter((r) => r.projected_receptions !== null)
+    .map((r) => ({
+      gsisId: r.gsis_id as string,
+      week: r.week as number,
+      projectedReceptions: r.projected_receptions as number,
+    }));
 
   const injuries: NflverseInjuryRow[] = injuriesRows.map((r) => ({
     gsisId: r.gsis_id,
@@ -131,6 +170,8 @@ export async function loadSupabaseProjectionsInput(
     injuries,
     schedule: [], // not needed: bye/opponent come from ESPN's own opponent tag in the orchestrator
     crosswalk,
+    gameLines,
+    receptionProjectionHistory,
     nflverseFetchedAt,
     latestAvailableNflverseWeek,
   };

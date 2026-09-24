@@ -36,6 +36,7 @@ export interface NflverseTeamWeekRow {
   passingAirYards: number;
   carries: number;
   rushingYards: number;
+  rushingTds: number;
 }
 
 export interface NflverseQbWeekRow {

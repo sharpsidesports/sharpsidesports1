@@ -73,6 +73,9 @@ function toTeamPassingGameLog(r: NflverseTeamWeekRow): TeamPassingGameLog {
     passAttempts: r.passAttempts,
     carries: r.carries,
     passingYards: r.passingYards,
+    completions: r.completions,
+    passingTds: r.passingTds,
+    rushingTds: r.rushingTds,
   };
 }
 

@@ -16,6 +16,9 @@ interface CombinedPlayer {
   consensus_td_probability: number | null;
   consensus_american_odds: number | null;
   edge: number | null;
+  implied_team_total: number | null;
+  matchup_td_rate_allowed: number | null;
+  sharp_score: number | null;
 }
 
 interface ApiResponse {
@@ -37,7 +40,15 @@ interface ApiResponse {
   details?: string;
 }
 
-type SortKey = 'edge' | 'projected' | 'espnProb' | 'consensusProb' | 'consensusOdds';
+type SortKey =
+  | 'edge'
+  | 'projected'
+  | 'espnProb'
+  | 'consensusProb'
+  | 'consensusOdds'
+  | 'impliedTotal'
+  | 'matchup'
+  | 'sharpScore';
 
 const POSITIONS: Array<'ALL' | 'QB' | 'RB' | 'WR' | 'TE'> = ['ALL', 'QB', 'RB', 'WR', 'TE'];
 
@@ -115,6 +126,12 @@ export default function AnytimeTdProjections() {
           return p.consensus_td_probability;
         case 'consensusOdds':
           return p.consensus_american_odds;
+        case 'impliedTotal':
+          return p.implied_team_total;
+        case 'matchup':
+          return p.matchup_td_rate_allowed;
+        case 'sharpScore':
+          return p.sharp_score;
       }
     };
     return [...filtered].sort((a, b) => {
@@ -226,6 +243,9 @@ export default function AnytimeTdProjections() {
                   {sortHeader('Consensus Odds', 'consensusOdds')}
                   {sortHeader('Consensus TD %', 'consensusProb')}
                   {sortHeader('Edge', 'edge')}
+                  {sortHeader('Implied Total', 'impliedTotal')}
+                  {sortHeader('Matchup', 'matchup')}
+                  {sortHeader('Sharp Score', 'sharpScore')}
                 </tr>
               </thead>
               <tbody>
@@ -263,6 +283,21 @@ export default function AnytimeTdProjections() {
                           }`}
                         >
                           {formatEdge(p.edge)}
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-center whitespace-nowrap">
+                      {p.implied_team_total === null ? '—' : p.implied_team_total.toFixed(1)}
+                    </td>
+                    <td className="px-4 py-3 text-center whitespace-nowrap">
+                      {p.matchup_td_rate_allowed === null ? '—' : p.matchup_td_rate_allowed.toFixed(2)}
+                    </td>
+                    <td className="px-4 py-3 text-center whitespace-nowrap">
+                      {p.sharp_score === null ? (
+                        '—'
+                      ) : (
+                        <span className="inline-block min-w-[40px] rounded-full bg-sharpside-green/10 px-2.5 py-1 font-bold text-sharpside-green">
+                          {p.sharp_score}
                         </span>
                       )}
                     </td>

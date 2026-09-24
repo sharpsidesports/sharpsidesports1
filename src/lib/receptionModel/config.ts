@@ -24,6 +24,16 @@ export const MODEL_WEIGHTS = {
   EDGE_ESPN_WEIGHT: 0.3,
   EDGE_TARGET_VOLUME_WEIGHT: 0.35,
   EDGE_TARGET_SHARE_WEIGHT: 0.35,
+
+  // Sharp Score component weights (Phase 1) — same min-max-normalize-and-
+  // weight pattern as the Edge Score above, plus matchup/environment/debt
+  // signals. Must sum to 1.0.
+  SHARP_ESPN_WEIGHT: 0.25,
+  SHARP_TARGET_VOLUME_WEIGHT: 0.25,
+  SHARP_TARGET_SHARE_WEIGHT: 0.2,
+  SHARP_IMPLIED_TOTAL_WEIGHT: 0.1,
+  SHARP_OPP_CATCH_PCT_ALLOWED_WEIGHT: 0.1,
+  SHARP_RECEPTION_DEBT_WEIGHT: 0.1,
 } as const;
 
 export type ModelWeights = typeof MODEL_WEIGHTS;

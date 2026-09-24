@@ -94,6 +94,7 @@ export interface Database {
           passing_air_yards: number
           carries: number
           rushing_yards: number
+          rushing_tds: number
           fetched_at: string
         }
         Insert: {
@@ -113,6 +114,7 @@ export interface Database {
           passing_air_yards?: number
           carries?: number
           rushing_yards?: number
+          rushing_tds?: number
           fetched_at?: string
         }
         Update: {
@@ -132,6 +134,7 @@ export interface Database {
           passing_air_yards?: number
           carries?: number
           rushing_yards?: number
+          rushing_tds?: number
           fetched_at?: string
         }
       }
@@ -439,6 +442,13 @@ export interface Database {
           projected_receptions: number | null
           reception_edge_score: number | null
           projection_difference: number | null
+          implied_team_total: number | null
+          opp_td_rate_allowed: number | null
+          opp_catch_pct_allowed: number | null
+          targets_per_game: number | null
+          catch_pct_season: number | null
+          reception_debt: number | null
+          sharp_score: number | null
           data_season: number | null
           data_week: number | null
           data_last_updated: string | null
@@ -464,6 +474,13 @@ export interface Database {
           projected_receptions?: number | null
           reception_edge_score?: number | null
           projection_difference?: number | null
+          implied_team_total?: number | null
+          opp_td_rate_allowed?: number | null
+          opp_catch_pct_allowed?: number | null
+          targets_per_game?: number | null
+          catch_pct_season?: number | null
+          reception_debt?: number | null
+          sharp_score?: number | null
           data_season?: number | null
           data_week?: number | null
           data_last_updated?: string | null
@@ -489,6 +506,13 @@ export interface Database {
           projected_receptions?: number | null
           reception_edge_score?: number | null
           projection_difference?: number | null
+          implied_team_total?: number | null
+          opp_td_rate_allowed?: number | null
+          opp_catch_pct_allowed?: number | null
+          targets_per_game?: number | null
+          catch_pct_season?: number | null
+          reception_debt?: number | null
+          sharp_score?: number | null
           data_season?: number | null
           data_week?: number | null
           data_last_updated?: string | null

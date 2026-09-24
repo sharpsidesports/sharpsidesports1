@@ -15,6 +15,13 @@ interface ReceptionProjectionRow {
   projectedReceptions: number | null;
   receptionEdgeScore: number | null;
   projectionDifference: number | null;
+  impliedTeamTotal: number | null;
+  opponentTdRateAllowed: number | null;
+  opponentCatchPctAllowed: number | null;
+  targetsPerGame: number | null;
+  catchPctSeason: number | null;
+  receptionDebt: number | null;
+  sharpScore: number | null;
   dataSeason: number;
   dataWeek: number;
   dataLastUpdated: string | null;
@@ -61,7 +68,7 @@ function formatDiffPct(diff: number | null, espnProjectedReceptions: number | nu
 function DetailRow({ row }: { row: ReceptionProjectionRow }) {
   return (
     <tr className="bg-gray-50">
-      <td colSpan={5} className="px-6 py-4 text-xs text-gray-600">
+      <td colSpan={6} className="px-6 py-4 text-xs text-gray-600">
         <div className="grid grid-cols-2 gap-x-8 gap-y-1 sm:grid-cols-3 lg:grid-cols-4">
           <div>ESPN projected: <span className="font-semibold text-gray-900">{row.espnProjectedReceptions ?? '—'}</span></div>
           <div>Target share: <span className="font-semibold text-gray-900">{row.expectedTargetShare !== null ? `${(row.expectedTargetShare * 100).toFixed(1)}%` : '—'}</span></div>
@@ -70,6 +77,13 @@ function DetailRow({ row }: { row: ReceptionProjectionRow }) {
           <div>Catch rate: <span className="font-semibold text-gray-900">{row.expectedCatchRate !== null ? `${(row.expectedCatchRate * 100).toFixed(1)}%` : '—'}</span></div>
           <div>nflverse model: <span className="font-semibold text-gray-900">{row.nflverseProjectedReceptions ?? '—'}</span></div>
           <div>Final (raw): <span className="font-semibold text-gray-900">{row.finalProjectedReceptionsRaw ?? '—'}</span></div>
+          <div>Edge Score (legacy): <span className="font-semibold text-gray-900">{row.receptionEdgeScore ?? '—'}</span></div>
+          <div>Implied team total: <span className="font-semibold text-gray-900">{row.impliedTeamTotal ?? '—'}</span></div>
+          <div>Matchup (opp TD/g allowed): <span className="font-semibold text-gray-900">{row.opponentTdRateAllowed ?? '—'}</span></div>
+          <div>Opp catch % allowed: <span className="font-semibold text-gray-900">{row.opponentCatchPctAllowed !== null ? `${(row.opponentCatchPctAllowed * 100).toFixed(1)}%` : '—'}</span></div>
+          <div>Targets/game (season): <span className="font-semibold text-gray-900">{row.targetsPerGame ?? '—'}</span></div>
+          <div>Catch % (season): <span className="font-semibold text-gray-900">{row.catchPctSeason !== null ? `${(row.catchPctSeason * 100).toFixed(1)}%` : '—'}</span></div>
+          <div>Reception debt: <span className="font-semibold text-gray-900">{row.receptionDebt ?? '—'}</span></div>
           <div>Data updated: <span className="font-semibold text-gray-900">{row.dataLastUpdated ? new Date(row.dataLastUpdated).toLocaleString() : '—'}</span></div>
           {row.fallbacksUsed.length > 0 && (
             <div className="col-span-full">Fallbacks: <span className="font-semibold text-gray-900">{row.fallbacksUsed.join(', ')}</span></div>
@@ -100,6 +114,7 @@ function TeamTable({ team, rows, unlocked, onVipClick }: { team: string; rows: R
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Projected Receptions</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reception Edge</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sportsbooks Proj</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sharp Score</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
             </tr>
           </thead>
@@ -136,6 +151,15 @@ function TeamTable({ team, rows, unlocked, onVipClick }: { team: string; rows: R
                     <td className={cellCls}>
                       <span className={isBlurred ? 'blur-sm' : ''}>
                         {row.espnProjectedReceptions !== null ? row.espnProjectedReceptions.toFixed(1) : '—'}
+                      </span>
+                    </td>
+                    <td className={cellCls}>
+                      <span className={isBlurred ? 'blur-sm' : ''}>
+                        {row.sharpScore !== null ? (
+                          <span className="inline-block px-2 py-0.5 rounded-full text-xs font-semibold bg-sharpside-green/10 text-sharpside-green">
+                            {row.sharpScore}
+                          </span>
+                        ) : '—'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">

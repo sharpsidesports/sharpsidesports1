@@ -9,6 +9,7 @@ import type { EspnPlayerReceptionProjection } from '../espnProjections.js';
 import type {
   NflversePlayerWeekRow,
   NflverseTeamWeekRow,
+  NflverseGameLineRow,
   NflverseInjuryRow,
   NflverseScheduleRow,
   PlayerCrosswalkRow,
@@ -23,6 +24,11 @@ import { calculateProjectedTargets } from './calculateProjectedTargets.js';
 import { calculateNFLVerseReceptions } from './calculateNFLVerseReceptions.js';
 import { calculateProjectedReceptions } from './calculateProjectedReceptions.js';
 import { calculateReceptionEdgeScore } from './calculateReceptionEdgeScore.js';
+import { calculateSharpScore } from './calculateSharpScore.js';
+import { calculateMatchupTdRateAllowed } from './calculateMatchupTdRateAllowed.js';
+import { calculateOpponentCatchRateAllowed } from './calculateOpponentCatchRateAllowed.js';
+import { calculateSeasonRollups } from './calculateSeasonRollups.js';
+import { calculateReceptionDebt } from './calculateReceptionDebt.js';
 import { calculateProjectionDifference } from './calculateProjectionDifference.js';
 import { checkNFLVerseFreshness } from './checkNFLVerseFreshness.js';
 import type {
@@ -45,6 +51,8 @@ export interface BuildProjectionsInput {
   injuries: NflverseInjuryRow[]; // current season
   schedule: NflverseScheduleRow[]; // current season, used for cross-check only (ESPN's own opponent/BYE tag is primary)
   crosswalk: PlayerCrosswalkRow[];
+  gameLines: NflverseGameLineRow[]; // current week only, consensus rows (Implied Team Total)
+  receptionProjectionHistory: { gsisId: string; week: number; projectedReceptions: number }[]; // this season, weeks < current week, persisted reception_projections (Reception Debt input)
   nflverseFetchedAt: string | null;
   latestAvailableNflverseWeek: { season: number; week: number } | null;
 }
@@ -85,6 +93,9 @@ function toTeamGameLog(r: NflverseTeamWeekRow): TeamGameLog {
     team: r.team,
     opponentTeam: r.opponentTeam || null,
     passAttempts: r.passAttempts,
+    completions: r.completions,
+    passingTds: r.passingTds,
+    rushingTds: r.rushingTds,
   };
 }
 
@@ -164,6 +175,15 @@ export function buildWeeklyReceptionProjections(input: BuildProjectionsInput): R
       ? input.injuries.find((i) => i.gsisId === gsisId && i.season === input.season && i.week === input.week)
       : undefined;
 
+    const impliedTeamTotal =
+      input.gameLines.find((g) => g.team === team && g.season === input.season && g.week === input.week)
+        ?.impliedTeamTotal ?? null;
+    const seasonProjectedReceptions = gsisId
+      ? input.receptionProjectionHistory
+          .filter((r) => r.gsisId === gsisId && r.week < input.week)
+          .map((r) => ({ week: r.week, projectedReceptions: r.projectedReceptions }))
+      : [];
+
     const model: PlayerModelInput = {
       gsisId,
       espnId: espnPlayer.espn_id,
@@ -177,6 +197,8 @@ export function buildWeeklyReceptionProjections(input: BuildProjectionsInput): R
       priorTeamGames,
       opponentGamesAllowed,
       espnProjectedReceptions: calculateEspnProjection(espnPlayer.espn_id, espnByEspnId),
+      impliedTeamTotal,
+      seasonProjectedReceptions,
       isRookie,
       isTeamChangeThisSeason,
       qbChanged: false, // V1: no starter-tracking data source yet; hook for a future adjustment
@@ -247,7 +269,28 @@ export function buildWeeklyReceptionProjections(input: BuildProjectionsInput): R
 
     const confidence = deriveConfidence(model, fallbacksUsed, warnings, unmatched);
 
-    return { model, targetShare, catchRate, passAttempts, projectedTargets, nflverseReceptions, blend, projectionDifference, fallbacksUsed, warnings, confidence };
+    const opponentTdRateAllowed = calculateMatchupTdRateAllowed(model.opponentGamesAllowed);
+    const opponentCatchPctAllowed = calculateOpponentCatchRateAllowed(model.opponentGamesAllowed);
+    const seasonRollups = calculateSeasonRollups(model.currentSeasonGames);
+    const receptionDebt = calculateReceptionDebt(model.seasonProjectedReceptions, model.currentSeasonGames);
+
+    return {
+      model,
+      targetShare,
+      catchRate,
+      passAttempts,
+      projectedTargets,
+      nflverseReceptions,
+      blend,
+      projectionDifference,
+      fallbacksUsed,
+      warnings,
+      confidence,
+      opponentTdRateAllowed,
+      opponentCatchPctAllowed,
+      seasonRollups,
+      receptionDebt,
+    };
   });
 
   const edgeScores = calculateReceptionEdgeScore(
@@ -255,6 +298,17 @@ export function buildWeeklyReceptionProjections(input: BuildProjectionsInput): R
       espnProjectedReceptions: p.model.espnProjectedReceptions,
       targetVolume: p.projectedTargets,
       expectedTargetShare: p.targetShare.value,
+    }))
+  );
+
+  const sharpScores = calculateSharpScore(
+    perPlayer.map((p) => ({
+      espnProjectedReceptions: p.model.espnProjectedReceptions,
+      targetVolume: p.projectedTargets,
+      expectedTargetShare: p.targetShare.value,
+      impliedTeamTotal: p.model.impliedTeamTotal,
+      opponentCatchPctAllowed: p.opponentCatchPctAllowed,
+      receptionDebt: p.receptionDebt,
     }))
   );
 
@@ -272,6 +326,13 @@ export function buildWeeklyReceptionProjections(input: BuildProjectionsInput): R
     projectedReceptions: p.blend.projectedReceptions,
     receptionEdgeScore: edgeScores[i],
     projectionDifference: p.projectionDifference,
+    impliedTeamTotal: round(p.model.impliedTeamTotal, 1),
+    opponentTdRateAllowed: round(p.opponentTdRateAllowed, 2),
+    opponentCatchPctAllowed: round(p.opponentCatchPctAllowed, 3),
+    targetsPerGame: round(p.seasonRollups.targetsPerGame, 2),
+    catchPctSeason: round(p.seasonRollups.catchPctSeason, 3),
+    receptionDebt: round(p.receptionDebt, 2),
+    sharpScore: sharpScores[i],
     dataSeason: input.season,
     dataWeek: input.week,
     dataLastUpdated: input.nflverseFetchedAt,
@@ -303,6 +364,13 @@ function baseResult(
     projectedReceptions: null,
     receptionEdgeScore: null,
     projectionDifference: null,
+    impliedTeamTotal: null,
+    opponentTdRateAllowed: null,
+    opponentCatchPctAllowed: null,
+    targetsPerGame: null,
+    catchPctSeason: null,
+    receptionDebt: null,
+    sharpScore: null,
     dataSeason: input.season,
     dataWeek: input.week,
     dataLastUpdated: input.nflverseFetchedAt,

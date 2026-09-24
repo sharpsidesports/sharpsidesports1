@@ -56,6 +56,12 @@ export async function loadLiveProjectionsInput(
     injuries: injuries.rows,
     schedule: schedule.rows,
     crosswalk: crosswalkResult.rows,
+    // Live/offline path has no Supabase-backed game lines or projection
+    // history — Implied Team Total and Reception Debt come back null for
+    // this input source (demo/backtest scripts), same as any other
+    // Supabase-only signal already unavailable here.
+    gameLines: [],
+    receptionProjectionHistory: [],
     nflverseFetchedAt: playerWeekCurrent.fetchedAt ?? playerWeekPrior.fetchedAt ?? null,
     latestAvailableNflverseWeek,
   };

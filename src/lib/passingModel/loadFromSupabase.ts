@@ -101,6 +101,7 @@ export async function loadPassingSupabaseInput(
     sacksSuffered: r.sacks_suffered,
     passingAirYards: r.passing_air_yards,
     carries: r.carries,
+    rushingTds: r.rushing_tds,
     rushingYards: r.rushing_yards,
   }));
 

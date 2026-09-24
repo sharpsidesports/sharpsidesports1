@@ -118,6 +118,7 @@ export async function ingestSeason(season: number): Promise<IngestSeasonResult> 
       passing_air_yards: r.passingAirYards,
       carries: r.carries,
       rushing_yards: r.rushingYards,
+      rushing_tds: r.rushingTds,
       fetched_at: fetchedAt,
     }));
     if (dbRows.length > 0) {

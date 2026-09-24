@@ -21,6 +21,7 @@ interface RawRow {
   passing_air_yards: string;
   carries: string;
   rushing_yards: string;
+  rushing_tds: string;
 }
 
 export async function fetchStatsTeamWeek(
@@ -49,6 +50,7 @@ export async function fetchStatsTeamWeek(
       passingAirYards: Number(r.passing_air_yards) || 0,
       carries: Number(r.carries) || 0,
       rushingYards: Number(r.rushing_yards) || 0,
+      rushingTds: Number(r.rushing_tds) || 0,
     }));
 
   return { rows: mapped, fetchedAt, sourceUrl };

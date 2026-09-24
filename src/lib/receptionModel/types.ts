@@ -17,6 +17,9 @@ export interface TeamGameLog {
   team: string;
   opponentTeam: string | null;
   passAttempts: number;
+  completions: number;
+  passingTds: number;
+  rushingTds: number;
 }
 
 export type FallbackReason =
@@ -56,6 +59,9 @@ export interface PlayerModelInput {
 
   espnProjectedReceptions: number | null;
 
+  impliedTeamTotal: number | null; // Vegas-consensus implied points for this player's team this week, null if lines aren't in yet
+  seasonProjectedReceptions: { week: number; projectedReceptions: number }[]; // this player's persisted projections for season weeks < current week (Reception Debt input) — joined against currentSeasonGames by week, not summed blindly, so a bye/injury week with a stale persisted projection but no actual game doesn't skew the total
+
   isRookie: boolean;
   isTeamChangeThisSeason: boolean;
   qbChanged: boolean; // best-effort flag; V1 has no starter-tracking data source, always false unless passed in explicitly. Structured so a future QB-tracking source can set it.
@@ -85,6 +91,14 @@ export interface ReceptionProjectionResult {
   receptionEdgeScore: number | null;
 
   projectionDifference: number | null;
+
+  impliedTeamTotal: number | null;
+  opponentTdRateAllowed: number | null; // opponent's rushing + passing TDs allowed per game
+  opponentCatchPctAllowed: number | null; // opponent's completions / pass attempts allowed per game
+  targetsPerGame: number | null; // season-to-date
+  catchPctSeason: number | null; // season-to-date receptions / targets
+  receptionDebt: number | null; // season-to-date projected minus actual receptions; positive = "due"
+  sharpScore: number | null; // composite 0-100 score across ESPN/volume/target-share/matchup/debt signals
 
   dataSeason: number;
   dataWeek: number;

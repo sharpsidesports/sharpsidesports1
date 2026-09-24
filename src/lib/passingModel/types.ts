@@ -33,6 +33,9 @@ export interface TeamPassingGameLog {
   passAttempts: number;
   carries: number;
   passingYards: number;
+  completions: number;
+  passingTds: number;
+  rushingTds: number;
 }
 
 export interface GameLineInput {

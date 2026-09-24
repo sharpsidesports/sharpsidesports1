@@ -11,6 +11,9 @@ import { pairKey, type SportsbookOutcome } from '../src/lib/oddsApi.js';
 import { fetchAnytimeTdOddsFromSportsGameOdds as fetchAnytimeTdOdds } from '../src/lib/sportsGameOddsApi.js';
 import { normalizePlayerName } from '../src/lib/nameMatch.js';
 import { americanOddsToImpliedProbability, probabilityToFairAmericanOdds } from '../src/lib/odds.js';
+import { receptionModelSupabaseAdmin as supabaseAdmin } from '../src/lib/receptionModel/supabaseAdmin.js';
+import { toNflverseTeamCode } from '../src/lib/nflverse/teamCodes.js';
+import { calculateTdSharpScore } from '../src/lib/tdModel/calculateTdSharpScore.js';
 
 interface CombinedPlayer {
   player_id: string;
@@ -28,6 +31,9 @@ interface CombinedPlayer {
   consensus_td_probability: number | null;
   consensus_american_odds: number | null;
   edge: number | null;
+  implied_team_total: number | null;
+  matchup_td_rate_allowed: number | null; // opponent's rushing + passing TDs allowed per game
+  sharp_score: number | null;
 }
 
 interface CombinedResult {
@@ -47,6 +53,51 @@ interface CombinedResult {
 
 function round4(n: number): number {
   return Math.round(n * 10000) / 10000;
+}
+
+function average(nums: number[]): number | null {
+  if (nums.length === 0) return null;
+  return nums.reduce((a, b) => a + b, 0) / nums.length;
+}
+
+// Implied Team Total (per team, this week) and Matchup — opponent's average
+// rushing + passing TDs allowed per game, any team they've faced this
+// season or last — both reused from the same Supabase tables the reception
+// and passing models already read (nflverse_game_lines / nflverse_team_week_stats),
+// so a manual Odds API sync-lines run or nflverse/sync run feeds this too.
+async function loadMatchupContext(
+  season: number,
+  week: number
+): Promise<{ impliedTeamTotalByTeam: Map<string, number>; tdRateAllowedByOpponent: Map<string, number> }> {
+  const priorSeason = season - 1;
+
+  const [{ data: gameLineRows }, { data: teamWeekRows }] = await Promise.all([
+    supabaseAdmin.from('nflverse_game_lines').select('team, implied_team_total').eq('season', season).eq('week', week),
+    supabaseAdmin
+      .from('nflverse_team_week_stats')
+      .select('opponent_team, rushing_tds, passing_tds')
+      .in('season', [season, priorSeason]),
+  ]);
+
+  const impliedTeamTotalByTeam = new Map<string, number>();
+  for (const r of gameLineRows ?? []) {
+    if (r.implied_team_total !== null) impliedTeamTotalByTeam.set(r.team, r.implied_team_total);
+  }
+
+  const tdsAllowedByOpponent = new Map<string, number[]>();
+  for (const r of teamWeekRows ?? []) {
+    if (!r.opponent_team) continue;
+    const list = tdsAllowedByOpponent.get(r.opponent_team) ?? [];
+    list.push(r.rushing_tds + r.passing_tds);
+    tdsAllowedByOpponent.set(r.opponent_team, list);
+  }
+  const tdRateAllowedByOpponent = new Map<string, number>();
+  for (const [team, tds] of tdsAllowedByOpponent) {
+    const avg = average(tds);
+    if (avg !== null) tdRateAllowedByOpponent.set(team, avg);
+  }
+
+  return { impliedTeamTotalByTeam, tdRateAllowedByOpponent };
 }
 
 async function buildCombinedData(season: number, week: number): Promise<CombinedResult> {
@@ -109,32 +160,64 @@ async function buildCombinedData(season: number, week: number): Promise<Combined
     }
   }
 
-  const players: CombinedPlayer[] = espn.players.map((p) => {
+  const { impliedTeamTotalByTeam, tdRateAllowedByOpponent } = await loadMatchupContext(season, week);
+
+  const enriched = espn.players.map((p) => {
     const prices = bookPrices.get(p.player_id) ?? {};
     const bookEntries = Object.entries(prices) as Array<[string, number]>;
     const probabilities = bookEntries.map(([, price]) => americanOddsToImpliedProbability(price));
     const consensusProbability =
       probabilities.length > 0 ? probabilities.reduce((sum, x) => sum + x, 0) / probabilities.length : null;
+    const edge = consensusProbability !== null ? round4(p.td_probability - consensusProbability) : null;
+
+    const teamCode = toNflverseTeamCode(p.team);
+    const opponentCode =
+      p.opponent && p.opponent !== 'BYE' && p.opponent !== 'TBD' ? toNflverseTeamCode(p.opponent) : null;
+    const impliedTeamTotal = impliedTeamTotalByTeam.get(teamCode) ?? null;
+    const matchupTdRateAllowed = opponentCode ? (tdRateAllowedByOpponent.get(opponentCode) ?? null) : null;
 
     return {
-      player_id: p.player_id,
-      player_name: p.player_name,
-      team: p.team,
-      position: p.position,
-      opponent: p.opponent,
-      projected_anytime_td: p.projected_anytime_td,
-      espn_td_probability: p.td_probability,
-      fanduel_odds: prices.fanduel ?? null,
-      draftkings_odds: prices.draftkings ?? null,
-      betmgm_odds: prices.betmgm ?? null,
-      caesars_odds: prices.caesars ?? null,
-      sportsbook_count: bookEntries.length,
-      consensus_td_probability: consensusProbability !== null ? round4(consensusProbability) : null,
-      consensus_american_odds:
-        consensusProbability !== null ? probabilityToFairAmericanOdds(consensusProbability) : null,
-      edge: consensusProbability !== null ? round4(p.td_probability - consensusProbability) : null,
+      p,
+      prices,
+      bookEntries,
+      consensusProbability,
+      edge,
+      impliedTeamTotal,
+      matchupTdRateAllowed,
     };
   });
+
+  const sharpScores = calculateTdSharpScore(
+    enriched.map((e) => ({
+      espnTdProbability: e.p.td_probability,
+      consensusTdProbability: e.consensusProbability,
+      edge: e.edge,
+      impliedTeamTotal: e.impliedTeamTotal,
+      matchupTdRateAllowed: e.matchupTdRateAllowed,
+    }))
+  );
+
+  const players: CombinedPlayer[] = enriched.map((e, i) => ({
+    player_id: e.p.player_id,
+    player_name: e.p.player_name,
+    team: e.p.team,
+    position: e.p.position,
+    opponent: e.p.opponent,
+    projected_anytime_td: e.p.projected_anytime_td,
+    espn_td_probability: e.p.td_probability,
+    fanduel_odds: e.prices.fanduel ?? null,
+    draftkings_odds: e.prices.draftkings ?? null,
+    betmgm_odds: e.prices.betmgm ?? null,
+    caesars_odds: e.prices.caesars ?? null,
+    sportsbook_count: e.bookEntries.length,
+    consensus_td_probability: e.consensusProbability !== null ? round4(e.consensusProbability) : null,
+    consensus_american_odds:
+      e.consensusProbability !== null ? probabilityToFairAmericanOdds(e.consensusProbability) : null,
+    edge: e.edge,
+    implied_team_total: e.impliedTeamTotal,
+    matchup_td_rate_allowed: e.matchupTdRateAllowed !== null ? round4(e.matchupTdRateAllowed) : null,
+    sharp_score: sharpScores[i],
+  }));
 
   return {
     season: espn.season,
