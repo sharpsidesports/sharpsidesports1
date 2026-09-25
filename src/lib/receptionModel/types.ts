@@ -73,8 +73,10 @@ export interface PlayerModelInput {
 
 export interface ReceptionProjectionResult {
   gsisId: string | null;
+  espnId: string;
   playerName: string;
   team: string;
+  opponentTeam: string | null;
 
   espnProjectedReceptions: number | null;
 

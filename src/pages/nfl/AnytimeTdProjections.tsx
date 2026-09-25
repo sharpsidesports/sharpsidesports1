@@ -1,4 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import PlayerCard, { type PlayerCardTag } from '../../components/nfl/PlayerCard.js';
+import MatchupGroup from '../../components/nfl/MatchupGroup.js';
+import { groupByMatchup } from '../../lib/nfl/groupByMatchup.js';
+import { percentileRank } from '../../lib/nfl/percentileRank.js';
 
 interface CombinedPlayer {
   player_id: string;
@@ -40,17 +44,13 @@ interface ApiResponse {
   details?: string;
 }
 
-type SortKey =
-  | 'edge'
-  | 'projected'
-  | 'espnProb'
-  | 'consensusProb'
-  | 'consensusOdds'
-  | 'impliedTotal'
-  | 'matchup'
-  | 'sharpScore';
-
 const POSITIONS: Array<'ALL' | 'QB' | 'RB' | 'WR' | 'TE'> = ['ALL', 'QB', 'RB', 'WR', 'TE'];
+
+// Presentation-only judgment calls against this week's pool, not part of the
+// Sharp Score calculation itself.
+const PLUS_MATCHUP_PERCENTILE = 0.7;
+const HIGH_TOTAL_PERCENTILE = 0.75;
+const VALUE_EDGE_THRESHOLD = 0.03; // edge is a probability delta (e.g. 0.03 = +3 points of edge)
 
 function formatOdds(odds: number | null): string {
   if (odds === null) return '—';
@@ -68,14 +68,50 @@ function formatEdge(edge: number | null): string {
   return pct > 0 ? `+${pct.toFixed(1)}%` : `${pct.toFixed(1)}%`;
 }
 
+function tagsForPlayer(
+  p: CombinedPlayer,
+  allMatchupRates: (number | null)[],
+  allImpliedTotals: (number | null)[]
+): PlayerCardTag[] {
+  const tags: PlayerCardTag[] = [];
+
+  const matchupPctl = percentileRank(p.matchup_td_rate_allowed, allMatchupRates);
+  if (matchupPctl !== null && matchupPctl >= PLUS_MATCHUP_PERCENTILE) tags.push({ label: 'Plus Matchup', tone: 'blue' });
+
+  const totalPctl = percentileRank(p.implied_team_total, allImpliedTotals);
+  if (totalPctl !== null && totalPctl >= HIGH_TOTAL_PERCENTILE) tags.push({ label: 'High Total', tone: 'green' });
+
+  if (p.edge !== null && p.edge >= VALUE_EDGE_THRESHOLD) tags.push({ label: 'Value', tone: 'amber' });
+
+  return tags;
+}
+
+function DetailPanel({ p }: { p: CombinedPlayer }) {
+  return (
+    <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-xs text-gray-600 sm:grid-cols-3 lg:grid-cols-4">
+      <div>Sharpside projected TD: <span className="font-semibold text-gray-900">{p.projected_anytime_td.toFixed(2)}</span></div>
+      <div>Sharpside TD %: <span className="font-semibold text-gray-900">{formatPct(p.espn_td_probability)}</span></div>
+      <div>
+        Consensus odds:{' '}
+        <span className="font-semibold text-gray-900">
+          {formatOdds(p.consensus_american_odds)}
+          {p.sportsbook_count > 0 && <span className="ml-1 text-gray-400">({p.sportsbook_count} books)</span>}
+        </span>
+      </div>
+      <div>Consensus TD %: <span className="font-semibold text-gray-900">{formatPct(p.consensus_td_probability)}</span></div>
+      <div>Edge: <span className="font-semibold text-gray-900">{formatEdge(p.edge)}</span></div>
+      <div>Implied team total: <span className="font-semibold text-gray-900">{p.implied_team_total === null ? '—' : p.implied_team_total.toFixed(1)}</span></div>
+      <div>Matchup (opp TD/g allowed): <span className="font-semibold text-gray-900">{p.matchup_td_rate_allowed === null ? '—' : p.matchup_td_rate_allowed.toFixed(2)}</span></div>
+    </div>
+  );
+}
+
 export default function AnytimeTdProjections() {
   const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [positionFilter, setPositionFilter] = useState<'ALL' | 'QB' | 'RB' | 'WR' | 'TE'>('ALL');
-  const [sortColumn, setSortColumn] = useState<SortKey>('edge');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   const load = useCallback(async (refresh: boolean) => {
     if (refresh) setRefreshing(true);
@@ -100,63 +136,38 @@ export default function AnytimeTdProjections() {
     load(false);
   }, [load]);
 
-  const handleSort = (col: SortKey) => {
-    if (sortColumn === col) {
-      setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'));
-    } else {
-      setSortColumn(col);
-      setSortDirection('desc');
-    }
-  };
-
   const players = data?.players ?? [];
+
+  // Global rank by Sharp Score across the whole week's pool (unfiltered by
+  // position), shown on each card the same way regardless of which matchup
+  // group or position filter is active.
+  const rankByPlayer = React.useMemo(() => {
+    const ranked = [...players]
+      .filter((p) => p.sharp_score !== null)
+      .sort((a, b) => (b.sharp_score ?? 0) - (a.sharp_score ?? 0));
+    const map = new Map<string, number>();
+    ranked.forEach((p, idx) => map.set(p.player_id, idx + 1));
+    return map;
+  }, [players]);
+
   const filtered = positionFilter === 'ALL' ? players : players.filter((p) => p.position === positionFilter);
 
-  const sorted = React.useMemo(() => {
-    const dir = sortDirection === 'asc' ? 1 : -1;
-    const valueFor = (p: CombinedPlayer): number | null => {
-      switch (sortColumn) {
-        case 'edge':
-          return p.edge;
-        case 'projected':
-          return p.projected_anytime_td;
-        case 'espnProb':
-          return p.espn_td_probability;
-        case 'consensusProb':
-          return p.consensus_td_probability;
-        case 'consensusOdds':
-          return p.consensus_american_odds;
-        case 'impliedTotal':
-          return p.implied_team_total;
-        case 'matchup':
-          return p.matchup_td_rate_allowed;
-        case 'sharpScore':
-          return p.sharp_score;
-      }
-    };
-    return [...filtered].sort((a, b) => {
-      const av = valueFor(a);
-      const bv = valueFor(b);
-      // Players with no sportsbook data sort to the bottom regardless of direction.
-      if (av === null && bv === null) return 0;
-      if (av === null) return 1;
-      if (bv === null) return -1;
-      return (av - bv) * dir;
-    });
-  }, [filtered, sortColumn, sortDirection]);
-
-  const sortHeader = (label: string, col: SortKey) => (
-    <th
-      onClick={() => handleSort(col)}
-      className="px-4 py-3 text-center uppercase tracking-wider font-semibold whitespace-nowrap cursor-pointer select-none"
-    >
-      {label}
-      {sortColumn === col && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
-    </th>
+  const matchups = React.useMemo(
+    () =>
+      groupByMatchup(
+        filtered,
+        (p) => p.team,
+        (p) => p.opponent,
+        (p) => p.sharp_score
+      ).sort((a, b) => a.key.localeCompare(b.key)),
+    [filtered]
   );
 
+  const allMatchupRates = React.useMemo(() => players.map((p) => p.matchup_td_rate_allowed), [players]);
+  const allImpliedTotals = React.useMemo(() => players.map((p) => p.implied_team_total), [players]);
+
   return (
-    <div className="space-y-6 max-w-6xl mx-auto py-8">
+    <div className="space-y-6 max-w-5xl mx-auto py-8 px-4">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 mb-1">NFL Week 1 Anytime TD Projections vs. Sportsbook Odds</h1>
@@ -222,89 +233,30 @@ export default function AnytimeTdProjections() {
               ))}
             </div>
             <p className="text-xs text-gray-500">
-              {sorted.length} players · {data.matchedPlayerCount} with sportsbook odds · updated{' '}
+              {filtered.length} players · {data.matchedPlayerCount} with sportsbook odds · updated{' '}
               {new Date(data.generatedAt).toLocaleString()}
               {data.cached ? ' (cached)' : ''}
             </p>
           </div>
 
-          <div className="overflow-x-auto rounded-lg shadow">
-            <table className="min-w-full text-sm font-medium">
-              <thead className="bg-sharpside-green/90 text-white sticky top-0 z-10">
-                <tr>
-                  <th className="px-4 py-3 text-left uppercase tracking-wider font-semibold whitespace-nowrap bg-sharpside-green text-white sticky left-0 z-20 shadow-lg">
-                    Player
-                  </th>
-                  <th className="px-4 py-3 text-center uppercase tracking-wider font-semibold whitespace-nowrap">Team</th>
-                  <th className="px-4 py-3 text-center uppercase tracking-wider font-semibold whitespace-nowrap">Pos</th>
-                  <th className="px-4 py-3 text-center uppercase tracking-wider font-semibold whitespace-nowrap">Opp</th>
-                  {sortHeader('Sharpside Projected TD', 'projected')}
-                  {sortHeader('Sharpside TD %', 'espnProb')}
-                  {sortHeader('Consensus Odds', 'consensusOdds')}
-                  {sortHeader('Consensus TD %', 'consensusProb')}
-                  {sortHeader('Edge', 'edge')}
-                  {sortHeader('Implied Total', 'impliedTotal')}
-                  {sortHeader('Matchup', 'matchup')}
-                  {sortHeader('Sharp Score', 'sharpScore')}
-                </tr>
-              </thead>
-              <tbody>
-                {sorted.map((p, idx) => (
-                  <tr
+          <div className="space-y-8">
+            {matchups.map((matchup) => (
+              <MatchupGroup key={matchup.key} teamA={matchup.teamA} teamB={matchup.teamB}>
+                {matchup.players.map((p) => (
+                  <PlayerCard
                     key={p.player_id}
-                    className={(idx % 2 === 0 ? 'bg-white' : 'bg-gray-50') + ' hover:bg-green-50 transition-colors duration-100'}
+                    rank={rankByPlayer.get(p.player_id) ?? 0}
+                    name={p.player_name}
+                    espnId={p.player_id}
+                    subtitle={`${p.position} · ${p.team} vs ${p.opponent}`}
+                    tags={tagsForPlayer(p, allMatchupRates, allImpliedTotals)}
+                    score={p.sharp_score}
                   >
-                    <td className="px-4 py-3 text-left whitespace-nowrap font-bold bg-white sticky left-0 z-10 shadow-lg">
-                      {p.player_name}
-                    </td>
-                    <td className="px-4 py-3 text-center whitespace-nowrap">{p.team}</td>
-                    <td className="px-4 py-3 text-center whitespace-nowrap">{p.position}</td>
-                    <td className="px-4 py-3 text-center whitespace-nowrap">{p.opponent}</td>
-                    <td className="px-4 py-3 text-center whitespace-nowrap">{p.projected_anytime_td.toFixed(2)}</td>
-                    <td className="px-4 py-3 text-center whitespace-nowrap">{formatPct(p.espn_td_probability)}</td>
-                    <td className="px-4 py-3 text-center whitespace-nowrap">
-                      {formatOdds(p.consensus_american_odds)}
-                      {p.sportsbook_count > 0 && (
-                        <span className="ml-1 text-xs text-gray-400">({p.sportsbook_count})</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-center whitespace-nowrap">{formatPct(p.consensus_td_probability)}</td>
-                    <td className="px-4 py-3 text-center whitespace-nowrap">
-                      {p.edge === null ? (
-                        <span className="text-gray-400">—</span>
-                      ) : (
-                        <span
-                          className={`inline-block min-w-[64px] rounded-full px-2.5 py-1 font-bold ${
-                            p.edge > 0
-                              ? 'bg-green-100 text-green-800'
-                              : p.edge < 0
-                                ? 'bg-red-100 text-red-800'
-                                : 'bg-gray-100 text-gray-700'
-                          }`}
-                        >
-                          {formatEdge(p.edge)}
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-center whitespace-nowrap">
-                      {p.implied_team_total === null ? '—' : p.implied_team_total.toFixed(1)}
-                    </td>
-                    <td className="px-4 py-3 text-center whitespace-nowrap">
-                      {p.matchup_td_rate_allowed === null ? '—' : p.matchup_td_rate_allowed.toFixed(2)}
-                    </td>
-                    <td className="px-4 py-3 text-center whitespace-nowrap">
-                      {p.sharp_score === null ? (
-                        '—'
-                      ) : (
-                        <span className="inline-block min-w-[40px] rounded-full bg-sharpside-green/10 px-2.5 py-1 font-bold text-sharpside-green">
-                          {p.sharp_score}
-                        </span>
-                      )}
-                    </td>
-                  </tr>
+                    <DetailPanel p={p} />
+                  </PlayerCard>
                 ))}
-              </tbody>
-            </table>
+              </MatchupGroup>
+            ))}
           </div>
         </>
       )}

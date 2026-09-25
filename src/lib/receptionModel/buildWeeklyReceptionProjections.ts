@@ -314,8 +314,10 @@ export function buildWeeklyReceptionProjections(input: BuildProjectionsInput): R
 
   const results: ReceptionProjectionResult[] = perPlayer.map((p, i) => ({
     gsisId: p.model.gsisId,
+    espnId: p.model.espnId,
     playerName: p.model.playerName,
     team: p.model.team,
+    opponentTeam: p.model.opponentTeam,
     espnProjectedReceptions: round(p.model.espnProjectedReceptions, 2),
     expectedTargetShare: round(p.targetShare.value, 3),
     projectedTeamPassAttempts: round(p.passAttempts.projectedTeamPassAttempts, 1),
@@ -352,8 +354,10 @@ function baseResult(
 ): ReceptionProjectionResult {
   return {
     gsisId: model.gsisId,
+    espnId: model.espnId,
     playerName: model.playerName,
     team: model.team,
+    opponentTeam: model.opponentTeam,
     espnProjectedReceptions: round(model.espnProjectedReceptions, 2),
     expectedTargetShare: null,
     projectedTeamPassAttempts: null,
