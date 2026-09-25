@@ -11,7 +11,13 @@
 // its own cron (api/passing-model/sync-lines.ts), not the weekly nflverse sync.
 
 import { receptionModelSupabaseAdmin as supabaseAdmin } from '../receptionModel/supabaseAdmin.js';
-import { fetchGameLines, pairKey } from '../oddsApi.js';
+import { pairKey } from '../oddsApi.js';
+// TEMPORARY (mirrors api/nfl-odds.ts's Anytime-TD odds swap): The Odds API
+// key is out of quota, so game lines (spread/total) come from SportsGameOdds
+// instead — same GameLinesResult shape, so buildConsensusGameLines needs no
+// changes. REVERT: swap this back to `import { fetchGameLines } from
+// '../oddsApi.js';` once The Odds API quota resets or the plan is upgraded.
+import { fetchGameLinesFromSportsGameOdds as fetchGameLines } from '../sportsGameOddsApi.js';
 import { buildConsensusGameLines } from './buildConsensusGameLines.js';
 
 export async function ingestGameLines(

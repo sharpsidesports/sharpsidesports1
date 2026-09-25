@@ -139,7 +139,7 @@ export default function PassingModel() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [season] = useState(2026);
-  const [week] = useState(2);
+  const [week] = useState(3);
 
   useEffect(() => {
     let cancelled = false;

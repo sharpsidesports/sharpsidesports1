@@ -1,17 +1,27 @@
 // server-only helper
 // TEMPORARY STAND-IN — The Odds API key is out of quota for this billing
 // cycle (see oddsApi.ts's OddsApiQuotaExhaustedError, hit 2026-09-12, one
-// day before Week 1 kickoff). This provides the exact same SportsbookOutcome
-// shape from SportsGameOdds' free "Amateur" tier (sportsgameodds.com) as a
-// drop-in replacement for fetchAnytimeTdOdds, so api/nfl-odds.ts's matching
-// logic downstream needs zero changes.
+// day before Week 1 kickoff). This provides the exact same SportsbookOutcome/
+// GameLinesResult shapes as The Odds API's fetchAnytimeTdOdds/fetchGameLines,
+// from SportsGameOdds' free "Amateur" tier (sportsgameodds.com), so the two
+// callers (api/nfl-odds.ts, src/lib/passingModel/ingestGameLines.ts) need
+// zero changes downstream.
 //
 // REVERT PLAN (do this once The Odds API quota resets or the plan is
-// upgraded — expected Monday): in api/nfl-odds.ts, change the import back
-// to `fetchAnytimeTdOdds` from './oddsApi.js', then delete this file.
+// upgraded): in api/nfl-odds.ts, change the import back to
+// `fetchAnytimeTdOdds` from './oddsApi.js'; in ingestGameLines.ts, change it
+// back to `fetchGameLines` from '../oddsApi.js'; then delete this file.
 
 import { normalizePlayerName } from './nameMatch.js';
-import { BOOKMAKERS, pairKey, type BookmakerKey, type SportsbookOutcome, type AnytimeTdOddsResult } from './oddsApi.js';
+import {
+  BOOKMAKERS,
+  pairKey,
+  type BookmakerKey,
+  type SportsbookOutcome,
+  type AnytimeTdOddsResult,
+  type GameLineOutcome,
+  type GameLinesResult,
+} from './oddsApi.js';
 
 const SPORTSGAMEODDS_BASE = 'https://api.sportsgameodds.com/v2';
 
@@ -27,7 +37,10 @@ function toEspnTeamCode(sgoAbbrev: string): string {
   return SGO_TO_ESPN[sgoAbbrev] ?? sgoAbbrev;
 }
 
-export async function fetchAnytimeTdOddsFromSportsGameOdds(validPairKeys: Set<string>): Promise<AnytimeTdOddsResult> {
+// Shared by every SportsGameOdds puller (Anytime-TD props, game lines, ...):
+// fetches this week's NFL events (paginating through the free tier's ~10/page
+// limit) and filters down to just the games we actually care about.
+async function fetchRelevantSportsGameOddsEvents(validPairKeys: Set<string>): Promise<any[]> {
   const apiKey = process.env.SPORTSGAMEODDS_API_KEY;
   if (!apiKey) {
     throw new Error('SPORTSGAMEODDS_API_KEY environment variable is not set');
@@ -62,12 +75,16 @@ export async function fetchAnytimeTdOddsFromSportsGameOdds(validPairKeys: Set<st
     if (!cursor) break;
   }
 
-  const relevantEvents = events.filter((e) => {
+  return events.filter((e) => {
     const homeAbbrev = toEspnTeamCode(e.teams?.home?.names?.short);
     const awayAbbrev = toEspnTeamCode(e.teams?.away?.names?.short);
     if (!homeAbbrev || !awayAbbrev) return false;
     return validPairKeys.has(pairKey(homeAbbrev, awayAbbrev));
   });
+}
+
+export async function fetchAnytimeTdOddsFromSportsGameOdds(validPairKeys: Set<string>): Promise<AnytimeTdOddsResult> {
+  const relevantEvents = await fetchRelevantSportsGameOddsEvents(validPairKeys);
 
   const outcomes: SportsbookOutcome[] = [];
   let eventsWithOdds = 0;
@@ -109,6 +126,64 @@ export async function fetchAnytimeTdOddsFromSportsGameOdds(validPairKeys: Set<st
           eventTeams: [homeAbbrev, awayAbbrev],
         });
       }
+    }
+
+    if (eventHadOdds) eventsWithOdds++;
+  }
+
+  return { outcomes, eventsChecked: relevantEvents.length, eventsWithOdds };
+}
+
+// Game spread/total — SportsGameOdds' equivalent of The Odds API's
+// spreads/totals markets. oddIDs: 'points-home-game-sp-home' /
+// 'points-away-game-sp-away' (each side's own spread lives on its own oddID,
+// unlike The Odds API where both outcomes sit in one 'spreads' market) and
+// 'points-all-game-ou-over' (game total; 'over' and 'under' share the same
+// number, so only one side needs reading). Confirmed against a live
+// SportsGameOdds response (2026-09-25) rather than guessed.
+export async function fetchGameLinesFromSportsGameOdds(validPairKeys: Set<string>): Promise<GameLinesResult> {
+  const relevantEvents = await fetchRelevantSportsGameOddsEvents(validPairKeys);
+
+  const outcomes: GameLineOutcome[] = [];
+  let eventsWithOdds = 0;
+
+  for (const event of relevantEvents) {
+    const homeAbbrev = toEspnTeamCode(event.teams.home.names.short);
+    const awayAbbrev = toEspnTeamCode(event.teams.away.names.short);
+
+    const odds = event.odds ?? {};
+    const homeSpreadByBookmaker = odds['points-home-game-sp-home']?.byBookmaker ?? {};
+    const awaySpreadByBookmaker = odds['points-away-game-sp-away']?.byBookmaker ?? {};
+    const totalByBookmaker = odds['points-all-game-ou-over']?.byBookmaker ?? {};
+
+    let eventHadOdds = false;
+
+    for (const bookmaker of BOOKMAKERS) {
+      const homeBm = homeSpreadByBookmaker[bookmaker];
+      const awayBm = awaySpreadByBookmaker[bookmaker];
+      const totalBm = totalByBookmaker[bookmaker];
+
+      const parseFinite = (value: unknown): number | null => {
+        if (typeof value !== 'string') return null;
+        const n = Number(value);
+        return Number.isFinite(n) ? n : null;
+      };
+
+      const homeSpread = homeBm?.available ? parseFinite(homeBm.spread) : null;
+      const awaySpread = awayBm?.available ? parseFinite(awayBm.spread) : null;
+      const total = totalBm?.available ? parseFinite(totalBm.overUnder) : null;
+
+      if (homeSpread === null && awaySpread === null && total === null) continue;
+
+      eventHadOdds = true;
+      outcomes.push({
+        homeAbbrev,
+        awayAbbrev,
+        homeSpread,
+        awaySpread,
+        total,
+        bookmaker,
+      });
     }
 
     if (eventHadOdds) eventsWithOdds++;
