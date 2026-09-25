@@ -1,8 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PlayerCard, { type PlayerCardTag } from '../../components/nfl/PlayerCard.js';
 import MatchupGroup from '../../components/nfl/MatchupGroup.js';
+import StatBar from '../../components/nfl/StatBar.js';
 import { groupByMatchup } from '../../lib/nfl/groupByMatchup.js';
 import { percentileRank } from '../../lib/nfl/percentileRank.js';
+
+function pctlFill(pctl: number | null): number | null {
+  return pctl === null ? null : pctl * 100;
+}
 
 interface CombinedPlayer {
   player_id: string;
@@ -86,22 +91,64 @@ function tagsForPlayer(
   return tags;
 }
 
-function DetailPanel({ p }: { p: CombinedPlayer }) {
+interface StatPools {
+  espnTdProbability: (number | null)[];
+  consensusTdProbability: (number | null)[];
+  edge: (number | null)[];
+  impliedTeamTotal: (number | null)[];
+  matchupTdRateAllowed: (number | null)[];
+}
+
+function DetailPanel({ p, pools }: { p: CombinedPlayer; pools: StatPools }) {
   return (
-    <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-xs text-gray-600 sm:grid-cols-3 lg:grid-cols-4">
-      <div>Sharpside projected TD: <span className="font-semibold text-gray-900">{p.projected_anytime_td.toFixed(2)}</span></div>
-      <div>Sharpside TD %: <span className="font-semibold text-gray-900">{formatPct(p.espn_td_probability)}</span></div>
+    <div className="space-y-4">
       <div>
-        Consensus odds:{' '}
-        <span className="font-semibold text-gray-900">
-          {formatOdds(p.consensus_american_odds)}
-          {p.sportsbook_count > 0 && <span className="ml-1 text-gray-400">({p.sportsbook_count} books)</span>}
-        </span>
+        <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Component Breakdown</div>
+        <div className="grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2">
+          <StatBar
+            label="Sharpside TD %"
+            value={formatPct(p.espn_td_probability)}
+            fillPct={pctlFill(percentileRank(p.espn_td_probability, pools.espnTdProbability))}
+          />
+          <StatBar
+            label="Consensus TD %"
+            value={formatPct(p.consensus_td_probability)}
+            fillPct={pctlFill(percentileRank(p.consensus_td_probability, pools.consensusTdProbability))}
+            tone="blue"
+          />
+          <StatBar
+            label="Implied Team Total"
+            value={p.implied_team_total === null ? '—' : `${p.implied_team_total.toFixed(1)} pts`}
+            fillPct={pctlFill(percentileRank(p.implied_team_total, pools.impliedTeamTotal))}
+          />
+          <StatBar
+            label="Matchup (opp TD/g allowed)"
+            value={p.matchup_td_rate_allowed === null ? '—' : p.matchup_td_rate_allowed.toFixed(2)}
+            fillPct={pctlFill(percentileRank(p.matchup_td_rate_allowed, pools.matchupTdRateAllowed))}
+            tone="blue"
+          />
+          <StatBar
+            label="Edge vs. Market"
+            value={formatEdge(p.edge)}
+            fillPct={pctlFill(percentileRank(p.edge, pools.edge))}
+            tone="amber"
+          />
+        </div>
       </div>
-      <div>Consensus TD %: <span className="font-semibold text-gray-900">{formatPct(p.consensus_td_probability)}</span></div>
-      <div>Edge: <span className="font-semibold text-gray-900">{formatEdge(p.edge)}</span></div>
-      <div>Implied team total: <span className="font-semibold text-gray-900">{p.implied_team_total === null ? '—' : p.implied_team_total.toFixed(1)}</span></div>
-      <div>Matchup (opp TD/g allowed): <span className="font-semibold text-gray-900">{p.matchup_td_rate_allowed === null ? '—' : p.matchup_td_rate_allowed.toFixed(2)}</span></div>
+
+      <div>
+        <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Full Data</div>
+        <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-xs text-gray-600 sm:grid-cols-3 lg:grid-cols-4">
+          <div>Sharpside projected TD: <span className="font-semibold text-gray-900">{p.projected_anytime_td.toFixed(2)}</span></div>
+          <div>
+            Consensus odds:{' '}
+            <span className="font-semibold text-gray-900">
+              {formatOdds(p.consensus_american_odds)}
+              {p.sportsbook_count > 0 && <span className="ml-1 text-gray-400">({p.sportsbook_count} books)</span>}
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -165,6 +212,17 @@ export default function AnytimeTdProjections() {
 
   const allMatchupRates = React.useMemo(() => players.map((p) => p.matchup_td_rate_allowed), [players]);
   const allImpliedTotals = React.useMemo(() => players.map((p) => p.implied_team_total), [players]);
+
+  const statPools: StatPools = React.useMemo(
+    () => ({
+      espnTdProbability: players.map((p) => p.espn_td_probability),
+      consensusTdProbability: players.map((p) => p.consensus_td_probability),
+      edge: players.map((p) => p.edge),
+      impliedTeamTotal: allImpliedTotals,
+      matchupTdRateAllowed: allMatchupRates,
+    }),
+    [players, allImpliedTotals, allMatchupRates]
+  );
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto py-8 px-4">
@@ -252,7 +310,7 @@ export default function AnytimeTdProjections() {
                     tags={tagsForPlayer(p, allMatchupRates, allImpliedTotals)}
                     score={p.sharp_score}
                   >
-                    <DetailPanel p={p} />
+                    <DetailPanel p={p} pools={statPools} />
                   </PlayerCard>
                 ))}
               </MatchupGroup>

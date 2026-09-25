@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PlayerCard, { type PlayerCardTag } from '../components/nfl/PlayerCard.js';
 import MatchupGroup from '../components/nfl/MatchupGroup.js';
+import StatBar from '../components/nfl/StatBar.js';
 import { groupByMatchup } from '../lib/nfl/groupByMatchup.js';
 import { percentileRank } from '../lib/nfl/percentileRank.js';
 
@@ -68,30 +69,80 @@ function tagsForRow(
   return tags;
 }
 
-function DetailPanel({ row }: { row: ReceptionProjectionRow }) {
+interface StatPools {
+  targetShare: (number | null)[];
+  catchPctSeason: (number | null)[];
+  targetsPerGame: (number | null)[];
+  opponentCatchPctAllowed: (number | null)[];
+  impliedTeamTotal: (number | null)[];
+  receptionDebt: (number | null)[];
+}
+
+function pctlFill(pctl: number | null): number | null {
+  return pctl === null ? null : pctl * 100;
+}
+
+function DetailPanel({ row, pools }: { row: ReceptionProjectionRow; pools: StatPools }) {
   return (
-    <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-xs text-gray-600 sm:grid-cols-3 lg:grid-cols-4">
-      <div>ESPN projected: <span className="font-semibold text-gray-900">{row.espnProjectedReceptions ?? '—'}</span></div>
-      <div>Target share: <span className="font-semibold text-gray-900">{row.expectedTargetShare !== null ? `${(row.expectedTargetShare * 100).toFixed(1)}%` : '—'}</span></div>
-      <div>Team pass att.: <span className="font-semibold text-gray-900">{row.projectedTeamPassAttempts ?? '—'}</span></div>
-      <div>Projected targets: <span className="font-semibold text-gray-900">{row.projectedTargets ?? '—'}</span></div>
-      <div>Catch rate: <span className="font-semibold text-gray-900">{row.expectedCatchRate !== null ? `${(row.expectedCatchRate * 100).toFixed(1)}%` : '—'}</span></div>
-      <div>nflverse model: <span className="font-semibold text-gray-900">{row.nflverseProjectedReceptions ?? '—'}</span></div>
-      <div>Final (raw): <span className="font-semibold text-gray-900">{row.finalProjectedReceptionsRaw ?? '—'}</span></div>
-      <div>Edge Score (legacy): <span className="font-semibold text-gray-900">{row.receptionEdgeScore ?? '—'}</span></div>
-      <div>Implied team total: <span className="font-semibold text-gray-900">{row.impliedTeamTotal ?? '—'}</span></div>
-      <div>Matchup (opp TD/g allowed): <span className="font-semibold text-gray-900">{row.opponentTdRateAllowed ?? '—'}</span></div>
-      <div>Opp catch % allowed: <span className="font-semibold text-gray-900">{row.opponentCatchPctAllowed !== null ? `${(row.opponentCatchPctAllowed * 100).toFixed(1)}%` : '—'}</span></div>
-      <div>Targets/game (season): <span className="font-semibold text-gray-900">{row.targetsPerGame ?? '—'}</span></div>
-      <div>Catch % (season): <span className="font-semibold text-gray-900">{row.catchPctSeason !== null ? `${(row.catchPctSeason * 100).toFixed(1)}%` : '—'}</span></div>
-      <div>Reception debt: <span className="font-semibold text-gray-900">{row.receptionDebt ?? '—'}</span></div>
-      <div>Data updated: <span className="font-semibold text-gray-900">{row.dataLastUpdated ? new Date(row.dataLastUpdated).toLocaleString() : '—'}</span></div>
-      {row.fallbacksUsed.length > 0 && (
-        <div className="col-span-full">Fallbacks: <span className="font-semibold text-gray-900">{row.fallbacksUsed.join(', ')}</span></div>
-      )}
-      {row.warnings.length > 0 && (
-        <div className="col-span-full text-amber-700">Warnings: <span className="font-semibold">{row.warnings.join(', ')}</span></div>
-      )}
+    <div className="space-y-4">
+      <div>
+        <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Component Breakdown</div>
+        <div className="grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2">
+          <StatBar
+            label="Target Share"
+            value={row.expectedTargetShare !== null ? `${(row.expectedTargetShare * 100).toFixed(1)}%` : '—'}
+            fillPct={pctlFill(percentileRank(row.expectedTargetShare, pools.targetShare))}
+          />
+          <StatBar
+            label="Targets / Game (season)"
+            value={row.targetsPerGame !== null ? `${row.targetsPerGame}` : '—'}
+            fillPct={pctlFill(percentileRank(row.targetsPerGame, pools.targetsPerGame))}
+            tone="blue"
+          />
+          <StatBar
+            label="Catch % (season)"
+            value={row.catchPctSeason !== null ? `${(row.catchPctSeason * 100).toFixed(1)}%` : '—'}
+            fillPct={pctlFill(percentileRank(row.catchPctSeason, pools.catchPctSeason))}
+          />
+          <StatBar
+            label="Matchup (opp catch % allowed)"
+            value={row.opponentCatchPctAllowed !== null ? `${(row.opponentCatchPctAllowed * 100).toFixed(1)}%` : '—'}
+            fillPct={pctlFill(percentileRank(row.opponentCatchPctAllowed, pools.opponentCatchPctAllowed))}
+            tone="blue"
+          />
+          <StatBar
+            label="Implied Team Total"
+            value={row.impliedTeamTotal !== null ? `${row.impliedTeamTotal} pts` : '—'}
+            fillPct={pctlFill(percentileRank(row.impliedTeamTotal, pools.impliedTeamTotal))}
+          />
+          <StatBar
+            label="Reception Debt (season, + = due)"
+            value={row.receptionDebt !== null ? `${row.receptionDebt}` : '—'}
+            fillPct={pctlFill(percentileRank(row.receptionDebt, pools.receptionDebt))}
+            tone="amber"
+          />
+        </div>
+      </div>
+
+      <div>
+        <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Full Data</div>
+        <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-xs text-gray-600 sm:grid-cols-3 lg:grid-cols-4">
+          <div>ESPN projected: <span className="font-semibold text-gray-900">{row.espnProjectedReceptions ?? '—'}</span></div>
+          <div>Team pass att.: <span className="font-semibold text-gray-900">{row.projectedTeamPassAttempts ?? '—'}</span></div>
+          <div>Projected targets: <span className="font-semibold text-gray-900">{row.projectedTargets ?? '—'}</span></div>
+          <div>nflverse model: <span className="font-semibold text-gray-900">{row.nflverseProjectedReceptions ?? '—'}</span></div>
+          <div>Final (raw): <span className="font-semibold text-gray-900">{row.finalProjectedReceptionsRaw ?? '—'}</span></div>
+          <div>Edge Score (legacy): <span className="font-semibold text-gray-900">{row.receptionEdgeScore ?? '—'}</span></div>
+          <div>Matchup (opp TD/g allowed): <span className="font-semibold text-gray-900">{row.opponentTdRateAllowed ?? '—'}</span></div>
+          <div>Data updated: <span className="font-semibold text-gray-900">{row.dataLastUpdated ? new Date(row.dataLastUpdated).toLocaleString() : '—'}</span></div>
+          {row.fallbacksUsed.length > 0 && (
+            <div className="col-span-full">Fallbacks: <span className="font-semibold text-gray-900">{row.fallbacksUsed.join(', ')}</span></div>
+          )}
+          {row.warnings.length > 0 && (
+            <div className="col-span-full text-amber-700">Warnings: <span className="font-semibold">{row.warnings.join(', ')}</span></div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -178,6 +229,18 @@ export default function ReceptionModel() {
   const allTargetsPerGame = React.useMemo(() => rows.map((r) => r.targetsPerGame), [rows]);
   const allOppCatchPct = React.useMemo(() => rows.map((r) => r.opponentCatchPctAllowed), [rows]);
 
+  const statPools: StatPools = React.useMemo(
+    () => ({
+      targetShare: rows.map((r) => r.expectedTargetShare),
+      catchPctSeason: rows.map((r) => r.catchPctSeason),
+      targetsPerGame: allTargetsPerGame,
+      opponentCatchPctAllowed: allOppCatchPct,
+      impliedTeamTotal: rows.map((r) => r.impliedTeamTotal),
+      receptionDebt: rows.map((r) => r.receptionDebt),
+    }),
+    [rows, allTargetsPerGame, allOppCatchPct]
+  );
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-gray-900">Reception Model</h1>
@@ -206,7 +269,7 @@ export default function ReceptionModel() {
                   blurred={!showVIP}
                   onUnlockClick={handleVIPClick}
                 >
-                  <DetailPanel row={row} />
+                  <DetailPanel row={row} pools={statPools} />
                 </PlayerCard>
               ))}
             </MatchupGroup>
