@@ -13,7 +13,12 @@ import { normalizePlayerName } from '../src/lib/nameMatch.js';
 import { americanOddsToImpliedProbability, probabilityToFairAmericanOdds } from '../src/lib/odds.js';
 import { receptionModelSupabaseAdmin as supabaseAdmin } from '../src/lib/receptionModel/supabaseAdmin.js';
 import { toNflverseTeamCode } from '../src/lib/nflverse/teamCodes.js';
+import { buildEspnToGsisMap } from '../src/lib/nflverse/playerCrosswalk.js';
+import type { PlayerCrosswalkRow } from '../src/lib/nflverse/types.js';
 import { calculateTdSharpScore } from '../src/lib/tdModel/calculateTdSharpScore.js';
+import { calculateZoneExpectedTds, type PlayerZoneWeekLog, type ZoneBreakdownRow } from '../src/lib/tdModel/calculateZoneExpectedTds.js';
+import { calculateTdDebt } from '../src/lib/tdModel/calculateTdDebt.js';
+import type { Zone } from '../src/lib/tdModel/zoneConversionRates.js';
 
 interface CombinedPlayer {
   player_id: string;
@@ -34,6 +39,10 @@ interface CombinedPlayer {
   implied_team_total: number | null;
   matchup_td_rate_allowed: number | null; // opponent's rushing + passing TDs allowed per game
   sharp_score: number | null;
+  zone_breakdown: ZoneBreakdownRow[] | null; // season-to-date cumulative touches/xTD by field zone; null if unmatched to an nflverse ID
+  expected_tds: number | null; // season-to-date, sum of zone_breakdown's xTd
+  scored: number | null; // season-to-date actual rushing + receiving TDs
+  td_debt: number | null; // expected_tds - scored; positive = "due"
 }
 
 interface CombinedResult {
@@ -100,6 +109,82 @@ async function loadMatchupContext(
   return { impliedTeamTotalByTeam, tdRateAllowedByOpponent };
 }
 
+// PostgREST caps a single select() response at 1000 rows — page through in
+// full or rows get silently truncated (same reasoning as
+// receptionModel/loadFromSupabase.ts's fetchAllRows).
+const PAGE_SIZE = 1000;
+async function fetchAllRows<T>(
+  fetchPage: (from: number, to: number) => PromiseLike<{ data: T[] | null; error: { message: string } | null }>
+): Promise<T[]> {
+  const rows: T[] = [];
+  for (let from = 0; ; from += PAGE_SIZE) {
+    const { data, error } = await fetchPage(from, from + PAGE_SIZE - 1);
+    if (error) throw new Error(error.message);
+    rows.push(...(data ?? []));
+    if (!data || data.length < PAGE_SIZE) break;
+  }
+  return rows;
+}
+
+interface ZoneModelContext {
+  espnToGsis: Map<string, string>;
+  zoneLogsByGsis: Map<string, PlayerZoneWeekLog[]>;
+  actualTdsByGsis: Map<string, number>; // season-to-date rushing + receiving TDs
+}
+
+// Season-to-date data behind the zone table / Expected TDs / Scored / TD
+// Debt: this player's own zone touches so far this season (from PBP,
+// ingested by api/nflverse/sync.ts into nflverse_player_zone_week_stats) and
+// actual TDs scored so far (nflverse_player_week_stats, widened with
+// rushing stats for this model). ESPN players are matched to nflverse gsisId
+// via the same crosswalk the reception/passing models use.
+async function loadZoneModelContext(season: number, week: number): Promise<ZoneModelContext> {
+  const [crosswalkRows, zoneRows, playerWeekRows] = await Promise.all([
+    fetchAllRows<any>((from, to) => supabaseAdmin.from('player_crosswalk').select('gsis_id, espn_id').range(from, to)),
+    fetchAllRows<any>((from, to) =>
+      supabaseAdmin
+        .from('nflverse_player_zone_week_stats')
+        .select('gsis_id, week, zone, carries, targets')
+        .eq('season', season)
+        .lt('week', week)
+        .range(from, to)
+    ),
+    fetchAllRows<any>((from, to) =>
+      supabaseAdmin
+        .from('nflverse_player_week_stats')
+        .select('gsis_id, receiving_tds, rushing_tds')
+        .eq('season', season)
+        .lt('week', week)
+        .range(from, to)
+    ),
+  ]);
+
+  const crosswalk: PlayerCrosswalkRow[] = crosswalkRows.map((r) => ({
+    gsisId: r.gsis_id,
+    espnId: r.espn_id,
+    displayName: '',
+    position: '',
+    status: null,
+    latestTeam: null,
+  }));
+  const espnToGsis = buildEspnToGsisMap(crosswalk);
+
+  const zoneLogsByGsis = new Map<string, PlayerZoneWeekLog[]>();
+  for (const r of zoneRows) {
+    const list = zoneLogsByGsis.get(r.gsis_id) ?? [];
+    list.push({ week: r.week, zone: r.zone as Zone, carries: r.carries, targets: r.targets });
+    zoneLogsByGsis.set(r.gsis_id, list);
+  }
+
+  const actualTdsByGsis = new Map<string, number>();
+  for (const r of playerWeekRows) {
+    const prior = actualTdsByGsis.get(r.gsis_id) ?? 0;
+    actualTdsByGsis.set(r.gsis_id, prior + (r.receiving_tds ?? 0) + (r.rushing_tds ?? 0));
+  }
+
+  return { espnToGsis, zoneLogsByGsis, actualTdsByGsis };
+}
+
 async function buildCombinedData(season: number, week: number): Promise<CombinedResult> {
   // Reuses the existing, unmodified ESPN projections pull.
   const espn = await getEspnWeekAnytimeTdProjections(season, week);
@@ -161,6 +246,7 @@ async function buildCombinedData(season: number, week: number): Promise<Combined
   }
 
   const { impliedTeamTotalByTeam, tdRateAllowedByOpponent } = await loadMatchupContext(season, week);
+  const { espnToGsis, zoneLogsByGsis, actualTdsByGsis } = await loadZoneModelContext(season, week);
 
   const enriched = espn.players.map((p) => {
     const prices = bookPrices.get(p.player_id) ?? {};
@@ -176,6 +262,11 @@ async function buildCombinedData(season: number, week: number): Promise<Combined
     const impliedTeamTotal = impliedTeamTotalByTeam.get(teamCode) ?? null;
     const matchupTdRateAllowed = opponentCode ? (tdRateAllowedByOpponent.get(opponentCode) ?? null) : null;
 
+    const gsisId = espnToGsis.get(p.player_id) ?? null;
+    const zoneResult = gsisId ? calculateZoneExpectedTds(zoneLogsByGsis.get(gsisId) ?? []) : null;
+    const scored = gsisId ? (actualTdsByGsis.get(gsisId) ?? 0) : null;
+    const tdDebt = calculateTdDebt(zoneResult?.expectedTds ?? null, scored);
+
     return {
       p,
       prices,
@@ -184,6 +275,9 @@ async function buildCombinedData(season: number, week: number): Promise<Combined
       edge,
       impliedTeamTotal,
       matchupTdRateAllowed,
+      zoneResult,
+      scored,
+      tdDebt,
     };
   });
 
@@ -217,6 +311,10 @@ async function buildCombinedData(season: number, week: number): Promise<Combined
     implied_team_total: e.impliedTeamTotal,
     matchup_td_rate_allowed: e.matchupTdRateAllowed !== null ? round4(e.matchupTdRateAllowed) : null,
     sharp_score: sharpScores[i],
+    zone_breakdown: e.zoneResult?.zoneBreakdown ?? null,
+    expected_tds: e.zoneResult ? round4(e.zoneResult.expectedTds) : null,
+    scored: e.scored,
+    td_debt: e.tdDebt !== null ? round4(e.tdDebt) : null,
   }));
 
   return {

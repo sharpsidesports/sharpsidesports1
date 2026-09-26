@@ -31,6 +31,8 @@ export interface Database {
           target_share: number | null
           air_yards_share: number | null
           racr: number | null
+          rushing_yards: number
+          rushing_tds: number
           fetched_at: string
         }
         Insert: {
@@ -52,6 +54,8 @@ export interface Database {
           target_share?: number | null
           air_yards_share?: number | null
           racr?: number | null
+          rushing_yards?: number
+          rushing_tds?: number
           fetched_at?: string
         }
         Update: {
@@ -73,6 +77,46 @@ export interface Database {
           target_share?: number | null
           air_yards_share?: number | null
           racr?: number | null
+          rushing_yards?: number
+          rushing_tds?: number
+          fetched_at?: string
+        }
+      }
+      nflverse_player_zone_week_stats: {
+        Row: {
+          id: number
+          gsis_id: string
+          season: number
+          week: number
+          zone: string
+          carries: number
+          targets: number
+          rush_tds: number
+          rec_tds: number
+          fetched_at: string
+        }
+        Insert: {
+          id?: number
+          gsis_id: string
+          season: number
+          week: number
+          zone: string
+          carries?: number
+          targets?: number
+          rush_tds?: number
+          rec_tds?: number
+          fetched_at?: string
+        }
+        Update: {
+          id?: number
+          gsis_id?: string
+          season?: number
+          week?: number
+          zone?: string
+          carries?: number
+          targets?: number
+          rush_tds?: number
+          rec_tds?: number
           fetched_at?: string
         }
       }

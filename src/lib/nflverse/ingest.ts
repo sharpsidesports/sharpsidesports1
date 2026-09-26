@@ -9,6 +9,7 @@ import { fetchStatsQbWeek } from './statsQbWeek.js';
 import { fetchStatsTeamWeek } from './statsTeamWeek.js';
 import { fetchInjuries } from './injuries.js';
 import { fetchPlayerCrosswalk } from './playerCrosswalk.js';
+import { fetchPbpZoneStats } from './pbp.js';
 
 export interface IngestSeasonResult {
   season: number;
@@ -46,6 +47,8 @@ export async function ingestSeason(season: number): Promise<IngestSeasonResult> 
       target_share: r.targetShare,
       air_yards_share: r.airYardsShare,
       racr: r.racr,
+      rushing_yards: r.rushingYards,
+      rushing_tds: r.rushingTds,
       fetched_at: fetchedAt,
     }));
     if (dbRows.length > 0) {
@@ -161,6 +164,34 @@ export async function ingestSeason(season: number): Promise<IngestSeasonResult> 
   }
 
   return { season, playerWeekRows, qbWeekRows, teamWeekRows, injuryRows, errors };
+}
+
+// Current-season-only — deliberately NOT looped over [season, priorSeason]
+// like ingestSeason() is, since a full prior season's PBP is ~19MB gzipped
+// and this only needs the in-progress current season (see pbp.ts / the zone
+// model's design notes). Call this separately, once, for the current season.
+export async function ingestPbpZoneStats(season: number): Promise<{ rows: number; error?: string }> {
+  try {
+    const rows = await fetchPbpZoneStats(season);
+    const dbRows = rows.map((r) => ({
+      gsis_id: r.gsisId,
+      season: r.season,
+      week: r.week,
+      zone: r.zone,
+      carries: r.carries,
+      targets: r.targets,
+      rush_tds: r.rushTds,
+      rec_tds: r.recTds,
+    }));
+    if (dbRows.length === 0) return { rows: 0 };
+    const { error } = await supabaseAdmin
+      .from('nflverse_player_zone_week_stats')
+      .upsert(dbRows, { onConflict: 'gsis_id,season,week,zone' });
+    if (error) throw new Error(error.message);
+    return { rows: dbRows.length };
+  } catch (err) {
+    return { rows: 0, error: err instanceof Error ? err.message : String(err) };
+  }
 }
 
 export async function ingestPlayerCrosswalk(): Promise<{ rows: number }> {

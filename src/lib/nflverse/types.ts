@@ -18,6 +18,8 @@ export interface NflversePlayerWeekRow {
   targetShare: number | null;
   airYardsShare: number | null;
   racr: number | null;
+  rushingYards: number;
+  rushingTds: number;
 }
 
 export interface NflverseTeamWeekRow {

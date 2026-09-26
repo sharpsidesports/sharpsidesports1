@@ -94,6 +94,8 @@ export async function loadSupabaseProjectionsInput(
     receivingAirYards: r.receiving_air_yards,
     targetShare: r.target_share,
     airYardsShare: r.air_yards_share,
+    rushingYards: r.rushing_yards,
+    rushingTds: r.rushing_tds,
     racr: r.racr,
   }));
 

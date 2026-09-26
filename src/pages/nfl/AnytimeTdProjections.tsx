@@ -9,6 +9,22 @@ function pctlFill(pctl: number | null): number | null {
   return pctl === null ? null : pctl * 100;
 }
 
+type Zone = 'GOAL_LINE' | 'RED_ZONE' | 'FRINGE' | 'OPEN_FIELD';
+const ZONE_ORDER: Zone[] = ['GOAL_LINE', 'RED_ZONE', 'FRINGE', 'OPEN_FIELD'];
+const ZONE_LABELS: Record<Zone, string> = {
+  GOAL_LINE: 'Goal Line (≤5)',
+  RED_ZONE: 'Red Zone (6-20)',
+  FRINGE: 'Fringe (21-40)',
+  OPEN_FIELD: 'Open Field',
+};
+
+interface ZoneBreakdownRow {
+  zone: Zone;
+  carries: number;
+  targets: number;
+  xTd: number;
+}
+
 interface CombinedPlayer {
   player_id: string;
   player_name: string;
@@ -28,6 +44,10 @@ interface CombinedPlayer {
   implied_team_total: number | null;
   matchup_td_rate_allowed: number | null;
   sharp_score: number | null;
+  zone_breakdown: ZoneBreakdownRow[] | null;
+  expected_tds: number | null;
+  scored: number | null;
+  td_debt: number | null;
 }
 
 interface ApiResponse {
@@ -99,9 +119,71 @@ interface StatPools {
   matchupTdRateAllowed: (number | null)[];
 }
 
+function ZoneBreakdownTable({ p }: { p: CombinedPlayer }) {
+  if (!p.zone_breakdown) {
+    return (
+      <div className="text-xs text-gray-400">
+        No season-to-date play-by-play zone data for this player yet (needs an nflverse ID match and at least one game
+        played this season).
+      </div>
+    );
+  }
+
+  const byZone = new Map(p.zone_breakdown.map((z) => [z.zone, z]));
+
+  return (
+    <div>
+      <div className="mb-2 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+        <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+          Zone Breakdown <span className="font-normal normal-case text-gray-400">(season-to-date)</span>
+        </div>
+        <div className="flex gap-4 text-xs">
+          <span>Expected TDs: <span className="font-semibold text-gray-900">{p.expected_tds ?? '—'}</span></span>
+          <span>Scored: <span className="font-semibold text-gray-900">{p.scored ?? '—'}</span></span>
+          <span>
+            TD Debt:{' '}
+            <span
+              className={`font-semibold ${p.td_debt !== null && p.td_debt > 0 ? 'text-sharpside-green' : 'text-gray-900'}`}
+            >
+              {p.td_debt !== null ? (p.td_debt > 0 ? `+${p.td_debt.toFixed(1)}` : p.td_debt.toFixed(1)) : '—'}
+            </span>
+          </span>
+        </div>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="min-w-full text-xs">
+          <thead>
+            <tr className="text-left text-gray-500">
+              <th className="py-1 pr-4 font-medium">Zone</th>
+              <th className="py-1 pr-4 text-right font-medium">Carries</th>
+              <th className="py-1 pr-4 text-right font-medium">Targets</th>
+              <th className="py-1 text-right font-medium">xTD</th>
+            </tr>
+          </thead>
+          <tbody>
+            {ZONE_ORDER.map((zone) => {
+              const row = byZone.get(zone);
+              return (
+                <tr key={zone} className="border-t border-gray-100">
+                  <td className="py-1 pr-4 text-gray-700">{ZONE_LABELS[zone]}</td>
+                  <td className="py-1 pr-4 text-right text-gray-900">{row?.carries ?? 0}</td>
+                  <td className="py-1 pr-4 text-right text-gray-900">{row?.targets ?? 0}</td>
+                  <td className="py-1 text-right font-semibold text-sharpside-green">{(row?.xTd ?? 0).toFixed(2)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 function DetailPanel({ p, pools }: { p: CombinedPlayer; pools: StatPools }) {
   return (
     <div className="space-y-4">
+      <ZoneBreakdownTable p={p} />
+
       <div>
         <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Component Breakdown</div>
         <div className="grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2">

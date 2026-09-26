@@ -1,7 +1,15 @@
 // server-only helper
-// Weekly WR receiving stats from nflverse's `stats_player` release
-// (replaces the deprecated `player_stats` release as of 2025-08-01).
-// File: stats_player_week_{season}.csv
+// Weekly receiving + rushing stats (every non-QB position — QBs are covered
+// separately by statsQbWeek.ts's own fetch of this same file, so excluding
+// them here avoids ingesting the same rows twice) from nflverse's
+// `stats_player` release (replaces the deprecated `player_stats` release as
+// of 2025-08-01). File: stats_player_week_{season}.csv
+//
+// Rushing fields were added for the zone-based TD model's "Scored" (season
+// actual TDs) input — every other consumer of this table (the reception
+// model) only ever reads the receiving fields and explicitly filters its own
+// player pool to WR, so widening this to all non-QB positions doesn't change
+// its behavior.
 
 import { fetchNflverseCsv, type NflverseCsvResult } from './fetchCsv.js';
 import type { NflversePlayerWeekRow } from './types.js';
@@ -24,6 +32,8 @@ interface RawRow {
   target_share: string;
   air_yards_share: string;
   racr: string;
+  rushing_yards: string;
+  rushing_tds: string;
 }
 
 // Empty-string numeric fields become null, never 0 — nflverse leaves these
@@ -48,8 +58,8 @@ export async function fetchStatsPlayerWeek(
     `stats_player_week_${season}.csv`
   );
 
-  const wrRows = rows
-    .filter((r) => r.position === 'WR' && r.season_type === 'REG')
+  const nonQbRows = rows
+    .filter((r) => r.position !== 'QB' && r.season_type === 'REG')
     .map((r): NflversePlayerWeekRow => ({
       gsisId: r.player_id,
       playerName: r.player_display_name,
@@ -68,7 +78,9 @@ export async function fetchStatsPlayerWeek(
       targetShare: toNullableNum(r.target_share),
       airYardsShare: toNullableNum(r.air_yards_share),
       racr: toNullableNum(r.racr),
+      rushingYards: toNum(r.rushing_yards),
+      rushingTds: toNum(r.rushing_tds),
     }));
 
-  return { rows: wrRows, fetchedAt, sourceUrl };
+  return { rows: nonQbRows, fetchedAt, sourceUrl };
 }
