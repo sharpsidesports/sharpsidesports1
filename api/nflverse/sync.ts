@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { ingestSeason, ingestPlayerCrosswalk, ingestPbpZoneStats } from '../../src/lib/nflverse/ingest.js';
+import { ingestSeason, ingestPlayerCrosswalk } from '../../src/lib/nflverse/ingest.js';
 
 // Pulls the current (and, on first run, prior) season's nflverse data into
 // Supabase. GET /api/nflverse/sync?season=2026&priorSeason=2025
@@ -24,10 +24,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     for (const s of seasons) {
       results.push(await ingestSeason(s));
     }
-    // Current season only — see ingestPbpZoneStats's own comment for why
-    // this isn't looped over `seasons` the way ingestSeason() is.
-    const pbpZone = await ingestPbpZoneStats(season);
-    return res.status(200).json({ crosswalk, seasons: results, pbpZone });
+    // Play-by-play zone stats are ingested by their own endpoint
+    // (api/nflverse/sync-pbp.ts), not here — combining it with the stats
+    // fetches above pushed this request past its function's execution
+    // budget (each on its own is fast; stacked in one invocation, under
+    // serverless CPU throttling, it wasn't).
+    return res.status(200).json({ crosswalk, seasons: results });
   } catch (error) {
     console.error('nflverse sync failed:', error);
     return res.status(500).json({
