@@ -47,9 +47,9 @@ function ZoneBreakdownSection({ r }: { r: TdModelRow }) {
             Scored: <span className="font-semibold tabular-nums text-gray-900">{r.scored ?? '—'}</span>
           </span>
           <span>
-            TD Debt:{' '}
+            TD Deficit:{' '}
             <span
-              className={`font-semibold tabular-nums ${r.td_debt !== null && r.td_debt > 0 ? 'text-sharpside-green' : 'text-gray-900'}`}
+              className={`font-semibold tabular-nums ${r.td_debt !== null && r.td_debt > 0 ? 'text-[#15803D]' : 'text-gray-900'}`}
             >
               {formatTdDebt(r.td_debt)}
             </span>
@@ -164,7 +164,7 @@ function rowBadges(r: TdModelRow) {
 const COLUMN_TOOLTIPS: Record<string, string> = {
   volume: 'Season-to-date carries + targets across all field zones — how often this player has gotten the ball.',
   tdDebt:
-    'Expected TDs minus actual TDs; higher means the player has been unlucky and is due for positive regression.',
+    'TD Deficit = Expected TDs minus actual TDs; higher means the player has been unlucky and is due for positive regression.',
   edge: "Sharpside's touchdown probability minus the sportsbook consensus — positive means our model sees more value than the market price.",
   impliedTotal: "This player's team Vegas-implied point total this week — higher means a higher-scoring environment.",
   sharpScore: "Sharpside's composite 0-100 ranking combining TD probability, market edge, implied total, and matchup.",
@@ -301,7 +301,7 @@ export default function TdModelTable({ rows, loading, highlightedPlayerId, onHig
                 <InfoTooltip text={COLUMN_TOOLTIPS.volume} />
               </th>
               <th className="cursor-pointer whitespace-nowrap px-3 py-2 text-right" onClick={() => handleSort('tdDebt')}>
-                TD Debt{sortIndicator('tdDebt')}
+                TD Deficit{sortIndicator('tdDebt')}
                 <InfoTooltip text={COLUMN_TOOLTIPS.tdDebt} />
               </th>
               <th className="cursor-pointer whitespace-nowrap px-3 py-2 text-right" onClick={() => handleSort('edge')}>
@@ -436,7 +436,7 @@ export default function TdModelTable({ rows, loading, highlightedPlayerId, onHig
               )}
               <div className="mt-2 grid grid-cols-2 gap-2">
                 <HeatCell value={`Vol ${r.volume}`} percentile={r.volumePercentile} />
-                <HeatCell value={`Debt ${formatTdDebt(r.td_debt)}`} percentile={r.tdDebtPercentile} />
+                <HeatCell value={`Deficit ${formatTdDebt(r.td_debt)}`} percentile={r.tdDebtPercentile} />
               </div>
               <div className="mt-1 flex justify-between text-xs text-gray-600">
                 <span>Edge {formatEdge(r.edge)}</span>
@@ -461,7 +461,7 @@ export default function TdModelTable({ rows, loading, highlightedPlayerId, onHig
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-gray-100 p-3 text-[11px] text-gray-500">
         <span className="font-semibold uppercase tracking-wide text-gray-400">Legend:</span>
-        <span>🔥 Due = Elite TD Debt (top 10%)</span>
+        <span>🔥 Due = Elite TD Deficit (top 10%)</span>
         <span>📈 High Volume = Elite Volume (top 10%)</span>
         <span>⭐ Top Play = Strong+ in both, positive/unknown edge</span>
         <span>Darker/bolder cell = higher percentile within current filters</span>

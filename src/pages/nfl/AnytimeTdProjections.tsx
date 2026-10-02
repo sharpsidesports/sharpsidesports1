@@ -58,7 +58,7 @@ export default function AnytimeTdProjections() {
           <h1 className="mb-1 text-2xl font-bold text-gray-900">NFL Week 1 Anytime TD Projections vs. Sportsbook Odds</h1>
           <p className="text-sm text-gray-600">
             Sharpside's Week 1 projections compared against the sportsbook consensus Anytime TD Scorer price. Volume
-            and TD Debt are ranked against the current position filter so the strongest signals stand out — not fixed
+            and TD Deficit are ranked against the current position filter so the strongest signals stand out — not fixed
             thresholds.
           </p>
         </div>

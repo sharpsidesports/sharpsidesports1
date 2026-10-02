@@ -53,7 +53,7 @@ export default function TopPlaysCarousel({ rows, onSelect }: TopPlaysCarouselPro
                 Vol <span className="font-semibold tabular-nums text-gray-900">{r.volume}</span>
               </span>
               <span>
-                Debt{' '}
+                Deficit{' '}
                 <span
                   className={`font-semibold tabular-nums ${r.td_debt !== null && r.td_debt > 0 ? 'text-sharpside-green' : 'text-gray-900'}`}
                 >

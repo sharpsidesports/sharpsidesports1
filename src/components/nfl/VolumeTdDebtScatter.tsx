@@ -123,7 +123,7 @@ export default function VolumeTdDebtScatter({ rows, onSelect }: VolumeTdDebtScat
       maintainAspectRatio: false,
       scales: {
         x: { title: { display: true, text: 'Volume (season-to-date touches)' } },
-        y: { title: { display: true, text: 'TD Debt' } },
+        y: { title: { display: true, text: 'TD Deficit' } },
       },
       plugins: {
         legend: { position: 'top', labels: { usePointStyle: true } },
@@ -131,7 +131,7 @@ export default function VolumeTdDebtScatter({ rows, onSelect }: VolumeTdDebtScat
           callbacks: {
             label: (ctx) => {
               const p = ctx.raw as BubblePoint;
-              return `${p.name} (${p.team}) — Vol ${p.x}, TD Debt ${p.y.toFixed(1)}${
+              return `${p.name} (${p.team}) — Vol ${p.x}, TD Deficit ${p.y.toFixed(1)}${
                 p.edge !== null ? `, Edge ${formatEdge(p.edge)}` : ''
               }`;
             },
@@ -151,7 +151,7 @@ export default function VolumeTdDebtScatter({ rows, onSelect }: VolumeTdDebtScat
   return (
     <div className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-gray-100">
       <div className="mb-2 flex items-center justify-between">
-        <h2 className="text-sm font-bold uppercase tracking-wide text-gray-700">Volume vs. TD Debt</h2>
+        <h2 className="text-sm font-bold uppercase tracking-wide text-gray-700">Volume vs. TD Deficit</h2>
         <button
           type="button"
           onClick={() => setCollapsed((v) => !v)}
