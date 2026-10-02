@@ -98,7 +98,11 @@ export default function VolumeTdDebtScatter({ rows, onSelect }: VolumeTdDebtScat
       const point: BubblePoint = {
         x: r.volume,
         y: r.td_debt as number,
-        r: 6 + Math.min(Math.abs(r.edge ?? 0) * 200, 14),
+        // Real edge values run roughly ±0.03-0.23 (checked against live data) — the
+        // old 6 + |edge|*200 scale saturated its 14px cap for most points, so nearly
+        // every bubble rendered at max size. Rescaled so the cap is reached only at
+        // the actual extreme, giving a real size gradient instead of uniform blobs.
+        r: 3 + Math.min(Math.abs(r.edge ?? 0) * 35, 6),
         playerId: r.player_id,
         name: r.player_name,
         team: r.team,
@@ -111,7 +115,7 @@ export default function VolumeTdDebtScatter({ rows, onSelect }: VolumeTdDebtScat
     return Array.from(byPosition.entries()).map(([position, data]) => ({
       label: position,
       data,
-      backgroundColor: `${POSITION_COLORS[position] ?? '#9CA3AF'}B3`, // ~70% opacity
+      backgroundColor: `${POSITION_COLORS[position] ?? '#9CA3AF'}80`, // ~50% opacity, lighter so dense overlaps stay legible
       borderColor: POSITION_COLORS[position] ?? '#9CA3AF',
       borderWidth: 1,
     }));
@@ -150,7 +154,7 @@ export default function VolumeTdDebtScatter({ rows, onSelect }: VolumeTdDebtScat
 
   return (
     <div className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-gray-100">
-      <div className="mb-2 flex items-center justify-between">
+      <div className="mb-1 flex items-center justify-between">
         <h2 className="text-sm font-bold uppercase tracking-wide text-gray-700">Volume vs. TD Deficit</h2>
         <button
           type="button"
@@ -160,10 +164,11 @@ export default function VolumeTdDebtScatter({ rows, onSelect }: VolumeTdDebtScat
           {collapsed ? 'Show chart' : 'Hide chart'}
         </button>
       </div>
+      {!collapsed && <p className="mb-2 hidden text-xs text-gray-400 md:block">Dot size reflects betting edge magnitude</p>}
 
       {!collapsed && (
         <>
-          <div className="hidden h-72 md:block">
+          <div className="hidden h-80 md:block">
             {plottable.length > 0 ? (
               <Bubble data={{ datasets }} options={options} plugins={[buildQuadrantPlugin(medianX, medianY)]} />
             ) : (
