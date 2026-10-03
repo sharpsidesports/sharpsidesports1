@@ -11,6 +11,7 @@ const NFL_MODELS = [
   { label: 'Touchdown Model', to: '/picks-preview/nfl-models/touchdown-model' },
   { label: 'Receiving Model', to: '/picks-preview/nfl-models/receiving-model' },
   { label: 'Passing Model', to: '/picks-preview/nfl-models/passing-model' },
+  { label: 'Pace Rankings', to: '/nfl/pace-rankings' },
 ];
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
