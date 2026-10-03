@@ -16,6 +16,7 @@ export interface RecentRollups {
   recentCatchPct: number | null;
   seasonTargetShareActual: number | null;
   recentGamesCount: number;
+  recentTargets: number; // raw target count over the recent window — lets callers gate signals on sample size (a 1-target/1-catch game is not a real 100% catch rate)
 }
 
 function average(nums: number[]): number | null {
@@ -25,7 +26,13 @@ function average(nums: number[]): number | null {
 
 export function calculateRecentRollups(currentSeasonGames: PlayerGameLog[]): RecentRollups {
   if (currentSeasonGames.length === 0) {
-    return { recentTargetShare: null, recentCatchPct: null, seasonTargetShareActual: null, recentGamesCount: 0 };
+    return {
+      recentTargetShare: null,
+      recentCatchPct: null,
+      seasonTargetShareActual: null,
+      recentGamesCount: 0,
+      recentTargets: 0,
+    };
   }
 
   const recentGames = currentSeasonGames.slice(-RECENT_WINDOW);
@@ -41,5 +48,6 @@ export function calculateRecentRollups(currentSeasonGames: PlayerGameLog[]): Rec
     recentCatchPct: recentTargets > 0 ? recentReceptions / recentTargets : null,
     seasonTargetShareActual: average(seasonShares),
     recentGamesCount: recentGames.length,
+    recentTargets,
   };
 }

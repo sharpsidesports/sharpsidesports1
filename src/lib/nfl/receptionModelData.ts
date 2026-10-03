@@ -32,6 +32,7 @@ export interface ReceptionProjectionRow {
   recentCatchPct: number | null;
   seasonTargetShareActual: number | null;
   recentGamesCount: number;
+  recentTargets: number;
   dataSeason: number;
   dataWeek: number;
   dataLastUpdated: string | null;
@@ -46,6 +47,11 @@ export interface ReceptionProjectionRow {
 // recent games so a single-game blip can't trigger it.
 const ROLE_TREND_THRESHOLD = 0.03;
 const ROLE_TREND_MIN_GAMES = 2;
+
+// A 1-target/1-catch game is a 100% catch rate in the data but not a real
+// efficiency signal — gate Buy Low/Unsustainable on a minimum recent target
+// count so small-sample noise can't masquerade as a regression candidate.
+const MIN_RECENT_TARGETS_FOR_EFFICIENCY_BADGE = 3;
 
 export interface ReceptionModelRow extends ReceptionProjectionRow {
   targetSharePercentile: number | null;
@@ -70,10 +76,15 @@ export function deriveReceptionModelRows(pool: ReceptionProjectionRow[]): Recept
     const targetShareTier = getTier(targetSharePercentile);
     const catchRateTier = getTier(catchRatePercentile);
 
+    const hasEnoughSampleForEfficiencyBadge = p.recentTargets >= MIN_RECENT_TARGETS_FOR_EFFICIENCY_BADGE;
     const isBuyLow =
-      (targetShareTier === 'elite' || targetShareTier === 'strong') && catchRateTier === 'low';
+      hasEnoughSampleForEfficiencyBadge &&
+      (targetShareTier === 'elite' || targetShareTier === 'strong') &&
+      catchRateTier === 'low';
     const isUnsustainable =
-      targetShareTier === 'low' && (catchRateTier === 'elite' || catchRateTier === 'strong');
+      hasEnoughSampleForEfficiencyBadge &&
+      targetShareTier === 'low' &&
+      (catchRateTier === 'elite' || catchRateTier === 'strong');
 
     const hasEnoughRecentGames = p.recentGamesCount >= ROLE_TREND_MIN_GAMES;
     const roleDelta =

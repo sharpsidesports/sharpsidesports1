@@ -20,7 +20,11 @@ export default function RegressionWatchCarousel({ rows, onSelect }: RegressionWa
   const qualifying = rows
     .filter((r) => r.isBuyLow || r.isUnsustainable)
     .sort((a, b) => Math.abs(b.regressionGap) - Math.abs(a.regressionGap));
-  const fallback = [...rows].sort((a, b) => Math.abs(b.regressionGap) - Math.abs(a.regressionGap));
+  // Fallback also requires a real recent sample — otherwise a 1-target/1-catch
+  // blip (100% catch rate on nothing) would fill empty carousel slots.
+  const fallback = rows
+    .filter((r) => r.recentTargets >= 3)
+    .sort((a, b) => Math.abs(b.regressionGap) - Math.abs(a.regressionGap));
   const picks = (qualifying.length >= MIN_CARDS ? qualifying : fallback).slice(0, MAX_CARDS);
 
   if (picks.length === 0) return null;

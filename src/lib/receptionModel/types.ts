@@ -110,6 +110,7 @@ export interface ReceptionProjectionResult {
   recentCatchPct: number | null;
   seasonTargetShareActual: number | null;
   recentGamesCount: number;
+  recentTargets: number;
 
   dataSeason: number;
   dataWeek: number;
