@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import TopPlaysCarousel from '../../components/nfl/TopPlaysCarousel.js';
 import VolumeTdDebtScatter from '../../components/nfl/VolumeTdDebtScatter.js';
 import TdModelTable from '../../components/nfl/TdModelTable.js';
+import PageExplainer from '../../components/nfl/PageExplainer.js';
 import { TopPlayCardSkeleton } from '../../components/nfl/Skeleton.js';
 import { deriveTdModelRows, type ApiResponse } from '../../lib/nfl/tdModelData.js';
 
@@ -70,6 +71,23 @@ export default function AnytimeTdProjections() {
           {refreshing ? 'Refreshing…' : 'Refresh odds'}
         </button>
       </div>
+
+      <PageExplainer storageKey="tdModelExplainerSeen">
+        <p>
+          <strong>Sharp Score</strong> (0-100) is our composite ranking of how good an Anytime TD play this player is
+          this week — higher is better.
+        </p>
+        <p>
+          <strong>Volume</strong> and <strong>TD Deficit</strong> are ranked against the current position filter, not
+          fixed thresholds — the strongest signals in the current pool stand out.
+        </p>
+        <ul className="list-disc space-y-1 pl-4">
+          <li><strong>🔥 Due</strong> — Elite TD Deficit: this player's expected TDs are well above his actual TDs scored. He's due for positive regression.</li>
+          <li><strong>📈 High Volume</strong> — Elite touch volume (carries + targets) near the goal line and beyond.</li>
+          <li><strong>⭐ Top Play</strong> — Strong or better in both Volume and TD Deficit, with a neutral or positive betting edge.</li>
+        </ul>
+        <p>Click <strong>Detail</strong> on any player to see the zone-by-zone breakdown behind the projection.</p>
+      </PageExplainer>
 
       {error ? (
         <div className="p-6 text-center text-red-600">{error}</div>
