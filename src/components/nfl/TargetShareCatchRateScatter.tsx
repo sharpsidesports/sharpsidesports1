@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
   Chart as ChartJS,
   LinearScale,
@@ -8,11 +8,17 @@ import {
   Legend,
   type Plugin,
   type ChartOptions,
+  type Chart,
 } from 'chart.js';
+import zoomPlugin from 'chartjs-plugin-zoom';
 import { Bubble } from 'react-chartjs-2';
 import type { ReceptionModelRow } from '../../lib/nfl/receptionModelData.js';
 
-ChartJS.register(LinearScale, PointElement, BubbleController, Tooltip, Legend);
+// chartjs-plugin-zoom's published types don't line up with Chart.js v4's
+// register() overloads (a known friction between the two packages, not a
+// runtime issue) — cast through the same Plugin type used for the quadrant
+// plugin below.
+ChartJS.register(LinearScale, PointElement, BubbleController, Tooltip, Legend, zoomPlugin as unknown as Plugin<'bubble'>);
 
 interface TargetShareCatchRateScatterProps {
   rows: ReceptionModelRow[];
@@ -90,6 +96,8 @@ function buildQuadrantPlugin(medianX: number, medianY: number): Plugin<'bubble'>
 
 export default function TargetShareCatchRateScatter({ rows, onSelect }: TargetShareCatchRateScatterProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const [isZoomed, setIsZoomed] = useState(false);
+  const chartRef = useRef<Chart<'bubble'> | null>(null);
 
   const plottable = useMemo(
     () => rows.filter((r) => r.recentTargetShare !== null && r.recentCatchPct !== null),
@@ -109,7 +117,7 @@ export default function TargetShareCatchRateScatter({ rows, onSelect }: TargetSh
       const point: BubblePoint = {
         x: (r.recentTargetShare as number) * 100,
         y: (r.recentCatchPct as number) * 100,
-        r: 3 + Math.min(Math.abs(r.regressionGap) * 14, 7),
+        r: 5 + Math.min(Math.abs(r.regressionGap) * 14, 8),
         playerId: r.espnId,
         name: r.playerName,
         team: r.team,
@@ -138,6 +146,10 @@ export default function TargetShareCatchRateScatter({ rows, onSelect }: TargetSh
         x: { title: { display: true, text: 'Recent Target Share (%)' } },
         y: { title: { display: true, text: 'Recent Catch Rate (%)' } },
       },
+      // 'nearest' + intersect:false means a click/tap registers on the closest
+      // bubble even if the pointer isn't exactly inside its small circle —
+      // applies to both hover tooltips and onClick's `elements` below.
+      interaction: { mode: 'nearest', intersect: false },
       plugins: {
         legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { size: 10 } } },
         tooltip: {
@@ -146,6 +158,23 @@ export default function TargetShareCatchRateScatter({ rows, onSelect }: TargetSh
               const p = ctx.raw as BubblePoint;
               return `${p.name} (${p.team}) — Share ${p.x.toFixed(1)}%, Catch % ${p.y.toFixed(1)}%`;
             },
+          },
+        },
+        zoom: {
+          limits: {
+            x: { min: 'original', max: 'original' },
+            y: { min: 'original', max: 'original' },
+          },
+          pan: {
+            enabled: true,
+            mode: 'xy',
+            onPanComplete: () => setIsZoomed(true),
+          },
+          zoom: {
+            wheel: { enabled: true },
+            pinch: { enabled: true },
+            mode: 'xy',
+            onZoomComplete: () => setIsZoomed(true),
           },
         },
       },
@@ -159,29 +188,46 @@ export default function TargetShareCatchRateScatter({ rows, onSelect }: TargetSh
     [onSelect]
   );
 
+  const resetZoom = () => {
+    chartRef.current?.resetZoom();
+    setIsZoomed(false);
+  };
+
   return (
     <div className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-gray-100">
       <div className="mb-1 flex items-center justify-between">
         <h2 className="text-sm font-bold uppercase tracking-wide text-gray-700">Target Share vs. Catch Rate</h2>
-        <button
-          type="button"
-          onClick={() => setCollapsed((v) => !v)}
-          className="text-xs font-semibold text-sharpside-green hover:underline"
-        >
-          {collapsed ? 'Show chart' : 'Hide chart'}
-        </button>
+        <div className="flex items-center gap-3">
+          {!collapsed && isZoomed && (
+            <button type="button" onClick={resetZoom} className="text-xs font-semibold text-gray-500 hover:underline">
+              Reset zoom
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => setCollapsed((v) => !v)}
+            className="text-xs font-semibold text-sharpside-green hover:underline"
+          >
+            {collapsed ? 'Show chart' : 'Hide chart'}
+          </button>
+        </div>
       </div>
       {!collapsed && (
         <p className="mb-2 text-xs text-gray-400">
           Both axes are last-3-game actuals, not season-cumulative — a player's recent role shift shows up directly
-          instead of being averaged away. Tap a dot for that player's row below.
+          instead of being averaged away. Scroll or pinch to zoom, drag to pan, tap a dot for that player's row below.
         </p>
       )}
 
       {!collapsed && (
         <div className="h-64 sm:h-80">
           {plottable.length > 0 ? (
-            <Bubble data={{ datasets }} options={options} plugins={[buildQuadrantPlugin(medianX, medianY)]} />
+            <Bubble
+              ref={chartRef}
+              data={{ datasets }}
+              options={options}
+              plugins={[buildQuadrantPlugin(medianX, medianY)]}
+            />
           ) : (
             <p className="text-sm text-gray-400">Not enough data yet to plot.</p>
           )}
