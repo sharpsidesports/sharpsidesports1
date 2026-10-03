@@ -57,6 +57,19 @@ export interface PlayerModelInput {
   priorTeamGames: TeamGameLog[]; // the player's current team, prior season (for early-season projected pass attempts)
   opponentGamesAllowed: TeamGameLog[]; // upcoming opponent's games, any team they faced, current + prior season
 
+  // Opponent's games allowed, filtered to what they've given up specifically
+  // to WRs (not all positions lumped together) — see
+  // calculateOpponentCatchRateAllowedByPosition.ts.
+  opponentGamesAllowedToWr: { targets: number; receptions: number }[];
+
+  currentSeasonSnapPct: { week: number; offenseSnapPct: number | null }[]; // this player, this season, ascending by week — offensive snap share (role proxy, not a literal routes-run count)
+  latestNgsReceiving: {
+    week: number;
+    avgSeparation: number | null;
+    avgCushion: number | null;
+    avgYacAboveExpectation: number | null;
+  } | null; // most recent available week's NGS row for this player, if any
+
   espnProjectedReceptions: number | null;
 
   impliedTeamTotal: number | null; // Vegas-consensus implied points for this player's team this week, null if lines aren't in yet
@@ -96,7 +109,8 @@ export interface ReceptionProjectionResult {
 
   impliedTeamTotal: number | null;
   opponentTdRateAllowed: number | null; // opponent's rushing + passing TDs allowed per game
-  opponentCatchPctAllowed: number | null; // opponent's completions / pass attempts allowed per game
+  opponentCatchPctAllowed: number | null; // opponent's completions / pass attempts allowed per game, ALL positions (team-wide) — kept for Sharp Score, which is unchanged
+  opponentCatchPctAllowedToWr: number | null; // same idea, but specifically what the opponent has allowed to WRs — more accurate for this WR-only page; display-only, not a Sharp Score input
   targetsPerGame: number | null; // season-to-date
   catchPctSeason: number | null; // season-to-date receptions / targets
   receptionDebt: number | null; // season-to-date projected minus actual receptions; positive = "due"
@@ -116,6 +130,15 @@ export interface ReceptionProjectionResult {
   // Climbing/Fading trend, a shorter/more reactive window than recentTargetShare.
   roleTrendTargetShare: number | null;
   roleTrendGamesCount: number;
+
+  // Snap share (role proxy) — same last-up-to-3-game recency window as
+  // recentTargetShare. Display-only; not a Sharp Score input.
+  recentOffenseSnapPct: number | null;
+
+  // NGS receiving quality signals — most recent available week, display-only.
+  avgSeparation: number | null;
+  avgCushion: number | null;
+  avgYacAboveExpectation: number | null;
 
   dataSeason: number;
   dataWeek: number;

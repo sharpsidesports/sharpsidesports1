@@ -44,6 +44,7 @@ import WRRedzoneStats from './pages/redzone/WR.js';
 import TERedzoneStats from './pages/redzone/TE.js';
 import RBRedzoneStats from './pages/redzone/RB.js';
 import AnytimeTdProjections from './pages/nfl/AnytimeTdProjections.js';
+import PaceRankings from './pages/nfl/PaceRankings.js';
 import NFLTeamOffenseStatsPage from './pages/nfl/Offense.js';
 import NFLTeamDefenseStatsPage from './pages/nfl/Defense.js';
 import PassAttemptsPerGame from './pages/nfl/PassAttemptsPerGame.js';
@@ -345,6 +346,7 @@ function App() {
                 <Route path="/nfl/yards-per-completion" element={<YardsPerCompletion />} />
                 <Route path="/nfl/passing-yards-per-game" element={<PassingYardsPerGame />} />
                 <Route path="/nfl/anytime-td-projections" element={<AnytimeTdProjections />} />
+                <Route path="/nfl/pace-rankings" element={<PaceRankings />} />
                 <Route path="/nfl/fantasy-projections" element={<FantasyProjectionsLanding />} />
                 <Route path="/nfl/redzone-stats" element={<RedzoneStatsLanding />} />
                 <Route path="/nfl/team-stats" element={<TeamStatsLanding />} />

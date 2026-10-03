@@ -12,6 +12,8 @@ import type {
   NflverseGameLineRow,
   NflverseInjuryRow,
   PlayerCrosswalkRow,
+  NflverseSnapCountRow,
+  NflverseNgsReceivingRow,
 } from '../nflverse/types.js';
 import type { BuildProjectionsInput } from './buildWeeklyReceptionProjections.js';
 
@@ -40,8 +42,17 @@ export async function loadSupabaseProjectionsInput(
   week: number,
   priorSeason: number = season - 1
 ): Promise<BuildProjectionsInput> {
-  const [espn, crosswalkRows, playerWeekRows, teamWeekRows, injuriesRows, gameLineRows, receptionHistoryRows] =
-    await Promise.all([
+  const [
+    espn,
+    crosswalkRows,
+    playerWeekRows,
+    teamWeekRows,
+    injuriesRows,
+    gameLineRows,
+    receptionHistoryRows,
+    snapCountRows,
+    ngsReceivingRows,
+  ] = await Promise.all([
       getEspnWeekReceptionProjections(season, week),
       fetchAllRows('player_crosswalk', (from, to) =>
         supabaseAdmin.from('player_crosswalk').select('*').range(from, to)
@@ -66,11 +77,23 @@ export async function loadSupabaseProjectionsInput(
           .lt('week', week)
           .range(from, to)
       ),
+      fetchAllRows('nflverse_player_snap_week_stats', (from, to) =>
+        supabaseAdmin.from('nflverse_player_snap_week_stats').select('*').eq('season', season).lt('week', week).range(from, to)
+      ),
+      fetchAllRows('nflverse_player_ngs_receiving_week_stats', (from, to) =>
+        supabaseAdmin
+          .from('nflverse_player_ngs_receiving_week_stats')
+          .select('*')
+          .eq('season', season)
+          .lt('week', week)
+          .range(from, to)
+      ),
     ]);
 
   const crosswalk: PlayerCrosswalkRow[] = crosswalkRows.map((r) => ({
     gsisId: r.gsis_id,
     espnId: r.espn_id,
+    pfrId: r.pfr_id,
     displayName: r.display_name,
     position: r.position ?? '',
     status: r.status,
@@ -140,6 +163,28 @@ export async function loadSupabaseProjectionsInput(
       projectedReceptions: r.projected_receptions as number,
     }));
 
+  const snapCounts: NflverseSnapCountRow[] = snapCountRows.map((r) => ({
+    gsisId: r.gsis_id,
+    season: r.season,
+    week: r.week,
+    team: r.team,
+    offenseSnaps: r.offense_snaps,
+    offensePct: r.offense_pct,
+  }));
+
+  const ngsReceiving: NflverseNgsReceivingRow[] = ngsReceivingRows.map((r) => ({
+    gsisId: r.gsis_id,
+    season: r.season,
+    week: r.week,
+    avgCushion: r.avg_cushion,
+    avgSeparation: r.avg_separation,
+    avgIntendedAirYards: r.avg_intended_air_yards,
+    catchPercentage: r.catch_percentage,
+    avgYac: r.avg_yac,
+    avgExpectedYac: r.avg_expected_yac,
+    avgYacAboveExpectation: r.avg_yac_above_expectation,
+  }));
+
   const injuries: NflverseInjuryRow[] = injuriesRows.map((r) => ({
     gsisId: r.gsis_id,
     playerName: r.player_name,
@@ -174,6 +219,8 @@ export async function loadSupabaseProjectionsInput(
     crosswalk,
     gameLines,
     receptionProjectionHistory,
+    snapCounts,
+    ngsReceiving,
     nflverseFetchedAt,
     latestAvailableNflverseWeek,
   };

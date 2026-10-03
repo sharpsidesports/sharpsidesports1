@@ -10,7 +10,7 @@ import { percentileRank } from '../../lib/nfl/percentileRank.js';
 import { formatPct } from '../../lib/nfl/formatters.js';
 
 type SortKey = 'sharpScore' | 'targetShare' | 'catchRate' | 'regressionGap' | 'projectedReceptions' | 'impliedTotal' | 'player';
-type ChipFilter = 'all' | 'buyLow' | 'unsustainable' | 'roleClimbing';
+type ChipFilter = 'all' | 'buyLow' | 'unsustainable' | 'roleClimbing' | 'overlooked';
 
 interface ReceptionModelTableProps {
   rows: ReceptionModelRow[]; // already search-filtered, percentiles derived against this pool
@@ -29,15 +29,27 @@ function roleTrendBadge(r: ReceptionModelRow) {
   return <span className="text-xs text-gray-400">Steady</span>;
 }
 
+function formatYards(value: number | null): string {
+  return value === null ? '—' : `${value.toFixed(1)} yds`;
+}
+
+function formatSignedYards(value: number | null): string {
+  if (value === null) return '—';
+  const sign = value > 0 ? '+' : '';
+  return `${sign}${value.toFixed(1)} yds`;
+}
+
 function ExpandedDetail({ r, pool }: { r: ReceptionModelRow; pool: ReceptionModelRow[] }) {
   const pools = useMemo(
     () => ({
       targetShare: pool.map((p) => p.expectedTargetShare),
       targetsPerGame: pool.map((p) => p.targetsPerGame),
       catchPctSeason: pool.map((p) => p.catchPctSeason),
-      opponentCatchPctAllowed: pool.map((p) => p.opponentCatchPctAllowed),
+      opponentCatchPctAllowedToWr: pool.map((p) => p.opponentCatchPctAllowedToWr),
       impliedTeamTotal: pool.map((p) => p.impliedTeamTotal),
       receptionDebt: pool.map((p) => p.receptionDebt),
+      offenseSnapPct: pool.map((p) => p.recentOffenseSnapPct),
+      avgSeparation: pool.map((p) => p.avgSeparation),
     }),
     [pool]
   );
@@ -86,15 +98,26 @@ function ExpandedDetail({ r, pool }: { r: ReceptionModelRow; pool: ReceptionMode
             fillPct={pctlFill(percentileRank(r.catchPctSeason, pools.catchPctSeason))}
           />
           <StatBar
-            label="Matchup (opp catch % allowed)"
-            value={formatPct(r.opponentCatchPctAllowed)}
-            fillPct={pctlFill(percentileRank(r.opponentCatchPctAllowed, pools.opponentCatchPctAllowed))}
+            label="Matchup (opp catch % allowed to WR)"
+            value={formatPct(r.opponentCatchPctAllowedToWr)}
+            fillPct={pctlFill(percentileRank(r.opponentCatchPctAllowedToWr, pools.opponentCatchPctAllowedToWr))}
             tone="blue"
           />
           <StatBar
             label="Implied Team Total"
             value={r.impliedTeamTotal !== null ? `${r.impliedTeamTotal} pts` : '—'}
             fillPct={pctlFill(percentileRank(r.impliedTeamTotal, pools.impliedTeamTotal))}
+          />
+          <StatBar
+            label="Recent Snap Share (role proxy)"
+            value={formatPct(r.recentOffenseSnapPct)}
+            fillPct={pctlFill(percentileRank(r.recentOffenseSnapPct, pools.offenseSnapPct))}
+            tone="blue"
+          />
+          <StatBar
+            label="Avg. Separation (NGS)"
+            value={formatYards(r.avgSeparation)}
+            fillPct={pctlFill(percentileRank(r.avgSeparation, pools.avgSeparation))}
           />
           <StatBar
             label="Reception Debt (season-cumulative, legacy)"
@@ -110,6 +133,9 @@ function ExpandedDetail({ r, pool }: { r: ReceptionModelRow; pool: ReceptionMode
         <div>Team pass att.: <span className="font-semibold text-gray-900">{r.projectedTeamPassAttempts ?? '—'}</span></div>
         <div>Projected targets: <span className="font-semibold text-gray-900">{r.projectedTargets ?? '—'}</span></div>
         <div>nflverse model: <span className="font-semibold text-gray-900">{r.nflverseProjectedReceptions ?? '—'}</span></div>
+        <div>Matchup, all positions: <span className="font-semibold text-gray-900">{formatPct(r.opponentCatchPctAllowed)}</span></div>
+        <div>Avg. Cushion (NGS): <span className="font-semibold text-gray-900">{formatYards(r.avgCushion)}</span></div>
+        <div>Avg. YAC above expectation (NGS): <span className="font-semibold text-gray-900">{formatSignedYards(r.avgYacAboveExpectation)}</span></div>
         <div>Data updated: <span className="font-semibold text-gray-900">{r.dataLastUpdated ? new Date(r.dataLastUpdated).toLocaleString() : '—'}</span></div>
         {r.fallbacksUsed.length > 0 && (
           <div className="col-span-full">Fallbacks: <span className="font-semibold text-gray-900">{r.fallbacksUsed.join(', ')}</span></div>
@@ -129,8 +155,13 @@ function rowBadges(r: ReceptionModelRow) {
       {r.isUnsustainable && <Badge label="⚠️ Unsustainable" tone="amber" />}
       {r.isRoleClimbing && <Badge label="📈 Climbing" tone="blue" />}
       {r.isRoleFading && <Badge label="📉 Fading" tone="gray" />}
+      {r.isOverlooked && <Badge label="🏃 Overlooked" tone="blue" />}
     </>
   );
+}
+
+function hasAnyBadge(r: ReceptionModelRow): boolean {
+  return r.isBuyLow || r.isUnsustainable || r.isRoleClimbing || r.isRoleFading || r.isOverlooked;
 }
 
 const COLUMN_TOOLTIPS: Record<string, string> = {
@@ -185,6 +216,8 @@ export default function ReceptionModelTable({
         return searched.filter((r) => r.isUnsustainable);
       case 'roleClimbing':
         return searched.filter((r) => r.isRoleClimbing);
+      case 'overlooked':
+        return searched.filter((r) => r.isOverlooked);
       default:
         return searched;
     }
@@ -237,6 +270,7 @@ export default function ReceptionModelTable({
     { key: 'buyLow', label: '🎯 Buy Low' },
     { key: 'unsustainable', label: '⚠️ Unsustainable' },
     { key: 'roleClimbing', label: '📈 Role Climbing' },
+    { key: 'overlooked', label: '🏃 Overlooked' },
   ];
 
   return (
@@ -343,7 +377,7 @@ export default function ReceptionModelTable({
                           <div className="truncate text-xs text-gray-500">
                             WR · {r.team} vs {r.opponentTeam ?? '—'}
                           </div>
-                          {(r.isBuyLow || r.isUnsustainable || r.isRoleClimbing || r.isRoleFading) && (
+                          {hasAnyBadge(r) && (
                             <div className="mt-0.5 flex flex-wrap gap-1">{rowBadges(r)}</div>
                           )}
                         </div>
@@ -418,7 +452,7 @@ export default function ReceptionModelTable({
                   {r.sharpScore ?? '—'}
                 </span>
               </div>
-              {(r.isBuyLow || r.isUnsustainable || r.isRoleClimbing || r.isRoleFading) && (
+              {hasAnyBadge(r) && (
                 <div className="mt-1.5 flex flex-wrap gap-1">{rowBadges(r)}</div>
               )}
               <div className="mt-2 grid grid-cols-2 gap-2">
@@ -450,7 +484,8 @@ export default function ReceptionModelTable({
         <span className="font-semibold uppercase tracking-wide text-gray-400">Legend:</span>
         <span>🎯 Buy Low = high recent target share, low recent catch rate</span>
         <span>⚠️ Unsustainable = low recent target share, high recent catch rate</span>
-        <span>📈/📉 Role Trend = last-3-game share vs. season average, ±3pp</span>
+        <span>📈/📉 Role Trend = last-2-game share vs. season average, ±3pp</span>
+        <span>🏃 Overlooked = high recent snap share, low recent target share</span>
         <span>Darker/bolder cell = higher percentile within current filters</span>
       </div>
     </div>

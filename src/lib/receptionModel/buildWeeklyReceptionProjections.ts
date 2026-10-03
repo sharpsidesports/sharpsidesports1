@@ -13,6 +13,8 @@ import type {
   NflverseInjuryRow,
   NflverseScheduleRow,
   PlayerCrosswalkRow,
+  NflverseSnapCountRow,
+  NflverseNgsReceivingRow,
 } from '../nflverse/types.js';
 import { toNflverseTeamCode } from '../nflverse/teamCodes.js';
 import { buildEspnToGsisMap, buildNormalizedNameMap, normalizePlayerName } from '../nflverse/playerCrosswalk.js';
@@ -27,6 +29,7 @@ import { calculateReceptionEdgeScore } from './calculateReceptionEdgeScore.js';
 import { calculateSharpScore } from './calculateSharpScore.js';
 import { calculateMatchupTdRateAllowed } from './calculateMatchupTdRateAllowed.js';
 import { calculateOpponentCatchRateAllowed } from './calculateOpponentCatchRateAllowed.js';
+import { calculateOpponentCatchRateAllowedByPosition } from './calculateOpponentCatchRateAllowedByPosition.js';
 import { calculateSeasonRollups } from './calculateSeasonRollups.js';
 import { calculateReceptionDebt } from './calculateReceptionDebt.js';
 import { calculateRecentRollups, calculateTargetShareWindow } from './calculateRecentRollups.js';
@@ -59,6 +62,8 @@ export interface BuildProjectionsInput {
   crosswalk: PlayerCrosswalkRow[];
   gameLines: NflverseGameLineRow[]; // current week only, consensus rows (Implied Team Total)
   receptionProjectionHistory: { gsisId: string; week: number; projectedReceptions: number }[]; // this season, weeks < current week, persisted reception_projections (Reception Debt input)
+  snapCounts: NflverseSnapCountRow[]; // current season, this player's offensive snap share by week
+  ngsReceiving: NflverseNgsReceivingRow[]; // current season, this player's NGS receiving rows by week
   nflverseFetchedAt: string | null;
   latestAvailableNflverseWeek: { season: number; week: number } | null;
 }
@@ -80,6 +85,15 @@ function round(n: number | null, decimals: number): number | null {
   if (n === null) return null;
   const f = 10 ** decimals;
   return Math.round(n * f) / f;
+}
+
+// Same last-up-to-3-game recency window as calculateRecentRollups, applied to
+// snap share — kept as a tiny inline helper rather than a new shared function
+// since this is its only use site.
+function recentAverage(values: (number | null)[], window = 3): number | null {
+  const recent = values.slice(-window).filter((v): v is number => v !== null);
+  if (recent.length === 0) return null;
+  return recent.reduce((a, b) => a + b, 0) / recent.length;
 }
 
 function toPlayerGameLog(r: NflversePlayerWeekRow): PlayerGameLog {
@@ -180,6 +194,32 @@ export function buildWeeklyReceptionProjections(input: BuildProjectionsInput): R
           .map(toTeamGameLog)
       : [];
 
+    // Same idea as opponentGamesAllowed above, but summed per-game across just
+    // the WRs who played that game — input.playerWeekStats already carries
+    // every non-QB position leaguewide, so this is a filter over data already
+    // loaded, not a new fetch. Grouped by (season, week) since a defense faces
+    // only one offense per week.
+    const opponentGamesAllowedToWr: { targets: number; receptions: number }[] = opponentTeam
+      ? Array.from(
+          input.playerWeekStats
+            .filter(
+              (r) =>
+                r.opponentTeam === opponentTeam &&
+                r.position === 'WR' &&
+                (r.season === input.season || r.season === input.priorSeason)
+            )
+            .reduce((acc, r) => {
+              const key = `${r.season}-${r.week}`;
+              const existing = acc.get(key) ?? { targets: 0, receptions: 0 };
+              existing.targets += r.targets;
+              existing.receptions += r.receptions;
+              acc.set(key, existing);
+              return acc;
+            }, new Map<string, { targets: number; receptions: number }>())
+            .values()
+        )
+      : [];
+
     const injury = gsisId
       ? input.injuries.find((i) => i.gsisId === gsisId && i.season === input.season && i.week === input.week)
       : undefined;
@@ -193,6 +233,19 @@ export function buildWeeklyReceptionProjections(input: BuildProjectionsInput): R
           .map((r) => ({ week: r.week, projectedReceptions: r.projectedReceptions }))
       : [];
 
+    const currentSeasonSnapPct = gsisId
+      ? input.snapCounts
+          .filter((r) => r.gsisId === gsisId && r.season === input.season && r.week < input.week)
+          .sort((a, b) => a.week - b.week)
+          .map((r) => ({ week: r.week, offenseSnapPct: r.offensePct }))
+      : [];
+
+    const latestNgsReceiving = gsisId
+      ? (input.ngsReceiving
+          .filter((r) => r.gsisId === gsisId && r.season === input.season && r.week < input.week)
+          .sort((a, b) => b.week - a.week)[0] ?? null)
+      : null;
+
     const model: PlayerModelInput = {
       gsisId,
       espnId: espnPlayer.espn_id,
@@ -205,6 +258,16 @@ export function buildWeeklyReceptionProjections(input: BuildProjectionsInput): R
       currentTeamGames,
       priorTeamGames,
       opponentGamesAllowed,
+      opponentGamesAllowedToWr,
+      currentSeasonSnapPct,
+      latestNgsReceiving: latestNgsReceiving
+        ? {
+            week: latestNgsReceiving.week,
+            avgSeparation: latestNgsReceiving.avgSeparation,
+            avgCushion: latestNgsReceiving.avgCushion,
+            avgYacAboveExpectation: latestNgsReceiving.avgYacAboveExpectation,
+          }
+        : null,
       espnProjectedReceptions: calculateEspnProjection(espnPlayer.espn_id, espnByEspnId),
       impliedTeamTotal,
       seasonProjectedReceptions,
@@ -280,10 +343,12 @@ export function buildWeeklyReceptionProjections(input: BuildProjectionsInput): R
 
     const opponentTdRateAllowed = calculateMatchupTdRateAllowed(model.opponentGamesAllowed);
     const opponentCatchPctAllowed = calculateOpponentCatchRateAllowed(model.opponentGamesAllowed);
+    const opponentCatchPctAllowedToWr = calculateOpponentCatchRateAllowedByPosition(model.opponentGamesAllowedToWr);
     const seasonRollups = calculateSeasonRollups(model.currentSeasonGames);
     const receptionDebt = calculateReceptionDebt(model.seasonProjectedReceptions, model.currentSeasonGames);
     const recentRollups = calculateRecentRollups(model.currentSeasonGames);
     const roleTrendWindow = calculateTargetShareWindow(model.currentSeasonGames, ROLE_TREND_WINDOW);
+    const recentOffenseSnapPct = recentAverage(model.currentSeasonSnapPct.map((g) => g.offenseSnapPct));
 
     return {
       model,
@@ -299,10 +364,12 @@ export function buildWeeklyReceptionProjections(input: BuildProjectionsInput): R
       confidence,
       opponentTdRateAllowed,
       opponentCatchPctAllowed,
+      opponentCatchPctAllowedToWr,
       seasonRollups,
       receptionDebt,
       recentRollups,
       roleTrendWindow,
+      recentOffenseSnapPct,
     };
   });
 
@@ -344,6 +411,7 @@ export function buildWeeklyReceptionProjections(input: BuildProjectionsInput): R
     impliedTeamTotal: round(p.model.impliedTeamTotal, 1),
     opponentTdRateAllowed: round(p.opponentTdRateAllowed, 2),
     opponentCatchPctAllowed: round(p.opponentCatchPctAllowed, 3),
+    opponentCatchPctAllowedToWr: round(p.opponentCatchPctAllowedToWr, 3),
     targetsPerGame: round(p.seasonRollups.targetsPerGame, 2),
     catchPctSeason: round(p.seasonRollups.catchPctSeason, 3),
     receptionDebt: round(p.receptionDebt, 2),
@@ -355,6 +423,10 @@ export function buildWeeklyReceptionProjections(input: BuildProjectionsInput): R
     recentTargets: p.recentRollups.recentTargets,
     roleTrendTargetShare: round(p.roleTrendWindow.targetShare, 3),
     roleTrendGamesCount: p.roleTrendWindow.gamesCount,
+    recentOffenseSnapPct: round(p.recentOffenseSnapPct, 3),
+    avgSeparation: round(p.model.latestNgsReceiving?.avgSeparation ?? null, 2),
+    avgCushion: round(p.model.latestNgsReceiving?.avgCushion ?? null, 2),
+    avgYacAboveExpectation: round(p.model.latestNgsReceiving?.avgYacAboveExpectation ?? null, 2),
     dataSeason: input.season,
     dataWeek: input.week,
     dataLastUpdated: input.nflverseFetchedAt,
@@ -391,6 +463,7 @@ function baseResult(
     impliedTeamTotal: null,
     opponentTdRateAllowed: null,
     opponentCatchPctAllowed: null,
+    opponentCatchPctAllowedToWr: null,
     targetsPerGame: null,
     catchPctSeason: null,
     receptionDebt: null,
@@ -402,6 +475,10 @@ function baseResult(
     recentTargets: 0,
     roleTrendTargetShare: null,
     roleTrendGamesCount: 0,
+    recentOffenseSnapPct: null,
+    avgSeparation: null,
+    avgCushion: null,
+    avgYacAboveExpectation: null,
     dataSeason: input.season,
     dataWeek: input.week,
     dataLastUpdated: input.nflverseFetchedAt,

@@ -162,6 +162,7 @@ async function loadZoneModelContext(season: number, week: number): Promise<ZoneM
   const crosswalk: PlayerCrosswalkRow[] = crosswalkRows.map((r) => ({
     gsisId: r.gsis_id,
     espnId: r.espn_id,
+    pfrId: null,
     displayName: '',
     position: '',
     status: null,

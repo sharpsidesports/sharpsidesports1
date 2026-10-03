@@ -62,6 +62,10 @@ export async function loadLiveProjectionsInput(
     // Supabase-only signal already unavailable here.
     gameLines: [],
     receptionProjectionHistory: [],
+    // Same reasoning as gameLines/receptionProjectionHistory above — snap
+    // counts and NGS are only wired up via the Supabase-backed path.
+    snapCounts: [],
+    ngsReceiving: [],
     nflverseFetchedAt: playerWeekCurrent.fetchedAt ?? playerWeekPrior.fetchedAt ?? null,
     latestAvailableNflverseWeek,
   };

@@ -10,6 +10,9 @@ import { fetchStatsTeamWeek } from './statsTeamWeek.js';
 import { fetchInjuries } from './injuries.js';
 import { fetchPlayerCrosswalk } from './playerCrosswalk.js';
 import { fetchPbpZoneStats } from './pbp.js';
+import { fetchSnapCounts } from './snapCounts.js';
+import { fetchNgsReceiving } from './ngsReceiving.js';
+import { buildPfrToGsisMap } from './playerCrosswalk.js';
 
 export interface IngestSeasonResult {
   season: number;
@@ -194,11 +197,77 @@ export async function ingestPbpZoneStats(season: number): Promise<{ rows: number
   }
 }
 
+// Takes the crosswalk as a parameter rather than fetching it again — the
+// caller (api/nflverse/sync-advanced.ts) already has it from its own
+// ingestPlayerCrosswalk() call, and it's a ~25k-row fetch not worth repeating.
+export async function ingestSnapCounts(
+  season: number,
+  crosswalk: Awaited<ReturnType<typeof fetchPlayerCrosswalk>>['rows']
+): Promise<{ rows: number; unmatched: number; error?: string }> {
+  try {
+    const pfrToGsis = buildPfrToGsisMap(crosswalk);
+    const { rows } = await fetchSnapCounts(season);
+    let unmatched = 0;
+    const dbRows = rows
+      .map((r) => {
+        const gsisId = pfrToGsis.get(r.pfrPlayerId);
+        if (!gsisId) {
+          unmatched += 1;
+          return null;
+        }
+        return {
+          gsis_id: gsisId,
+          season: r.season,
+          week: r.week,
+          team: r.team,
+          offense_snaps: r.offenseSnaps,
+          offense_pct: r.offensePct,
+        };
+      })
+      .filter((r): r is NonNullable<typeof r> => r !== null);
+    if (dbRows.length === 0) return { rows: 0, unmatched };
+    const { error } = await supabaseAdmin
+      .from('nflverse_player_snap_week_stats')
+      .upsert(dbRows, { onConflict: 'gsis_id,season,week' });
+    if (error) throw new Error(error.message);
+    return { rows: dbRows.length, unmatched };
+  } catch (err) {
+    return { rows: 0, unmatched: 0, error: err instanceof Error ? err.message : String(err) };
+  }
+}
+
+export async function ingestNgsReceiving(season: number): Promise<{ rows: number; error?: string }> {
+  try {
+    const { rows } = await fetchNgsReceiving(season);
+    const dbRows = rows.map((r) => ({
+      gsis_id: r.gsisId,
+      season: r.season,
+      week: r.week,
+      avg_cushion: r.avgCushion,
+      avg_separation: r.avgSeparation,
+      avg_intended_air_yards: r.avgIntendedAirYards,
+      catch_percentage: r.catchPercentage,
+      avg_yac: r.avgYac,
+      avg_expected_yac: r.avgExpectedYac,
+      avg_yac_above_expectation: r.avgYacAboveExpectation,
+    }));
+    if (dbRows.length === 0) return { rows: 0 };
+    const { error } = await supabaseAdmin
+      .from('nflverse_player_ngs_receiving_week_stats')
+      .upsert(dbRows, { onConflict: 'gsis_id,season,week' });
+    if (error) throw new Error(error.message);
+    return { rows: dbRows.length };
+  } catch (err) {
+    return { rows: 0, error: err instanceof Error ? err.message : String(err) };
+  }
+}
+
 export async function ingestPlayerCrosswalk(): Promise<{ rows: number }> {
   const { rows, fetchedAt } = await fetchPlayerCrosswalk();
   const dbRows = rows.map((r) => ({
     gsis_id: r.gsisId,
     espn_id: r.espnId,
+    pfr_id: r.pfrId,
     display_name: r.displayName,
     position: r.position,
     status: r.status,

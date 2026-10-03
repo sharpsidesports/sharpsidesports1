@@ -56,6 +56,7 @@ export default function RegressionWatchCarousel({ rows, onSelect }: RegressionWa
               {r.isUnsustainable && <Badge label="⚠️ Unsustainable" tone="amber" />}
               {r.isRoleClimbing && <Badge label="📈 Role Climbing" tone="blue" />}
               {r.isRoleFading && <Badge label="📉 Role Fading" tone="gray" />}
+              {r.isOverlooked && <Badge label="🏃 Overlooked" tone="blue" />}
             </div>
             <div className="mt-2 flex justify-between text-xs text-gray-600">
               <span>

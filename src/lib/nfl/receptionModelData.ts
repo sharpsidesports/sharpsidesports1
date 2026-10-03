@@ -24,6 +24,7 @@ export interface ReceptionProjectionRow {
   impliedTeamTotal: number | null;
   opponentTdRateAllowed: number | null;
   opponentCatchPctAllowed: number | null;
+  opponentCatchPctAllowedToWr: number | null;
   targetsPerGame: number | null;
   catchPctSeason: number | null;
   receptionDebt: number | null;
@@ -35,6 +36,10 @@ export interface ReceptionProjectionRow {
   recentTargets: number;
   roleTrendTargetShare: number | null;
   roleTrendGamesCount: number;
+  recentOffenseSnapPct: number | null;
+  avgSeparation: number | null;
+  avgCushion: number | null;
+  avgYacAboveExpectation: number | null;
   dataSeason: number;
   dataWeek: number;
   dataLastUpdated: string | null;
@@ -56,6 +61,9 @@ const ROLE_TREND_MIN_GAMES = 2;
 // count so small-sample noise can't masquerade as a regression candidate.
 const MIN_RECENT_TARGETS_FOR_EFFICIENCY_BADGE = 3;
 
+// "Overlooked" gate: same minimum-recent-games bar as the role-trend badges.
+const OVERLOOKED_MIN_GAMES = 2;
+
 export interface ReceptionModelRow extends ReceptionProjectionRow {
   targetSharePercentile: number | null;
   catchRatePercentile: number | null;
@@ -66,11 +74,14 @@ export interface ReceptionModelRow extends ReceptionProjectionRow {
   isUnsustainable: boolean; // low recent target share, high recent catch rate — efficiency likely to cool off
   isRoleClimbing: boolean;
   isRoleFading: boolean;
+  snapSharePercentile: number | null;
+  isOverlooked: boolean; // elite/strong recent snap share but low/neutral recent target share — on the field, not yet getting used
 }
 
 export function deriveReceptionModelRows(pool: ReceptionProjectionRow[]): ReceptionModelRow[] {
   const allTargetShares = pool.map((p) => p.recentTargetShare);
   const allCatchPcts = pool.map((p) => p.recentCatchPct);
+  const allSnapShares = pool.map((p) => p.recentOffenseSnapPct);
 
   return pool.map((p) => {
     const targetSharePercentile = percentileRank(p.recentTargetShare, allTargetShares);
@@ -99,6 +110,13 @@ export function deriveReceptionModelRows(pool: ReceptionProjectionRow[]): Recept
 
     const regressionGap = (targetSharePercentile ?? 0) - (catchRatePercentile ?? 0);
 
+    const snapSharePercentile = percentileRank(p.recentOffenseSnapPct, allSnapShares);
+    const snapShareTier = getTier(snapSharePercentile);
+    const isOverlooked =
+      p.recentGamesCount >= OVERLOOKED_MIN_GAMES &&
+      (snapShareTier === 'elite' || snapShareTier === 'strong') &&
+      (targetShareTier === 'low' || targetShareTier === 'neutral');
+
     return {
       ...p,
       targetSharePercentile,
@@ -110,6 +128,8 @@ export function deriveReceptionModelRows(pool: ReceptionProjectionRow[]): Recept
       isUnsustainable,
       isRoleClimbing,
       isRoleFading,
+      snapSharePercentile,
+      isOverlooked,
     };
   });
 }

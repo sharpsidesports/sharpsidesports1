@@ -52,6 +52,7 @@ export async function loadPassingSupabaseInput(
   const crosswalk: PlayerCrosswalkRow[] = crosswalkRows.map((r) => ({
     gsisId: r.gsis_id,
     espnId: r.espn_id,
+    pfrId: r.pfr_id,
     displayName: r.display_name,
     position: r.position ?? '',
     status: r.status,

@@ -30,6 +30,10 @@
       "schedule": "10 9 * * 2"
     },
     {
+      "path": "/api/nflverse/sync-advanced?season=2026",
+      "schedule": "15 9 * * 2"
+    },
+    {
       "path": "/api/passing-model/sync-lines?season=2026&week=4",
       "schedule": "0 14 * * 2,5"
     }

@@ -11,6 +11,7 @@ interface RawRow {
   gsis_id: string;
   display_name: string;
   espn_id: string;
+  pfr_id: string;
   position: string;
   status: string;
   latest_team: string;
@@ -24,6 +25,7 @@ export async function fetchPlayerCrosswalk(): Promise<NflverseCsvResult<PlayerCr
     .map((r): PlayerCrosswalkRow => ({
       gsisId: r.gsis_id,
       espnId: r.espn_id || null,
+      pfrId: r.pfr_id || null,
       displayName: r.display_name,
       position: r.position,
       status: r.status || null,
@@ -37,6 +39,14 @@ export function buildEspnToGsisMap(crosswalk: PlayerCrosswalkRow[]): Map<string,
   const map = new Map<string, string>();
   for (const row of crosswalk) {
     if (row.espnId) map.set(row.espnId, row.gsisId);
+  }
+  return map;
+}
+
+export function buildPfrToGsisMap(crosswalk: PlayerCrosswalkRow[]): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const row of crosswalk) {
+    if (row.pfrId) map.set(row.pfrId, row.gsisId);
   }
   return map;
 }

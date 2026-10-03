@@ -4,6 +4,7 @@
 // Node code (Vercel Serverless Functions, scripts) — never the frontend.
 
 import { parse } from 'csv-parse/sync';
+import { gunzipSync } from 'zlib';
 
 const NFLVERSE_RELEASE_BASE = 'https://github.com/nflverse/nflverse-data/releases/download';
 
@@ -38,6 +39,39 @@ export async function fetchNflverseCsv<T = Record<string, string>>(
     throw new NflverseFetchError(tag, file, `HTTP ${res.status}`);
   }
   const text = await res.text();
+  let rows: T[];
+  try {
+    rows = parse(text, { columns: true, skip_empty_lines: true }) as T[];
+  } catch (err) {
+    throw new NflverseFetchError(tag, file, `CSV parse error: ${err instanceof Error ? err.message : String(err)}`);
+  }
+  return { rows, fetchedAt: new Date().toISOString(), sourceUrl };
+}
+
+// Same as fetchNflverseCsv, but for a .csv.gz asset small enough to buffer
+// fully in memory (NGS files are ~1MB compressed) — unlike the much larger
+// play-by-play file, which src/lib/nflverse/pbp.ts streams instead.
+export async function fetchNflverseGzipCsv<T = Record<string, string>>(
+  tag: string,
+  file: string
+): Promise<NflverseCsvResult<T>> {
+  const sourceUrl = `${NFLVERSE_RELEASE_BASE}/${tag}/${file}`;
+  let res: Response;
+  try {
+    res = await fetch(sourceUrl);
+  } catch (err) {
+    throw new NflverseFetchError(tag, file, err instanceof Error ? err.message : 'network error');
+  }
+  if (!res.ok) {
+    throw new NflverseFetchError(tag, file, `HTTP ${res.status}`);
+  }
+  const compressed = Buffer.from(await res.arrayBuffer());
+  let text: string;
+  try {
+    text = gunzipSync(compressed).toString('utf-8');
+  } catch (err) {
+    throw new NflverseFetchError(tag, file, `gunzip failed: ${err instanceof Error ? err.message : String(err)}`);
+  }
   let rows: T[];
   try {
     rows = parse(text, { columns: true, skip_empty_lines: true }) as T[];

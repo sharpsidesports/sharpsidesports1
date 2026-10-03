@@ -103,8 +103,35 @@ export interface NflverseScheduleRow {
 export interface PlayerCrosswalkRow {
   gsisId: string;
   espnId: string | null;
+  pfrId: string | null;
   displayName: string;
   position: string;
   status: string | null;
   latestTeam: string | null;
+}
+
+// Stored/ingested shape (already joined to gsis_id at ingest time) — see
+// src/lib/nflverse/snapCounts.ts for the raw pfr_player_id-keyed CSV shape.
+export interface NflverseSnapCountRow {
+  gsisId: string;
+  season: number;
+  week: number;
+  team: string;
+  offenseSnaps: number;
+  offensePct: number | null;
+}
+
+// Stored/ingested shape — NGS's own CSV is already gsis_id-keyed, so this
+// matches the raw shape directly (see src/lib/nflverse/ngsReceiving.ts).
+export interface NflverseNgsReceivingRow {
+  gsisId: string;
+  season: number;
+  week: number;
+  avgCushion: number | null;
+  avgSeparation: number | null;
+  avgIntendedAirYards: number | null;
+  catchPercentage: number | null;
+  avgYac: number | null;
+  avgExpectedYac: number | null;
+  avgYacAboveExpectation: number | null;
 }
