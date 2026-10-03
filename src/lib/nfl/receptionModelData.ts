@@ -1,0 +1,101 @@
+// Shared types + derived-field computation for the Reception Model page.
+// Pure/presentation-only: percentiles, tiers, and regression badges are all
+// computed here from fields api/reception-model.ts already returns — no
+// model math changes (Sharp Score itself is untouched).
+
+import { percentileRank } from './percentileRank.js';
+import { getTier, type Tier } from './tiers.js';
+
+export interface ReceptionProjectionRow {
+  espnId: string;
+  playerName: string;
+  team: string;
+  opponentTeam: string | null;
+  espnProjectedReceptions: number | null;
+  expectedTargetShare: number | null;
+  projectedTeamPassAttempts: number | null;
+  projectedTargets: number | null;
+  expectedCatchRate: number | null;
+  nflverseProjectedReceptions: number | null;
+  finalProjectedReceptionsRaw: number | null;
+  projectedReceptions: number | null;
+  receptionEdgeScore: number | null;
+  projectionDifference: number | null;
+  impliedTeamTotal: number | null;
+  opponentTdRateAllowed: number | null;
+  opponentCatchPctAllowed: number | null;
+  targetsPerGame: number | null;
+  catchPctSeason: number | null;
+  receptionDebt: number | null;
+  sharpScore: number | null;
+  recentTargetShare: number | null;
+  recentCatchPct: number | null;
+  seasonTargetShareActual: number | null;
+  recentGamesCount: number;
+  dataSeason: number;
+  dataWeek: number;
+  dataLastUpdated: string | null;
+  confidence: 'high' | 'medium' | 'low';
+  fallbacksUsed: string[];
+  warnings: string[];
+  skipped?: 'OUT' | 'BYE';
+}
+
+// Role-trend threshold: a 3-percentage-point gap between recent (last up to
+// 3 games) and season-long actual target share, gated on having at least 2
+// recent games so a single-game blip can't trigger it.
+const ROLE_TREND_THRESHOLD = 0.03;
+const ROLE_TREND_MIN_GAMES = 2;
+
+export interface ReceptionModelRow extends ReceptionProjectionRow {
+  targetSharePercentile: number | null;
+  catchRatePercentile: number | null;
+  targetShareTier: Tier;
+  catchRateTier: Tier;
+  regressionGap: number; // targetSharePercentile - catchRatePercentile; positive = Buy Low direction
+  isBuyLow: boolean; // high recent target share, low recent catch rate — due for positive regression
+  isUnsustainable: boolean; // low recent target share, high recent catch rate — efficiency likely to cool off
+  isRoleClimbing: boolean;
+  isRoleFading: boolean;
+}
+
+export function deriveReceptionModelRows(pool: ReceptionProjectionRow[]): ReceptionModelRow[] {
+  const allTargetShares = pool.map((p) => p.recentTargetShare);
+  const allCatchPcts = pool.map((p) => p.recentCatchPct);
+
+  return pool.map((p) => {
+    const targetSharePercentile = percentileRank(p.recentTargetShare, allTargetShares);
+    const catchRatePercentile = percentileRank(p.recentCatchPct, allCatchPcts);
+
+    const targetShareTier = getTier(targetSharePercentile);
+    const catchRateTier = getTier(catchRatePercentile);
+
+    const isBuyLow =
+      (targetShareTier === 'elite' || targetShareTier === 'strong') && catchRateTier === 'low';
+    const isUnsustainable =
+      targetShareTier === 'low' && (catchRateTier === 'elite' || catchRateTier === 'strong');
+
+    const hasEnoughRecentGames = p.recentGamesCount >= ROLE_TREND_MIN_GAMES;
+    const roleDelta =
+      p.recentTargetShare !== null && p.seasonTargetShareActual !== null
+        ? p.recentTargetShare - p.seasonTargetShareActual
+        : null;
+    const isRoleClimbing = hasEnoughRecentGames && roleDelta !== null && roleDelta >= ROLE_TREND_THRESHOLD;
+    const isRoleFading = hasEnoughRecentGames && roleDelta !== null && roleDelta <= -ROLE_TREND_THRESHOLD;
+
+    const regressionGap = (targetSharePercentile ?? 0) - (catchRatePercentile ?? 0);
+
+    return {
+      ...p,
+      targetSharePercentile,
+      catchRatePercentile,
+      targetShareTier,
+      catchRateTier,
+      regressionGap,
+      isBuyLow,
+      isUnsustainable,
+      isRoleClimbing,
+      isRoleFading,
+    };
+  });
+}

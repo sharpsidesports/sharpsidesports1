@@ -29,6 +29,7 @@ import { calculateMatchupTdRateAllowed } from './calculateMatchupTdRateAllowed.j
 import { calculateOpponentCatchRateAllowed } from './calculateOpponentCatchRateAllowed.js';
 import { calculateSeasonRollups } from './calculateSeasonRollups.js';
 import { calculateReceptionDebt } from './calculateReceptionDebt.js';
+import { calculateRecentRollups } from './calculateRecentRollups.js';
 import { calculateProjectionDifference } from './calculateProjectionDifference.js';
 import { checkNFLVerseFreshness } from './checkNFLVerseFreshness.js';
 import type {
@@ -276,6 +277,7 @@ export function buildWeeklyReceptionProjections(input: BuildProjectionsInput): R
     const opponentCatchPctAllowed = calculateOpponentCatchRateAllowed(model.opponentGamesAllowed);
     const seasonRollups = calculateSeasonRollups(model.currentSeasonGames);
     const receptionDebt = calculateReceptionDebt(model.seasonProjectedReceptions, model.currentSeasonGames);
+    const recentRollups = calculateRecentRollups(model.currentSeasonGames);
 
     return {
       model,
@@ -293,6 +295,7 @@ export function buildWeeklyReceptionProjections(input: BuildProjectionsInput): R
       opponentCatchPctAllowed,
       seasonRollups,
       receptionDebt,
+      recentRollups,
     };
   });
 
@@ -338,6 +341,10 @@ export function buildWeeklyReceptionProjections(input: BuildProjectionsInput): R
     catchPctSeason: round(p.seasonRollups.catchPctSeason, 3),
     receptionDebt: round(p.receptionDebt, 2),
     sharpScore: sharpScores[i],
+    recentTargetShare: round(p.recentRollups.recentTargetShare, 3),
+    recentCatchPct: round(p.recentRollups.recentCatchPct, 3),
+    seasonTargetShareActual: round(p.recentRollups.seasonTargetShareActual, 3),
+    recentGamesCount: p.recentRollups.recentGamesCount,
     dataSeason: input.season,
     dataWeek: input.week,
     dataLastUpdated: input.nflverseFetchedAt,
@@ -378,6 +385,10 @@ function baseResult(
     catchPctSeason: null,
     receptionDebt: null,
     sharpScore: null,
+    recentTargetShare: null,
+    recentCatchPct: null,
+    seasonTargetShareActual: null,
+    recentGamesCount: 0,
     dataSeason: input.season,
     dataWeek: input.week,
     dataLastUpdated: input.nflverseFetchedAt,

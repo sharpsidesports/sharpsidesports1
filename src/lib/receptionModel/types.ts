@@ -102,6 +102,15 @@ export interface ReceptionProjectionResult {
   receptionDebt: number | null; // season-to-date projected minus actual receptions; positive = "due"
   sharpScore: number | null; // composite 0-100 score across ESPN/volume/target-share/matchup/debt signals
 
+  // Recent-games (last up to 3) raw observed rollups — see calculateRecentRollups.ts.
+  // Not blended/shrunk like expectedTargetShare/expectedCatchRate, and not diluted
+  // by the whole season like receptionDebt/catchPctSeason — used to flag a
+  // player's current role/efficiency and detect a role trend.
+  recentTargetShare: number | null;
+  recentCatchPct: number | null;
+  seasonTargetShareActual: number | null;
+  recentGamesCount: number;
+
   dataSeason: number;
   dataWeek: number;
   dataLastUpdated: string | null;
