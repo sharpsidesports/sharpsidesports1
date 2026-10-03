@@ -112,6 +112,11 @@ export interface ReceptionProjectionResult {
   recentGamesCount: number;
   recentTargets: number;
 
+  // Target share over the last 2 games specifically — used for the Role
+  // Climbing/Fading trend, a shorter/more reactive window than recentTargetShare.
+  roleTrendTargetShare: number | null;
+  roleTrendGamesCount: number;
+
   dataSeason: number;
   dataWeek: number;
   dataLastUpdated: string | null;

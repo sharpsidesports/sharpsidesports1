@@ -33,6 +33,8 @@ export interface ReceptionProjectionRow {
   seasonTargetShareActual: number | null;
   recentGamesCount: number;
   recentTargets: number;
+  roleTrendTargetShare: number | null;
+  roleTrendGamesCount: number;
   dataSeason: number;
   dataWeek: number;
   dataLastUpdated: string | null;
@@ -42,9 +44,10 @@ export interface ReceptionProjectionRow {
   skipped?: 'OUT' | 'BYE';
 }
 
-// Role-trend threshold: a 3-percentage-point gap between recent (last up to
-// 3 games) and season-long actual target share, gated on having at least 2
-// recent games so a single-game blip can't trigger it.
+// Role-trend threshold: a 3-percentage-point gap between the last 2 games'
+// and season-long actual target share. Deliberately a shorter window than
+// the 3-game recentTargetShare used for Buy Low/Unsustainable — a role trend
+// should react faster than the efficiency signal does.
 const ROLE_TREND_THRESHOLD = 0.03;
 const ROLE_TREND_MIN_GAMES = 2;
 
@@ -86,10 +89,10 @@ export function deriveReceptionModelRows(pool: ReceptionProjectionRow[]): Recept
       targetShareTier === 'low' &&
       (catchRateTier === 'elite' || catchRateTier === 'strong');
 
-    const hasEnoughRecentGames = p.recentGamesCount >= ROLE_TREND_MIN_GAMES;
+    const hasEnoughRecentGames = p.roleTrendGamesCount >= ROLE_TREND_MIN_GAMES;
     const roleDelta =
-      p.recentTargetShare !== null && p.seasonTargetShareActual !== null
-        ? p.recentTargetShare - p.seasonTargetShareActual
+      p.roleTrendTargetShare !== null && p.seasonTargetShareActual !== null
+        ? p.roleTrendTargetShare - p.seasonTargetShareActual
         : null;
     const isRoleClimbing = hasEnoughRecentGames && roleDelta !== null && roleDelta >= ROLE_TREND_THRESHOLD;
     const isRoleFading = hasEnoughRecentGames && roleDelta !== null && roleDelta <= -ROLE_TREND_THRESHOLD;

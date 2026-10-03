@@ -24,6 +24,23 @@ function average(nums: number[]): number | null {
   return nums.reduce((a, b) => a + b, 0) / nums.length;
 }
 
+// Target share average over the last `window` games — used for the Role
+// Climbing/Fading trend specifically, which compares against season average
+// on a shorter, more reactive window than the main recent rollups above.
+export interface TargetShareWindowResult {
+  targetShare: number | null;
+  gamesCount: number;
+}
+
+export function calculateTargetShareWindow(
+  currentSeasonGames: PlayerGameLog[],
+  window: number
+): TargetShareWindowResult {
+  const games = currentSeasonGames.slice(-window);
+  const shares = games.map((g) => g.targetShare).filter((v): v is number => v !== null);
+  return { targetShare: average(shares), gamesCount: games.length };
+}
+
 export function calculateRecentRollups(currentSeasonGames: PlayerGameLog[]): RecentRollups {
   if (currentSeasonGames.length === 0) {
     return {

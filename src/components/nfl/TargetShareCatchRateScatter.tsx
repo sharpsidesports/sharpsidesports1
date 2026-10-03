@@ -82,7 +82,7 @@ function buildQuadrantPlugin(medianX: number, medianY: number): Plugin<'bubble'>
       ctx.fillStyle = '#6B7280';
       ctx.font = '11px sans-serif';
       ctx.textAlign = 'right';
-      ctx.fillText('Buy Low (high share, low catch %)', chartArea.right - 6, chartArea.bottom - 8);
+      ctx.fillText('Buy Low zone', chartArea.right - 6, chartArea.bottom - 8);
       ctx.restore();
     },
   };
@@ -139,7 +139,7 @@ export default function TargetShareCatchRateScatter({ rows, onSelect }: TargetSh
         y: { title: { display: true, text: 'Recent Catch Rate (%)' } },
       },
       plugins: {
-        legend: { position: 'top', labels: { usePointStyle: true } },
+        legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { size: 10 } } },
         tooltip: {
           callbacks: {
             label: (ctx) => {
@@ -172,52 +172,20 @@ export default function TargetShareCatchRateScatter({ rows, onSelect }: TargetSh
         </button>
       </div>
       {!collapsed && (
-        <p className="mb-2 hidden text-xs text-gray-400 md:block">
+        <p className="mb-2 text-xs text-gray-400">
           Both axes are last-3-game actuals, not season-cumulative — a player's recent role shift shows up directly
-          instead of being averaged away.
+          instead of being averaged away. Tap a dot for that player's row below.
         </p>
       )}
 
       {!collapsed && (
-        <>
-          <div className="hidden h-80 md:block">
-            {plottable.length > 0 ? (
-              <Bubble data={{ datasets }} options={options} plugins={[buildQuadrantPlugin(medianX, medianY)]} />
-            ) : (
-              <p className="text-sm text-gray-400">Not enough data yet to plot.</p>
-            )}
-          </div>
-
-          {/* Mobile fallback: a simple ranked bar list instead of the 2D chart. */}
-          <div className="space-y-1.5 md:hidden">
-            {[...plottable]
-              .sort((a, b) => Math.abs(b.regressionGap) - Math.abs(a.regressionGap))
-              .slice(0, 8)
-              .map((r) => (
-                <button
-                  key={r.espnId}
-                  type="button"
-                  onClick={() => onSelect(r.espnId)}
-                  className="flex w-full items-center gap-2 rounded px-1 py-1 text-left hover:bg-gray-50"
-                >
-                  <span className="w-24 shrink-0 truncate text-xs text-gray-700">{r.playerName}</span>
-                  <span className="h-2 flex-1 overflow-hidden rounded-full bg-gray-100">
-                    <span
-                      className="block h-full rounded-full"
-                      style={{
-                        width: `${Math.max(4, Math.abs(r.regressionGap) * 100)}%`,
-                        backgroundColor: r.isBuyLow
-                          ? GROUP_COLORS.buyLow
-                          : r.isUnsustainable
-                            ? GROUP_COLORS.unsustainable
-                            : GROUP_COLORS.neutral,
-                      }}
-                    />
-                  </span>
-                </button>
-              ))}
-          </div>
-        </>
+        <div className="h-64 sm:h-80">
+          {plottable.length > 0 ? (
+            <Bubble data={{ datasets }} options={options} plugins={[buildQuadrantPlugin(medianX, medianY)]} />
+          ) : (
+            <p className="text-sm text-gray-400">Not enough data yet to plot.</p>
+          )}
+        </div>
       )}
     </div>
   );

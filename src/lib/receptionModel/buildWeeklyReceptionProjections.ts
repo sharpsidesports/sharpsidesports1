@@ -29,7 +29,12 @@ import { calculateMatchupTdRateAllowed } from './calculateMatchupTdRateAllowed.j
 import { calculateOpponentCatchRateAllowed } from './calculateOpponentCatchRateAllowed.js';
 import { calculateSeasonRollups } from './calculateSeasonRollups.js';
 import { calculateReceptionDebt } from './calculateReceptionDebt.js';
-import { calculateRecentRollups } from './calculateRecentRollups.js';
+import { calculateRecentRollups, calculateTargetShareWindow } from './calculateRecentRollups.js';
+
+// Role Climbing/Fading compares a shorter, more reactive window (last 2
+// games) against the season average, separate from the 3-game window used
+// for the main recent target-share/catch-rate rollups above.
+const ROLE_TREND_WINDOW = 2;
 import { calculateProjectionDifference } from './calculateProjectionDifference.js';
 import { checkNFLVerseFreshness } from './checkNFLVerseFreshness.js';
 import type {
@@ -278,6 +283,7 @@ export function buildWeeklyReceptionProjections(input: BuildProjectionsInput): R
     const seasonRollups = calculateSeasonRollups(model.currentSeasonGames);
     const receptionDebt = calculateReceptionDebt(model.seasonProjectedReceptions, model.currentSeasonGames);
     const recentRollups = calculateRecentRollups(model.currentSeasonGames);
+    const roleTrendWindow = calculateTargetShareWindow(model.currentSeasonGames, ROLE_TREND_WINDOW);
 
     return {
       model,
@@ -296,6 +302,7 @@ export function buildWeeklyReceptionProjections(input: BuildProjectionsInput): R
       seasonRollups,
       receptionDebt,
       recentRollups,
+      roleTrendWindow,
     };
   });
 
@@ -346,6 +353,8 @@ export function buildWeeklyReceptionProjections(input: BuildProjectionsInput): R
     seasonTargetShareActual: round(p.recentRollups.seasonTargetShareActual, 3),
     recentGamesCount: p.recentRollups.recentGamesCount,
     recentTargets: p.recentRollups.recentTargets,
+    roleTrendTargetShare: round(p.roleTrendWindow.targetShare, 3),
+    roleTrendGamesCount: p.roleTrendWindow.gamesCount,
     dataSeason: input.season,
     dataWeek: input.week,
     dataLastUpdated: input.nflverseFetchedAt,
@@ -391,6 +400,8 @@ function baseResult(
     seasonTargetShareActual: null,
     recentGamesCount: 0,
     recentTargets: 0,
+    roleTrendTargetShare: null,
+    roleTrendGamesCount: 0,
     dataSeason: input.season,
     dataWeek: input.week,
     dataLastUpdated: input.nflverseFetchedAt,
