@@ -178,6 +178,10 @@ function App() {
                   path="/picks-preview/nfl-models/passing-model"
                   element={<PicksLayout><div className="px-4 py-6 sm:px-6 lg:px-8"><PassingModel /></div></PicksLayout>}
                 />
+                <Route
+                  path="/picks-preview/nfl-models/pace-rankings"
+                  element={<PicksLayout><PaceRankings /></PicksLayout>}
+                />
                 <Route path="/articles/football-betting-guide" element={<FootballBettingGuide />} />
                 <Route path="/articles/football-betting-basic-strategy" element={<FootballBettingBasicStrategy />} />
                 <Route path="/articles/profitable-football-betting-trends" element={<ProfitableFootballBettingTrends />} />
