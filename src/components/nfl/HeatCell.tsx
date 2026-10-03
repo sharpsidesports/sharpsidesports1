@@ -3,6 +3,7 @@ import { getTier } from '../../lib/nfl/tiers.js';
 interface HeatCellProps {
   value: string;
   percentile: number | null; // 0-1, this row's rank within the current filtered pool
+  align?: 'right' | 'center'; // 'right' keeps desktop table columns aligned with their numeric neighbors; mobile cards use 'center'
 }
 
 const BAR_RGB = '60, 179, 113'; // sharpside-green, used only for the background tint
@@ -14,7 +15,7 @@ const BAR_RGB = '60, 179, 113'; // sharpside-green, used only for the background
 // Text uses a darker green than the background tint (same hue family, not
 // the same color) — using sharpside-green for both made Elite/Strong values
 // blend into their own highlight instead of standing out.
-export default function HeatCell({ value, percentile }: HeatCellProps) {
+export default function HeatCell({ value, percentile, align = 'right' }: HeatCellProps) {
   const tier = getTier(percentile);
   const pct = percentile === null ? 0 : Math.max(0, Math.min(100, percentile * 100));
 
@@ -38,7 +39,11 @@ export default function HeatCell({ value, percentile }: HeatCellProps) {
         style={{ width: `${pct}%`, backgroundColor: `rgba(${BAR_RGB}, ${barOpacity})` }}
         aria-hidden="true"
       />
-      <span className={`relative block px-2 py-1 text-right tabular-nums ${textCls}`}>{value}</span>
+      <span
+        className={`relative block px-2 py-1 tabular-nums ${align === 'center' ? 'text-center' : 'text-right'} ${textCls}`}
+      >
+        {value}
+      </span>
     </div>
   );
 }

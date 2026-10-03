@@ -435,8 +435,8 @@ export default function TdModelTable({ rows, loading, highlightedPlayerId, onHig
                 <div className="mt-1.5 flex flex-wrap gap-1">{rowBadges(r)}</div>
               )}
               <div className="mt-2 grid grid-cols-2 gap-2">
-                <HeatCell value={`Vol ${r.volume}`} percentile={r.volumePercentile} />
-                <HeatCell value={`Deficit ${formatTdDebt(r.td_debt)}`} percentile={r.tdDebtPercentile} />
+                <HeatCell value={`Vol ${r.volume}`} percentile={r.volumePercentile} align="center" />
+                <HeatCell value={`Deficit ${formatTdDebt(r.td_debt)}`} percentile={r.tdDebtPercentile} align="center" />
               </div>
               <div className="mt-1 flex justify-between text-xs text-gray-600">
                 <span>Edge {formatEdge(r.edge)}</span>
