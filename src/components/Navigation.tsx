@@ -42,6 +42,7 @@ export default function Navigation() {
     { to: '/picks-preview/nfl-models/receiving-model', label: 'Reception Model', requiredTier: 'free' },
     { to: '/picks-preview/nfl-models/passing-model', label: 'Passing Model', requiredTier: 'free' },
     { to: '/picks-preview/nfl-models/touchdown-model', label: 'Touchdown Model', requiredTier: 'free' },
+    { to: '/nfl/pace-rankings', label: 'Pace Rankings', requiredTier: 'free' },
     // Basic Tier Features
     // { to: '/dashboard', label: 'Betting Model', requiredTier: 'basic' },
     // { to: '/matchups', label: 'Matchup Tool', requiredTier: 'basic' },
@@ -309,6 +310,7 @@ export default function Navigation() {
         {/* Desktop Navigation */}
         <div className="hidden md:flex space-x-8 h-16 justify-center">
           <NavLink to="/expert-insights" className={navLinkClass}>Betting Picks</NavLink>
+          <NFLDropdown />
           <GolfDropdown />
           <CBBDropdown />
           <NavLink to="/subscription" className={navLinkClass}>Pricing</NavLink>
