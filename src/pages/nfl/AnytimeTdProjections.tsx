@@ -5,10 +5,27 @@ import TdModelTable from '../../components/nfl/TdModelTable.js';
 import PageExplainer from '../../components/nfl/PageExplainer.js';
 import { TopPlayCardSkeleton } from '../../components/nfl/Skeleton.js';
 import { deriveTdModelRows, type ApiResponse } from '../../lib/nfl/tdModelData.js';
+import { usePageSeo } from '../../hooks/usePageSeo.js';
 
 const POSITIONS: Array<'ALL' | 'QB' | 'RB' | 'WR' | 'TE'> = ['ALL', 'QB', 'RB', 'WR', 'TE'];
 
 export default function AnytimeTdProjections() {
+  usePageSeo({
+    title: 'NFL Player Props: Anytime TD Projections & Odds | SharpSide Sports',
+    description:
+      'NFL player props for the Anytime Touchdown Scorer market — Sharpside projections compared against live sportsbook odds for every RB, WR, TE, and QB, with volume and TD Deficit signals to find betting value.',
+    keywords: 'nfl player props, anytime touchdown scorer, nfl betting, td props, nfl prop bets',
+    canonicalPath: '/picks-preview/nfl-models/touchdown-model',
+    structuredData: {
+      '@context': 'https://schema.org',
+      '@type': 'Dataset',
+      name: 'NFL Anytime TD Player Props',
+      description: 'Weekly NFL anytime touchdown scorer projections compared against sportsbook player props odds.',
+      keywords: ['nfl player props', 'anytime touchdown scorer', 'nfl betting'],
+      temporalCoverage: '2026 NFL Season',
+    },
+  });
+
   const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);

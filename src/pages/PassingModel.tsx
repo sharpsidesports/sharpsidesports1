@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { usePageSeo } from '../hooks/usePageSeo.js';
 
 interface PassingProjectionRow {
   playerName: string;
@@ -140,6 +141,14 @@ export default function PassingModel() {
   const [error, setError] = useState<string | null>(null);
   const [season] = useState(2026);
   const [week] = useState(4);
+
+  usePageSeo({
+    title: 'NFL Passing Prop Projections & QB Player Props | SharpSide Sports',
+    description:
+      "Weekly NFL passing yard and attempt projections for every starting QB, built from team pass rate, matchup, and Vegas game script — compare against sportsbook player props to find an edge.",
+    keywords: 'nfl passing projections, qb player props, nfl player props, passing yards prop',
+    canonicalPath: '/picks-preview/nfl-models/passing-model',
+  });
 
   useEffect(() => {
     let cancelled = false;

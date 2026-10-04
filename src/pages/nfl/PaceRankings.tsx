@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { usePageSeo } from '../../hooks/usePageSeo.js';
 
 interface TeamPaceRow {
   team: string;
@@ -10,6 +11,14 @@ interface TeamPaceRow {
 type SortKey = 'team' | 'offensePlaysPerGame' | 'defensePlaysPerGame';
 
 export default function PaceRankings() {
+  usePageSeo({
+    title: 'NFL Pace Rankings — Plays Per Game | SharpSide Sports',
+    description:
+      'NFL team pace rankings — offensive plays run per game and defensive plays faced per game, season-to-date. A key input for NFL player props: faster offenses and defenses mean more betting volume.',
+    keywords: 'nfl pace rankings, nfl plays per game, nfl player props, nfl betting',
+    canonicalPath: '/picks-preview/nfl-models/pace-rankings',
+  });
+
   const [teams, setTeams] = useState<TeamPaceRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

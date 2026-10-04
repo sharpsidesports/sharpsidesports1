@@ -35,7 +35,6 @@ import NFLWinTotalsFirstTimeCoaches from './pages/articles/nfl-win-totals-first-
 import NFLBetsBeforeWeek1 from './pages/articles/nfl-bets-before-week-1.js';
 import RecappingBetsWeekGoodBadUnlucky from './pages/articles/recapping-bets-week-good-bad-unlucky.js';
 import RecappingNFLBetsWeek2 from './pages/articles/recapping-nfl-bets-week-2.js';
-import Sitemap from './pages/sitemap.xml.js';
 import ReceptionModel from './pages/ReceptionModel.js';
 import PassingModel from './pages/PassingModel.js';
 import WRTargetProjections from './pages/cfb/WRTargetProjections.js';
@@ -331,10 +330,6 @@ function App() {
                   path="/reception-model" 
                   element={<ReceptionModel />} 
                 /> 
-                <Route 
-                  path="/sitemap.xml" 
-                  element={<Sitemap />} 
-                />
                 <Route path="/cfb/sp-plus" element={<SPPlus />} />
                 <Route path="/cfb/wr-target-projections" element={<WRTargetProjections />} />
                 <Route path="/nfl/offense" element={<NFLTeamOffenseStatsPage />} />

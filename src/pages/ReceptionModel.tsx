@@ -5,8 +5,25 @@ import ReceptionModelTable from '../components/nfl/ReceptionModelTable.js';
 import PageExplainer from '../components/nfl/PageExplainer.js';
 import { TopPlayCardSkeleton } from '../components/nfl/Skeleton.js';
 import { deriveReceptionModelRows, type ReceptionProjectionRow } from '../lib/nfl/receptionModelData.js';
+import { usePageSeo } from '../hooks/usePageSeo.js';
 
 export default function ReceptionModel() {
+  usePageSeo({
+    title: 'NFL Reception Projections & WR Player Props | SharpSide Sports',
+    description:
+      'Weekly NFL reception projections for every starting WR, built from target share, catch rate, and matchup data. Compare our player props model against sportsbook lines to find receiving yardage and reception total edges.',
+    keywords: 'nfl reception projections, reception projections, nfl player props, wr player props, target share',
+    canonicalPath: '/picks-preview/nfl-models/receiving-model',
+    structuredData: {
+      '@context': 'https://schema.org',
+      '@type': 'Dataset',
+      name: 'NFL Reception Projections',
+      description: 'Weekly NFL wide receiver reception, target share, and catch rate projections.',
+      keywords: ['nfl reception projections', 'reception projections', 'nfl player props'],
+      temporalCoverage: '2026 NFL Season',
+    },
+  });
+
   const [rows, setRows] = useState<ReceptionProjectionRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

@@ -5,6 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sharpside Sports</title>
     <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="canonical" href="https://sharpsidesports.com/">
+
+    <!--
+      Sitewide default SEO/social tags. Every page-level SEO hook (see
+      src/hooks/usePageSeo.ts, useArticleSEO.ts) overwrites these via
+      document.querySelector(...).setAttribute(...) once React mounts — but
+      that only works if the tag already exists here for querySelector to
+      find. Without these defaults present, that per-page code silently
+      no-ops (confirmed: this file previously had none of these tags, so
+      description/OG/Twitter were never actually being set on any page).
+      A crawler that does NOT execute JavaScript (most social link-preview
+      bots) will only ever see these defaults, not a page's specific values —
+      fixing that needs server-side rendering/prerendering, out of scope here.
+    -->
+    <meta name="description" content="Data-driven NFL betting picks, player props, and reception projections. Sharpside Sports models anytime-TD, receiving, and passing props against sportsbook lines to help you find an edge." />
+    <meta property="og:site_name" content="Sharpside Sports" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://sharpsidesports.com/" />
+    <meta property="og:title" content="Sharpside Sports — NFL Betting Picks & Player Props" />
+    <meta property="og:description" content="Data-driven NFL betting picks, player props, and reception projections. Sharpside Sports models anytime-TD, receiving, and passing props against sportsbook lines to help you find an edge." />
+    <meta property="og:image" content="https://sharpsidesports.com/sharpside-logo.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Sharpside Sports — NFL Betting Picks & Player Props" />
+    <meta name="twitter:description" content="Data-driven NFL betting picks, player props, and reception projections. Sharpside Sports models anytime-TD, receiving, and passing props against sportsbook lines to help you find an edge." />
+
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XHLE9YWSZ6"></script>
     <script>

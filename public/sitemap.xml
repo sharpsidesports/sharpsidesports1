@@ -1,208 +1,306 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Homepage -->
   <url>
     <loc>https://sharpsidesports.com/</loc>
-    <lastmod>2024-08-14</lastmod>
+    <lastmod>2026-10-03</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
-  <!-- Main Pages -->
+  <!-- NFL betting / player props funnel (picks-preview) -->
   <url>
-    <loc>https://sharpsidesports.com/subscription</loc>
-    <lastmod>2024-08-14</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://sharpsidesports.com/picks-preview</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
   </url>
-
   <url>
-    <loc>https://sharpsidesports.com/subscription-management</loc>
-    <lastmod>2024-08-14</lastmod>
+    <loc>https://sharpsidesports.com/picks-preview/nfl-models/touchdown-model</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/picks-preview/nfl-models/receiving-model</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/picks-preview/nfl-models/passing-model</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/picks-preview/nfl-models/pace-rankings</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/picks-preview/pricing</loc>
+    <lastmod>2026-10-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-
   <url>
-    <loc>https://sharpsidesports.com/terms</loc>
-    <lastmod>2024-08-14</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-
-  <!-- NFL Articles (High Priority for SEO) -->
-  <url>
-    <loc>https://sharpsidesports.com/articles/holdouts-performance</loc>
-    <lastmod>2024-08-14</lastmod>
+    <loc>https://sharpsidesports.com/picks-preview/articles</loc>
+    <lastmod>2026-10-03</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/expert-insights</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
 
+  <!-- NFL betting strategy articles -->
+  <url>
+    <loc>https://sharpsidesports.com/articles/football-betting-guide</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/articles/football-betting-basic-strategy</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/articles/football-betting-advanced-metrics</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/articles/profitable-football-betting-trends</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/articles/sports-betting-bankroll-management</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/articles/uncorrelated-parlays-nfl-betting-edge</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/articles/how-sportsbook-lines-move</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/articles/live-in-play-betting-strategy</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
   <url>
     <loc>https://sharpsidesports.com/articles/best-nfl-betting-spot</loc>
-    <lastmod>2024-08-14</lastmod>
+    <lastmod>2026-10-03</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.7</priority>
   </url>
-
   <url>
     <loc>https://sharpsidesports.com/articles/wr-highest-upside</loc>
-    <lastmod>2024-08-14</lastmod>
+    <lastmod>2026-10-03</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.7</priority>
   </url>
-
   <url>
     <loc>https://sharpsidesports.com/articles/nfl-player-massive-year</loc>
-    <lastmod>2024-08-14</lastmod>
+    <lastmod>2026-10-03</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/articles/holdouts-performance</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/articles/nfl-bets-before-week-1</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/articles/nfl-win-totals-first-time-coaches</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/articles/recapping-nfl-bets-week-2</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/articles/recapping-bets-week-good-bad-unlucky</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
   </url>
 
-  <!-- NFL Stats Pages -->
+  <!-- NFL reception projections / player props (also reachable via picks-preview) -->
+  <url>
+    <loc>https://sharpsidesports.com/reception-model</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/nfl/anytime-td-projections</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/nfl/pace-rankings</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- NFL stats pages -->
   <url>
     <loc>https://sharpsidesports.com/nfl/team-stats</loc>
-    <lastmod>2024-08-14</lastmod>
+    <lastmod>2026-10-03</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
-
   <url>
     <loc>https://sharpsidesports.com/nfl/fantasy-projections</loc>
-    <lastmod>2024-08-14</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://sharpsidesports.com/nfl/PassingYardsPerGame</loc>
-    <lastmod>2024-08-14</lastmod>
+    <lastmod>2026-10-03</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
-
   <url>
-    <loc>https://sharpsidesports.com/nfl/YardsPerPlay</loc>
-    <lastmod>2024-08-14</lastmod>
+    <loc>https://sharpsidesports.com/nfl/redzone-stats</loc>
+    <lastmod>2026-10-03</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.7</priority>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/redzone/rb</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/redzone/wr</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/redzone/te</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/nfl/offense</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/nfl/defense</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/nfl/passing-yards-per-game</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/nfl/rushing-yards-per-game</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/nfl/yards-per-play</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/nfl/points-per-game</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
   </url>
 
+  <!-- Fantasy projections -->
   <url>
-    <loc>https://sharpsidesports.com/nfl/PointsPerGame</loc>
-    <lastmod>2024-08-14</lastmod>
+    <loc>https://sharpsidesports.com/fantasy/qb-projections</loc>
+    <lastmod>2026-10-03</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.7</priority>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/fantasy/wr-projections</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
   </url>
 
+  <!-- College football -->
   <url>
-    <loc>https://sharpsidesports.com/nfl/RushingYardsPerGame</loc>
-    <lastmod>2024-08-14</lastmod>
+    <loc>https://sharpsidesports.com/cfb/sp-plus</loc>
+    <lastmod>2026-10-03</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.7</priority>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://sharpsidesports.com/cfb/wr-target-projections</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
   </url>
 
-  <!-- NFL Fantasy Projections -->
+  <!-- Golf tools -->
   <url>
-    <loc>https://sharpsidesports.com/fantasy/QBProjections</loc>
-    <lastmod>2024-08-14</lastmod>
+    <loc>https://sharpsidesports.com/dashboard</loc>
+    <lastmod>2026-10-03</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.8</priority>
+    <priority>0.6</priority>
   </url>
-
   <url>
-    <loc>https://sharpsidesports.com/fantasy/WRProjections</loc>
-    <lastmod>2024-08-14</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- NFL Tools -->
-  <url>
-    <loc>https://sharpsidesports.com/FantasyOptimizer</loc>
-    <lastmod>2024-08-14</lastmod>
+    <loc>https://sharpsidesports.com/ai-caddie</loc>
+    <lastmod>2026-10-03</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.5</priority>
   </url>
-
   <url>
-    <loc>https://sharpsidesports.com/MatchupTool</loc>
-    <lastmod>2024-08-14</lastmod>
+    <loc>https://sharpsidesports.com/course-fit</loc>
+    <lastmod>2026-10-03</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <!-- Golf Pages -->
-  <url>
-    <loc>https://sharpsidesports.com/Dashboard</loc>
-    <lastmod>2024-08-14</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://sharpsidesports.com/AICaddie</loc>
-    <lastmod>2024-08-14</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://sharpsidesports.com/CourseFitTool</loc>
-    <lastmod>2024-08-14</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://sharpsidesports.com/ExpertInsights</loc>
-    <lastmod>2024-08-14</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <!-- Account Pages -->
-  <url>
-    <loc>https://sharpsidesports.com/Account</loc>
-    <lastmod>2024-08-14</lastmod>
-    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
   <url>
-    <loc>https://sharpsidesports.com/Auth</loc>
-    <lastmod>2024-08-14</lastmod>
+    <loc>https://sharpsidesports.com/subscription</loc>
+    <lastmod>2026-10-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
-
-  <!-- Success Pages -->
-  <url>
-    <loc>https://sharpsidesports.com/CheckoutSuccess</loc>
-    <lastmod>2024-08-14</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.3</priority>
-  </url>
-
-  <!-- Legacy Golf Articles (Lower Priority) -->
-  <url>
-    <loc>https://sharpsidesports.com/articles/detroit-gc</loc>
-    <lastmod>2024-08-14</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.4</priority>
-  </url>
-
-  <url>
-    <loc>https://sharpsidesports.com/articles/john-deere-classic</loc>
-    <lastmod>2024-08-14</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.4</priority>
-  </url>
-
-  <url>
-    <loc>https://sharpsidesports.com/articles/john-deere-classic-betting-picks</loc>
-    <lastmod>2024-08-14</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.4</priority>
-  </url>
-</urlset> 
+</urlset>
