@@ -66,6 +66,7 @@ export async function loadLiveProjectionsInput(
     // counts and NGS are only wired up via the Supabase-backed path.
     snapCounts: [],
     ngsReceiving: [],
+    teamPassRateStats: [],
     nflverseFetchedAt: playerWeekCurrent.fetchedAt ?? playerWeekPrior.fetchedAt ?? null,
     latestAvailableNflverseWeek,
   };

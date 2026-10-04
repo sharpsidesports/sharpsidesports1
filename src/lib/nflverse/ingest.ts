@@ -173,10 +173,13 @@ export async function ingestSeason(season: number): Promise<IngestSeasonResult> 
 // like ingestSeason() is, since a full prior season's PBP is ~19MB gzipped
 // and this only needs the in-progress current season (see pbp.ts / the zone
 // model's design notes). Call this separately, once, for the current season.
-export async function ingestPbpZoneStats(season: number): Promise<{ rows: number; error?: string }> {
+export async function ingestPbpZoneStats(
+  season: number
+): Promise<{ rows: number; passRateRows: number; error?: string }> {
   try {
-    const rows = await fetchPbpZoneStats(season);
-    const dbRows = rows.map((r) => ({
+    const { zoneStats, teamPassRateStats } = await fetchPbpZoneStats(season);
+
+    const dbRows = zoneStats.map((r) => ({
       gsis_id: r.gsisId,
       season: r.season,
       week: r.week,
@@ -186,14 +189,30 @@ export async function ingestPbpZoneStats(season: number): Promise<{ rows: number
       rush_tds: r.rushTds,
       rec_tds: r.recTds,
     }));
-    if (dbRows.length === 0) return { rows: 0 };
-    const { error } = await supabaseAdmin
-      .from('nflverse_player_zone_week_stats')
-      .upsert(dbRows, { onConflict: 'gsis_id,season,week,zone' });
-    if (error) throw new Error(error.message);
-    return { rows: dbRows.length };
+    if (dbRows.length > 0) {
+      const { error } = await supabaseAdmin
+        .from('nflverse_player_zone_week_stats')
+        .upsert(dbRows, { onConflict: 'gsis_id,season,week,zone' });
+      if (error) throw new Error(error.message);
+    }
+
+    const passRateDbRows = teamPassRateStats.map((r) => ({
+      team: r.team,
+      season: r.season,
+      week: r.week,
+      neutral_plays: r.neutralPlays,
+      pass_oe_sum: r.passOeSum,
+    }));
+    if (passRateDbRows.length > 0) {
+      const { error } = await supabaseAdmin
+        .from('nflverse_team_week_pass_rate_stats')
+        .upsert(passRateDbRows, { onConflict: 'team,season,week' });
+      if (error) throw new Error(error.message);
+    }
+
+    return { rows: dbRows.length, passRateRows: passRateDbRows.length };
   } catch (err) {
-    return { rows: 0, error: err instanceof Error ? err.message : String(err) };
+    return { rows: 0, passRateRows: 0, error: err instanceof Error ? err.message : String(err) };
   }
 }
 

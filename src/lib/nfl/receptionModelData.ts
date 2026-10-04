@@ -40,6 +40,8 @@ export interface ReceptionProjectionRow {
   avgSeparation: number | null;
   avgCushion: number | null;
   avgYacAboveExpectation: number | null;
+  recentTeamProe: number | null;
+  seasonTeamProe: number | null;
   dataSeason: number;
   dataWeek: number;
   dataLastUpdated: string | null;
@@ -64,6 +66,13 @@ const MIN_RECENT_TARGETS_FOR_EFFICIENCY_BADGE = 3;
 // "Overlooked" gate: same minimum-recent-games bar as the role-trend badges.
 const OVERLOOKED_MIN_GAMES = 2;
 
+// Pass-rate-over-expected trend gate: a 5-percentage-point gap between a
+// team's last-3-week and season-to-date neutral-script PROE. recentTeamProe
+// is already null (from calculateTeamPassRateTrend.ts) when the recent
+// sample is under ~one game's worth of neutral-script plays, so no separate
+// sample-size gate is needed here.
+const TEAM_PROE_TREND_THRESHOLD = 0.05;
+
 export interface ReceptionModelRow extends ReceptionProjectionRow {
   targetSharePercentile: number | null;
   catchRatePercentile: number | null;
@@ -76,6 +85,8 @@ export interface ReceptionModelRow extends ReceptionProjectionRow {
   isRoleFading: boolean;
   snapSharePercentile: number | null;
   isOverlooked: boolean; // elite/strong recent snap share but low/neutral recent target share — on the field, not yet getting used
+  isPassRateRebound: boolean; // team's recent neutral-script pass rate is well below their season norm — recent raw pass-attempt sample is likely script-suppressed, volume likely bounces back up
+  isPassRateCooling: boolean; // team's recent neutral-script pass rate is well above their season norm — recent volume likely to normalize back down
 }
 
 export function deriveReceptionModelRows(pool: ReceptionProjectionRow[]): ReceptionModelRow[] {
@@ -117,6 +128,11 @@ export function deriveReceptionModelRows(pool: ReceptionProjectionRow[]): Recept
       (snapShareTier === 'elite' || snapShareTier === 'strong') &&
       (targetShareTier === 'low' || targetShareTier === 'neutral');
 
+    const teamProeDelta =
+      p.recentTeamProe !== null && p.seasonTeamProe !== null ? p.recentTeamProe - p.seasonTeamProe : null;
+    const isPassRateRebound = teamProeDelta !== null && teamProeDelta <= -TEAM_PROE_TREND_THRESHOLD;
+    const isPassRateCooling = teamProeDelta !== null && teamProeDelta >= TEAM_PROE_TREND_THRESHOLD;
+
     return {
       ...p,
       targetSharePercentile,
@@ -130,6 +146,8 @@ export function deriveReceptionModelRows(pool: ReceptionProjectionRow[]): Recept
       isRoleFading,
       snapSharePercentile,
       isOverlooked,
+      isPassRateRebound,
+      isPassRateCooling,
     };
   });
 }

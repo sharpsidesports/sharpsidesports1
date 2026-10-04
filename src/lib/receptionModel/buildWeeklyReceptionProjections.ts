@@ -33,6 +33,8 @@ import { calculateOpponentCatchRateAllowedByPosition } from './calculateOpponent
 import { calculateSeasonRollups } from './calculateSeasonRollups.js';
 import { calculateReceptionDebt } from './calculateReceptionDebt.js';
 import { calculateRecentRollups, calculateTargetShareWindow } from './calculateRecentRollups.js';
+import { calculateTeamPassRateTrend } from './calculateTeamPassRateTrend.js';
+import type { NflverseTeamPassRateRow } from '../nflverse/pbp.js';
 
 // Role Climbing/Fading compares a shorter, more reactive window (last 2
 // games) against the season average, separate from the 3-game window used
@@ -64,6 +66,7 @@ export interface BuildProjectionsInput {
   receptionProjectionHistory: { gsisId: string; week: number; projectedReceptions: number }[]; // this season, weeks < current week, persisted reception_projections (Reception Debt input)
   snapCounts: NflverseSnapCountRow[]; // current season, this player's offensive snap share by week
   ngsReceiving: NflverseNgsReceivingRow[]; // current season, this player's NGS receiving rows by week
+  teamPassRateStats: NflverseTeamPassRateRow[]; // current season, every team's neutral-script pass rate by week
   nflverseFetchedAt: string | null;
   latestAvailableNflverseWeek: { season: number; week: number } | null;
 }
@@ -350,6 +353,11 @@ export function buildWeeklyReceptionProjections(input: BuildProjectionsInput): R
     const roleTrendWindow = calculateTargetShareWindow(model.currentSeasonGames, ROLE_TREND_WINDOW);
     const recentOffenseSnapPct = recentAverage(model.currentSeasonSnapPct.map((g) => g.offenseSnapPct));
 
+    const teamWeeks = input.teamPassRateStats
+      .filter((r) => r.team === model.team && r.week < input.week)
+      .map((r) => ({ week: r.week, neutralPlays: r.neutralPlays, passOeSum: r.passOeSum }));
+    const teamPassRateTrend = calculateTeamPassRateTrend(teamWeeks);
+
     return {
       model,
       targetShare,
@@ -370,6 +378,7 @@ export function buildWeeklyReceptionProjections(input: BuildProjectionsInput): R
       recentRollups,
       roleTrendWindow,
       recentOffenseSnapPct,
+      teamPassRateTrend,
     };
   });
 
@@ -427,6 +436,8 @@ export function buildWeeklyReceptionProjections(input: BuildProjectionsInput): R
     avgSeparation: round(p.model.latestNgsReceiving?.avgSeparation ?? null, 2),
     avgCushion: round(p.model.latestNgsReceiving?.avgCushion ?? null, 2),
     avgYacAboveExpectation: round(p.model.latestNgsReceiving?.avgYacAboveExpectation ?? null, 2),
+    recentTeamProe: round(p.teamPassRateTrend.recentProe, 3),
+    seasonTeamProe: round(p.teamPassRateTrend.seasonProe, 3),
     dataSeason: input.season,
     dataWeek: input.week,
     dataLastUpdated: input.nflverseFetchedAt,
@@ -479,6 +490,8 @@ function baseResult(
     avgSeparation: null,
     avgCushion: null,
     avgYacAboveExpectation: null,
+    recentTeamProe: null,
+    seasonTeamProe: null,
     dataSeason: input.season,
     dataWeek: input.week,
     dataLastUpdated: input.nflverseFetchedAt,

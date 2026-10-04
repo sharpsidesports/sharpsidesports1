@@ -140,6 +140,11 @@ export interface ReceptionProjectionResult {
   avgCushion: number | null;
   avgYacAboveExpectation: number | null;
 
+  // Team-level neutral-script pass rate over expected (PROE) trend — see
+  // calculateTeamPassRateTrend.ts. Display-only, not a Sharp Score input.
+  recentTeamProe: number | null;
+  seasonTeamProe: number | null;
+
   dataSeason: number;
   dataWeek: number;
   dataLastUpdated: string | null;

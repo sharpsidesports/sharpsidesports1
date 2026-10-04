@@ -15,6 +15,7 @@ import type {
   NflverseSnapCountRow,
   NflverseNgsReceivingRow,
 } from '../nflverse/types.js';
+import type { NflverseTeamPassRateRow } from '../nflverse/pbp.js';
 import type { BuildProjectionsInput } from './buildWeeklyReceptionProjections.js';
 
 // PostgREST caps a single select() response at 1000 rows regardless of
@@ -52,6 +53,7 @@ export async function loadSupabaseProjectionsInput(
     receptionHistoryRows,
     snapCountRows,
     ngsReceivingRows,
+    teamPassRateRows,
   ] = await Promise.all([
       getEspnWeekReceptionProjections(season, week),
       fetchAllRows('player_crosswalk', (from, to) =>
@@ -83,6 +85,14 @@ export async function loadSupabaseProjectionsInput(
       fetchAllRows('nflverse_player_ngs_receiving_week_stats', (from, to) =>
         supabaseAdmin
           .from('nflverse_player_ngs_receiving_week_stats')
+          .select('*')
+          .eq('season', season)
+          .lt('week', week)
+          .range(from, to)
+      ),
+      fetchAllRows('nflverse_team_week_pass_rate_stats', (from, to) =>
+        supabaseAdmin
+          .from('nflverse_team_week_pass_rate_stats')
           .select('*')
           .eq('season', season)
           .lt('week', week)
@@ -185,6 +195,14 @@ export async function loadSupabaseProjectionsInput(
     avgYacAboveExpectation: r.avg_yac_above_expectation,
   }));
 
+  const teamPassRateStats: NflverseTeamPassRateRow[] = teamPassRateRows.map((r) => ({
+    team: r.team,
+    season: r.season,
+    week: r.week,
+    neutralPlays: r.neutral_plays,
+    passOeSum: r.pass_oe_sum,
+  }));
+
   const injuries: NflverseInjuryRow[] = injuriesRows.map((r) => ({
     gsisId: r.gsis_id,
     playerName: r.player_name,
@@ -221,6 +239,7 @@ export async function loadSupabaseProjectionsInput(
     receptionProjectionHistory,
     snapCounts,
     ngsReceiving,
+    teamPassRateStats,
     nflverseFetchedAt,
     latestAvailableNflverseWeek,
   };

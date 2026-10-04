@@ -10,7 +10,7 @@ import { percentileRank } from '../../lib/nfl/percentileRank.js';
 import { formatPct } from '../../lib/nfl/formatters.js';
 
 type SortKey = 'sharpScore' | 'targetShare' | 'catchRate' | 'regressionGap' | 'projectedReceptions' | 'impliedTotal' | 'player';
-type ChipFilter = 'all' | 'buyLow' | 'unsustainable' | 'roleClimbing' | 'overlooked';
+type ChipFilter = 'all' | 'buyLow' | 'unsustainable' | 'roleClimbing' | 'overlooked' | 'passRateRebound';
 
 interface ReceptionModelTableProps {
   rows: ReceptionModelRow[]; // already search-filtered, percentiles derived against this pool
@@ -37,6 +37,13 @@ function formatSignedYards(value: number | null): string {
   if (value === null) return '—';
   const sign = value > 0 ? '+' : '';
   return `${sign}${value.toFixed(1)} yds`;
+}
+
+function formatSignedPct(value: number | null): string {
+  if (value === null) return '—';
+  const pct = value * 100;
+  const sign = pct > 0 ? '+' : '';
+  return `${sign}${pct.toFixed(1)}%`;
 }
 
 function ExpandedDetail({ r, pool }: { r: ReceptionModelRow; pool: ReceptionModelRow[] }) {
@@ -134,6 +141,8 @@ function ExpandedDetail({ r, pool }: { r: ReceptionModelRow; pool: ReceptionMode
         <div>Projected targets: <span className="font-semibold text-gray-900">{r.projectedTargets ?? '—'}</span></div>
         <div>nflverse model: <span className="font-semibold text-gray-900">{r.nflverseProjectedReceptions ?? '—'}</span></div>
         <div>Matchup, all positions: <span className="font-semibold text-gray-900">{formatPct(r.opponentCatchPctAllowed)}</span></div>
+        <div>Team pass rate vs. expected (recent 3wk, neutral script): <span className="font-semibold text-gray-900">{formatSignedPct(r.recentTeamProe)}</span></div>
+        <div>Team pass rate vs. expected (season, neutral script): <span className="font-semibold text-gray-900">{formatSignedPct(r.seasonTeamProe)}</span></div>
         <div>Avg. Cushion (NGS): <span className="font-semibold text-gray-900">{formatYards(r.avgCushion)}</span></div>
         <div>Avg. YAC above expectation (NGS): <span className="font-semibold text-gray-900">{formatSignedYards(r.avgYacAboveExpectation)}</span></div>
         <div>Data updated: <span className="font-semibold text-gray-900">{r.dataLastUpdated ? new Date(r.dataLastUpdated).toLocaleString() : '—'}</span></div>
@@ -156,12 +165,22 @@ function rowBadges(r: ReceptionModelRow) {
       {r.isRoleClimbing && <Badge label="📈 Climbing" tone="blue" />}
       {r.isRoleFading && <Badge label="📉 Fading" tone="gray" />}
       {r.isOverlooked && <Badge label="🏃 Overlooked" tone="blue" />}
+      {r.isPassRateRebound && <Badge label="🔄 Pass Rate Rebound" tone="green" />}
+      {r.isPassRateCooling && <Badge label="⚠️ Pass Rate Cooling" tone="amber" />}
     </>
   );
 }
 
 function hasAnyBadge(r: ReceptionModelRow): boolean {
-  return r.isBuyLow || r.isUnsustainable || r.isRoleClimbing || r.isRoleFading || r.isOverlooked;
+  return (
+    r.isBuyLow ||
+    r.isUnsustainable ||
+    r.isRoleClimbing ||
+    r.isRoleFading ||
+    r.isOverlooked ||
+    r.isPassRateRebound ||
+    r.isPassRateCooling
+  );
 }
 
 const COLUMN_TOOLTIPS: Record<string, string> = {
@@ -218,6 +237,8 @@ export default function ReceptionModelTable({
         return searched.filter((r) => r.isRoleClimbing);
       case 'overlooked':
         return searched.filter((r) => r.isOverlooked);
+      case 'passRateRebound':
+        return searched.filter((r) => r.isPassRateRebound);
       default:
         return searched;
     }
@@ -271,6 +292,7 @@ export default function ReceptionModelTable({
     { key: 'unsustainable', label: '⚠️ Unsustainable' },
     { key: 'roleClimbing', label: '📈 Role Climbing' },
     { key: 'overlooked', label: '🏃 Overlooked' },
+    { key: 'passRateRebound', label: '🔄 Pass Rate Rebound' },
   ];
 
   return (
@@ -486,6 +508,7 @@ export default function ReceptionModelTable({
         <span>⚠️ Unsustainable = low recent target share, high recent catch rate</span>
         <span>📈/📉 Role Trend = last-2-game share vs. season average, ±3pp</span>
         <span>🏃 Overlooked = high recent snap share, low recent target share</span>
+        <span>🔄 Pass Rate Rebound = team's recent neutral-script pass rate is well below their season norm</span>
         <span>Darker/bolder cell = higher percentile within current filters</span>
       </div>
     </div>

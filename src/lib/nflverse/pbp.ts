@@ -24,7 +24,26 @@ export interface NflversePbpZoneRow {
   recTds: number;
 }
 
-export async function fetchPbpZoneStats(season: number): Promise<NflversePbpZoneRow[]> {
+// Neutral-script pass-rate-over-expected, aggregated per team per week —
+// see calculateTeamPassRateTrend.ts for why "neutral script" (offense win
+// probability 0.1-0.9) matters: nflverse's own xpass/pass_oe columns are NOT
+// pre-filtered to neutral situations (confirmed against live data — they're
+// populated even in 4th-quarter blowouts), so without this filter garbage
+// time would dilute exactly the signal this is meant to isolate.
+export interface NflverseTeamPassRateRow {
+  team: string;
+  season: number;
+  week: number;
+  neutralPlays: number;
+  passOeSum: number;
+}
+
+export interface PbpAggregates {
+  zoneStats: NflversePbpZoneRow[];
+  teamPassRateStats: NflverseTeamPassRateRow[];
+}
+
+export async function fetchPbpZoneStats(season: number): Promise<PbpAggregates> {
   const url = `${PBP_BASE}/play_by_play_${season}.csv.gz`;
   const res = await fetch(url);
   if (!res.ok || !res.body) {
@@ -33,6 +52,8 @@ export async function fetchPbpZoneStats(season: number): Promise<NflversePbpZone
 
   // key: gsisId|week|zone -> running counts
   const agg = new Map<string, NflversePbpZoneRow>();
+  // key: team|week -> running counts
+  const passRateAgg = new Map<string, NflverseTeamPassRateRow>();
 
   function bump(gsisId: string, week: number, zone: Zone, field: 'carries' | 'targets' | 'rushTds' | 'recTds') {
     const key = `${gsisId}|${week}|${zone}`;
@@ -42,6 +63,17 @@ export async function fetchPbpZoneStats(season: number): Promise<NflversePbpZone
       agg.set(key, row);
     }
     row[field]++;
+  }
+
+  function bumpPassRate(team: string, week: number, passOe: number) {
+    const key = `${team}|${week}`;
+    let row = passRateAgg.get(key);
+    if (!row) {
+      row = { team, season, week, neutralPlays: 0, passOeSum: 0 };
+      passRateAgg.set(key, row);
+    }
+    row.neutralPlays += 1;
+    row.passOeSum += passOe;
   }
 
   const nodeStream = Readable.fromWeb(res.body as any);
@@ -66,10 +98,22 @@ export async function fetchPbpZoneStats(season: number): Promise<NflversePbpZone
           bump(row.receiver_player_id, week, zone, 'targets');
           if (row.pass_touchdown === '1') bump(row.receiver_player_id, week, zone, 'recTds');
         }
+
+        if (
+          (row.play_type === 'run' || row.play_type === 'pass') &&
+          row.season_type === 'REG' &&
+          row.posteam
+        ) {
+          const wp = Number(row.wp);
+          const passOe = Number(row.pass_oe);
+          if (Number.isFinite(wp) && wp >= 0.1 && wp <= 0.9 && Number.isFinite(passOe)) {
+            bumpPassRate(row.posteam, week, passOe);
+          }
+        }
       })
       .on('end', () => resolve())
       .on('error', reject);
   });
 
-  return Array.from(agg.values());
+  return { zoneStats: Array.from(agg.values()), teamPassRateStats: Array.from(passRateAgg.values()) };
 }
