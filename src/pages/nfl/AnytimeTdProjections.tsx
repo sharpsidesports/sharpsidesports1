@@ -39,7 +39,7 @@ export default function AnytimeTdProjections() {
     else setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/nfl-odds?week=4&season=2026${refresh ? '&refresh=1' : ''}`);
+      const res = await fetch(`/api/nfl-odds?week=5&season=2026${refresh ? '&refresh=1' : ''}`);
       const json: ApiResponse = await res.json();
       if (!res.ok) {
         throw new Error(json.details || json.error || 'Failed to load projections');

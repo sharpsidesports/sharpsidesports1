@@ -18,7 +18,7 @@
 
   "crons": [
     {
-      "path": "/api/nfl-odds?season=2026&week=4&refresh=1",
+      "path": "/api/nfl-odds?season=2026&week=5&refresh=1",
       "schedule": "0 13 * * 2,5"
     },
     {
@@ -34,7 +34,7 @@
       "schedule": "15 9 * * 2"
     },
     {
-      "path": "/api/passing-model/sync-lines?season=2026&week=4",
+      "path": "/api/passing-model/sync-lines?season=2026&week=5",
       "schedule": "0 14 * * 2,5"
     }
   ]
