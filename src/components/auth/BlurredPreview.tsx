@@ -11,6 +11,8 @@ interface BlurredPreviewProps {
 // TEMPORARY OVERRIDE: Disable blur/upgrade gating during development
 const DISABLE_BLUR = false; // TODO: revert to false when re-enabling gating
 
+const VIP_UNLOCK_KEY = 'ss_vip_unlocked';
+
 export default function BlurredPreview({ children, requiredSubscription = 'free' }: BlurredPreviewProps) {
   const { user } = useAuthContext();
   console.log('user in BlurredPreview', user);
@@ -21,7 +23,10 @@ export default function BlurredPreview({ children, requiredSubscription = 'free'
   const [showPrompt, setShowPrompt] = useState(false);
   const [pwInput, setPwInput] = useState('');
   const [pwError, setPwError] = useState('');
-  const [showVIP, setShowVIP] = useState(false);
+  // Persist a VIP unlock for the browser session so it carries across gated pages
+  const [showVIP, setShowVIP] = useState(() => {
+    try { return sessionStorage.getItem(VIP_UNLOCK_KEY) === '1'; } catch { return false; }
+  });
   const VIP_PASSWORDS = ['cfbweek1', 'brodie25', 'ssports25', 'chris25', 'josh25', 'NFL2026', 'nfl0101']; // Array of valid VIP passwords
 
   // Auto-open the VIP password modal for pro-gated pages instead of requiring a button click first
@@ -43,6 +48,7 @@ export default function BlurredPreview({ children, requiredSubscription = 'free'
     e.preventDefault();
           if (VIP_PASSWORDS.includes(pwInput)) {
       setShowVIP(true);
+      try { sessionStorage.setItem(VIP_UNLOCK_KEY, '1'); } catch { /* storage unavailable */ }
       setShowPrompt(false);
       setPwInput('');
       setPwError('');

@@ -167,19 +167,19 @@ function App() {
                 <Route path="/picks-preview/articles" element={<PicksArticles />} />
                 <Route
                   path="/picks-preview/nfl-models/touchdown-model"
-                  element={<PicksLayout><AnytimeTdProjections /></PicksLayout>}
+                  element={<PicksLayout><ProtectedRoute requiredSubscription="pro" showPreview={true}><AnytimeTdProjections /></ProtectedRoute></PicksLayout>}
                 />
                 <Route
                   path="/picks-preview/nfl-models/receiving-model"
-                  element={<PicksLayout><div className="px-4 py-6 sm:px-6 lg:px-8"><ReceptionModel /></div></PicksLayout>}
+                  element={<PicksLayout><ProtectedRoute requiredSubscription="pro" showPreview={true}><div className="px-4 py-6 sm:px-6 lg:px-8"><ReceptionModel /></div></ProtectedRoute></PicksLayout>}
                 />
                 <Route
                   path="/picks-preview/nfl-models/passing-model"
-                  element={<PicksLayout><div className="px-4 py-6 sm:px-6 lg:px-8"><PassingModel /></div></PicksLayout>}
+                  element={<PicksLayout><ProtectedRoute requiredSubscription="pro" showPreview={true}><div className="px-4 py-6 sm:px-6 lg:px-8"><PassingModel /></div></ProtectedRoute></PicksLayout>}
                 />
                 <Route
                   path="/picks-preview/nfl-models/pace-rankings"
-                  element={<PicksLayout><PaceRankings /></PicksLayout>}
+                  element={<PicksLayout><ProtectedRoute requiredSubscription="pro" showPreview={true}><PaceRankings /></ProtectedRoute></PicksLayout>}
                 />
                 <Route path="/articles/football-betting-guide" element={<FootballBettingGuide />} />
                 <Route path="/articles/football-betting-basic-strategy" element={<FootballBettingBasicStrategy />} />
@@ -328,7 +328,7 @@ function App() {
                 />
                 <Route 
                   path="/reception-model" 
-                  element={<ReceptionModel />} 
+                  element={<ProtectedRoute requiredSubscription="pro" showPreview={true}><ReceptionModel /></ProtectedRoute>} 
                 /> 
                 <Route path="/cfb/sp-plus" element={<SPPlus />} />
                 <Route path="/cfb/wr-target-projections" element={<WRTargetProjections />} />
@@ -344,8 +344,8 @@ function App() {
                 <Route path="/nfl/yards-per-pass-attempt" element={<YardsPerPassAttempt />} />
                 <Route path="/nfl/yards-per-completion" element={<YardsPerCompletion />} />
                 <Route path="/nfl/passing-yards-per-game" element={<PassingYardsPerGame />} />
-                <Route path="/nfl/anytime-td-projections" element={<AnytimeTdProjections />} />
-                <Route path="/nfl/pace-rankings" element={<PaceRankings />} />
+                <Route path="/nfl/anytime-td-projections" element={<ProtectedRoute requiredSubscription="pro" showPreview={true}><AnytimeTdProjections /></ProtectedRoute>} />
+                <Route path="/nfl/pace-rankings" element={<ProtectedRoute requiredSubscription="pro" showPreview={true}><PaceRankings /></ProtectedRoute>} />
                 <Route path="/nfl/fantasy-projections" element={<FantasyProjectionsLanding />} />
                 <Route path="/nfl/redzone-stats" element={<RedzoneStatsLanding />} />
                 <Route path="/nfl/team-stats" element={<TeamStatsLanding />} />
